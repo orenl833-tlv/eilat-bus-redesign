@@ -22,9 +22,27 @@ how much each attractor weighs. Nothing has been computed on the network yet.
 assigned to today's network predicts boardings per line; these can be compared with the real boardings
 of 23 line-directions over 9 quarters, and the weights fitted. Guesses become starting values.
 
+## Changes that affect the ridership series
+
+| Change | Date | Effect on the comparison |
+|---|---|---|
+| Free travel 75+ ("Zahav Kav"), validation required | 1 Aug 2022 | before the first quarter in the file |
+| Soldiers validate with the ZUZU app instead of showing an ID; exemption extended to private trips | app by mid-2022; extension 15 Dec 2022 | small, from 2023 |
+| **Free travel 67+**, and a regular fare of 8 NIS | **25 Apr 2025** | likely more senior trips (11.8% of Eilat residents are 65+), possibly fewer others |
+| Evacuees from the north and south living in Eilat hotels, free public transport | Oct 2023 - 2024 | 2024 Q1-Q2 are not a normal baseline |
+| Lines 3 and 4 opened | 2025 | ~1,900 boardings a day by 2026 Q1, partly taken from lines 1 and 2 |
+
+- Calibrate mainly on **2025 Q4 and 2026 Q1**: current network, 67+ rule in force, no evacuees. Use the
+  other quarters for seasonal comparison only.
+- Open questions: whether the file counts app validations (Rav-Pass, Moovit, ZUZU) or only Rav-Kav
+  cards, and whether "daily" means an average weekday or an average over the week. The dataset's
+  description PDF could not be opened from here.
+
 ## What the data already says
 
-- **Total: about 10,400 boardings a day** on Eilat lines in 2026 Q1, up from 7,600 in 2022 Q4.
+- **Total: about 10,400 boardings a day** on lines that start and end in Eilat in 2026 Q1, up from
+  7,600 in 2022 Q4. Urban lines alone: 9,364, up from 6,625 (+41%); the airport and regional lines (30,
+  31, 32, 50) add ~1,000. These are validations, not people: a return trip or a transfer counts twice.
 - **Four long loops carry two thirds of it.** Lines 1, 2, 5, 6 (23-26 km, 60-70 minutes per trip) have
   1,500-1,750 boardings a day each; the short lines 3 and 4 have 400-540 per direction.
 - **Line 30 to Ramon airport: ~720 a day.** The airport is a major attractor that was missing from the list.
