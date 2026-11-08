@@ -1,0 +1,3 @@
+day,weekday,group,rides,vehicles,peak_in_service,peak_in_use,vehicle_hours_service,vehicle_hours_use,peak_time,unknown_line_refs
+20251207,Sun,urban,442,39,32,34,349.9,387.7,13:30,2
+20251207,Sun,airport,151,29,10,10,105.6,118.4,11:50,2
