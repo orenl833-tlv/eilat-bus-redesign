@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 URBAN = {"1", "1א", "2", "3", "4", "5", "5א", "6", "6א", "10", "11", "15", "16", "80", "80א", "81", "82"}
 AIRPORT = {"30", "30א", "31", "32", "50", "50א"}
 LAYOVER = 20
+GAP_DAYS = {"20251208"}  # 14k reports against ~32k on the other weekdays that week: SIRI outage
 INK, INK2, GRID, SURF = "#0b0b0b", "#52514e", "#e4e3df", "#fcfcfb"
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 
@@ -31,6 +32,29 @@ BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
 def line_names():
     r = pd.read_csv("data/raw/gtfs_20261107/routes.txt", encoding="utf-8-sig")
     return dict(zip(r.route_id, r.route_short_name.astype(str), strict=True))
+
+
+def names_for_day(d, names, day):
+    """Current GTFS names, plus the names Stride's GTFS archive gives for that day for any other line ref."""
+    import json, urllib.request  # noqa: E401
+    missing = sorted(set(d.siri_route__line_ref.dropna().astype(int)) - set(names))
+    out = dict(names)
+    cache = f"data/siri/names_{day}.json"
+    if os.path.exists(cache):
+        out.update({int(k): v for k, v in json.load(open(cache)).items()})
+        return out
+    got = {}
+    for i in range(0, len(missing), 50):
+        refs = ",".join(str(x) for x in missing[i:i + 50])
+        iso = f"{day[:4]}-{day[4:6]}-{day[6:]}"
+        url = ("https://open-bus-stride-api.hasadna.org.il/gtfs_routes/list?limit=1000"
+               f"&line_refs={refs}&date_from={iso}&date_to={iso}")
+        with urllib.request.urlopen(url, timeout=120) as r:
+            for x in json.load(r):
+                got[int(x["line_ref"])] = str(x["route_short_name"])
+    json.dump(got, open(cache, "w"))
+    out.update(got)
+    return out
 
 
 def rides(d, names):
@@ -69,7 +93,7 @@ def main():
             continue
         day = os.path.basename(f)[:8]
         day0 = pd.Timestamp(f"{day[:4]}-{day[4:6]}-{day[6:]} 04:00", tz="Asia/Jerusalem")
-        g, unknown = rides(d, names)
+        g, unknown = rides(d, names_for_day(d, names, day))
         for grp in ["urban", "airport"]:
             gg = g[g.group == grp]
             m = minute_counts(gg, day0)
@@ -83,6 +107,8 @@ def main():
                              peak_time=m.t[m.in_use.idxmax()].tz_convert("Asia/Jerusalem").strftime("%H:%M"),
                              unknown_line_refs=unknown))
     t = pd.DataFrame(days)
+    # days with a SIRI data gap (far fewer reports than the same weekday in the same week)
+    t["data_gap"] = t.day.isin(GAP_DAYS)
     t.to_csv("data/fleet_daily.csv", index=False)
     pm = pd.concat(per_min)
     pm.to_csv("data/fleet_by_minute.csv", index=False)
