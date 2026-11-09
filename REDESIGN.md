@@ -210,8 +210,9 @@ Today's network in the same model needs 84 duties a day, 105 drivers ("standard"
   - In the options many buses run to midnight; a day of ~19 h becomes three shorter shifts.
   - Overtime brings it back to two shifts, at the cost of more paid hours.
 - **The cost is not extra to the bus-hour gap.**
-  - Driver pay is part of the NIS 360 per bus-hour, so the up to NIS 1.5 M a year for extra bus-hours
-    (above) already contains most of it.
+  - Driver pay is part of the NIS 360 per bus-hour, so the NIS 0.5-4.9 M a year for 1-9% extra
+    bus-hours (above) already contains most of it. (An earlier version of this report said "up to NIS
+    1.5 M"; that was an arithmetic error.)
   - What it adds is the labour side: 10-17 more people to hire.
 - **Can Eilat hire them?** Israel is short of more than 5,000 bus drivers. Eilat is remote. Hiring 10-17
   more is the real risk, more than the money.
@@ -222,6 +223,51 @@ Today's network in the same model needs 84 duties a day, 105 drivers ("standard"
 - **Not included:** one-off recruiting and training costs; Friday and Saturday crews.
 - **Not validated:** the model's 105 drivers for today could not be checked against the operator's real
   roster, so the differences matter more than the levels.
+
+## Ending the evening earlier (`scripts/evening.py`)
+
+The extra drivers come from the evening service to midnight. Here each option ends its last departures
+earlier, and the model re-checks it. Duties use the same Regulation 168 rules as above. "Overtime" lets the
+second shift of a long bus day run to 10.5 h; Israeli drivers commonly work such days today.
+
+Year averages vs today:
+- **Time:** perceived time, mean of calibrations A and B.
+- **Worst area:** the worst area in any season or calibration.
+- **Cost:** operating cost = extra bus-hours × NIS 360, all costs including drivers.
+
+| Option | Evening ends | Time | Worst area | Extra drivers, standard / overtime | Bus-hours | Operating cost a year |
+|---|---|---|---|---|---|---|
+| 1 | midnight (as proposed) | −12.4% | +2.9% | +14 / +11 | +5.1% | +NIS 2.7 M |
+| 1 | 23:00, winter + spring/autumn | −10.6% | +3.7% | +9 / +5 | −0.5% | −NIS 0.3 M |
+| 1 | 23:00 all year | −10.2% | +5.3% | +4 / +5 | −1.3% | −NIS 0.7 M |
+| 1 | 22:00, winter + spring/autumn | −7.9% | +6.6% | +9 / +2 | −5.8% | −NIS 3.1 M |
+| 2 | midnight (as proposed) | −16.2% | −0.7% | +17 / +10 | +7.4% | +NIS 4.0 M |
+| 2 | 23:00, winter + spring/autumn | −14.8% | +0.2% | +9 / +1 | +1.9% | +NIS 1.0 M |
+| **2** | **23:00 all year** | **−14.4%** | **+1.1%** | **+4 / +1** | **+1.0%** | **+NIS 0.5 M** |
+| 2 | 22:00, winter + spring/autumn | −12.4% | +2.7% | +9 / −4 | −2.8% | −NIS 1.5 M |
+| 3 | midnight (as proposed) | −17.7% | −1.8% | +17 / +1 | +9.1% | +NIS 4.9 M |
+| 3 | 23:00 all year | −15.8% | −0.1% | +9 / −2 | +3.1% | +NIS 1.7 M |
+| 3 | 22:00, winter + spring/autumn | −13.5% | +2.6% | +14 / −2 | −1.9% | −NIS 1.0 M |
+
+How the earlier end enters the model:
+- The model has one evening period (19-24), represented by its average headway, exactly as it represents
+  today's network (whose evening already thins out after 21:00).
+- Ending at 23:00 stretches that average × 5/4; ending at 22:00, × 5/3.
+- Today's 3 departures after 23:00 are cut too, and the worst-area column carries that.
+
+- **Ending at 23:00 removes most of the extra-driver problem and most of the extra cost.** It keeps 80-90%
+  of each option's gain.
+- **The realistic package is option 2 ending at 23:00 all year, with overtime as today:**
+  - 14% shorter perceived trips;
+  - no area more than 1.1% worse than today;
+  - one more driver;
+  - about NIS 0.5 M a year more.
+- **Without merging lines, option 1 ending at 23:00 costs less than today** (−NIS 0.7 M) and still gives
+  10%. It needs 4-5 more drivers.
+- **Ending at 22:00 in the quiet seasons is the cheapest, but it cuts service that runs today.** That is
+  what the worst-area column shows: up to 6.6% worse in option 1.
+- **Option 3's saving in buses never materialises in real blocks.** Its bus-hours stay 3% above today even
+  at 23:00.
 
 ## GTFS export (`scripts/export_gtfs.py`)
 
@@ -242,13 +288,15 @@ match `data/blocking.csv`. No holidays are marked, and Friday and Saturday are n
    - Ask for stop-level Rav-Kav data.
    - Hand the GTFS to the operator.
    - Align timetables between lines to close the bus-hour gap.
-2. **Option 1, with today's pre-06:00 trips kept.** Every line and number stays, and it delivers most of
-   the gain (~12%).
+2. **Option 1 ending at 23:00, with today's pre-06:00 trips kept.**
+   - Every line and number stays.
+   - It gives ~10%, costs about what today does, and needs 4-5 more drivers.
 3. **Measure 3-6 months.**
    - Boardings per line, SIRI lateness, complaints.
    - Go on only if trips haven't fallen and no area lost more than expected.
-4. **Option 2 in two steps.** Run line 7 as a pilot next to lines 1 and 4; merge 1 and 4 only if line 7
-   holds its riders. That adds ~4%.
+4. **Option 2 (ending at 23:00) in two steps.**
+   - Run line 7 as a pilot next to lines 1 and 4; merge 1 and 4 only if line 7 holds its riders.
+   - That takes the gain to ~14% with one driver more than today, for about NIS 0.5 M a year.
 5. **With the new districts:** the Shifolei HaHar spur (+3 buses justified by the new demand), planned on
    the real street map.
 
