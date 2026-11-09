@@ -122,7 +122,18 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "full_warm", season: "winter", period: "09-12", selL: null, selR: null, note: ""};
+const st = {opt: "full_warm", season: "winter", period: "all", selL: null, selR: null, note: ""};
+// "all" = the whole service day 06:00-24:00: buses an hour averaged over the day, trips a day per line
+const PH = {"06-09": 3, "09-12": 3, "12-15": 3, "15-19": 4, "19-24": 5}, DAY_H = 18;
+function segsFor(tag) {
+  const net = D.net[tag]?.[st.season] || {};
+  if (st.period !== "all") return net[st.period] || [];
+  const m = new Map();
+  for (const [p, h] of Object.entries(PH)) for (const [i, j, b] of net[p] || []) { const k = i + "," + j; m.set(k, (m.get(k) || 0) + b * h) }
+  return [...m].map(([k, v]) => { const [i, j] = k.split(",").map(Number); return [i, j, v / DAY_H] });
+}
+const tripsDay = (l) => Object.entries(PH).reduce((s, [p, h]) => s + (l.hw[p] ? h * 60 / l.hw[p] : 0), 0);
+const runs = (l) => st.period === "all" ? tripsDay(l) > 0 : !!l.hw[st.period];
 // "5א/0x" -> family "5א", direction "0"; a counterpart has the same family and direction, any variant (x, s)
 const parts = (n) => { const m = /^(.+?)\/(\d)([xs]?)$/.exec(n); return m ? { fam: m[1], dir: m[2] } : { fam: n, dir: "" } };
 function counterpart(name, tag) {
@@ -197,7 +208,7 @@ function drawMap(svg, tag, showChange) {
       g.appendChild(t);
     }
   }
-  const segs = (D.net[tag]?.[st.season]?.[st.period] || []).slice().sort((x, y) => x[2] - y[2]);
+  const segs = segsFor(tag).slice().sort((x, y) => x[2] - y[2]);
   for (const [i, j, b] of segs) {
     const [la1, lo1] = D.stops[i], [la2, lo2] = D.stops[j];
     const p = document.createElementNS(ns, "path");
@@ -265,7 +276,7 @@ function selectLine(selKey, name) {
 // clicking a street on a map: the lines running on it now, most frequent first; each click moves to the next one
 function clickStreet(tag, i, j) {
   const selKey = tag === "today" ? "selL" : "selR";
-  const on = (D.lines[tag]?.[st.season] || []).filter((l) => l.hw[st.period] && l.stops.some((s, k) => k > 0 &&
+  const on = (D.lines[tag]?.[st.season] || []).filter((l) => runs(l) && l.stops.some((s, k) => k > 0 &&
     ((l.stops[k - 1] === i && s === j) || (l.stops[k - 1] === j && s === i)))).sort((a, b) => a.hw[st.period] - b.hw[st.period]);
   if (!on.length) return;
   const k = on.findIndex((l) => l.name === st[selKey]);
@@ -283,9 +294,10 @@ function lineList(id, tag, selKey) {
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
-    const h = l.hw[st.period];
+    const h = st.period === "all" ? null : l.hw[st.period];
+    const freq = st.period === "all" ? (tripsDay(l) ? `${Math.round(tripsDay(l))} נסיעות ביום` : "אין שירות") : (h ? "כל " + h + " דק'" : "אין שירות");
     b.innerHTML = `<span class="no">${num(l.display || label(l.name))}</span><span class="route">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</span>` +
-      `<span class="hw">${h ? "כל " + h + " דק'" : "אין שירות"}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
+      `<span class="hw">${freq}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
     b.onclick = () => selectLine(selKey, st[selKey] === l.name ? null : l.name);
     el.appendChild(b);
   }
@@ -338,19 +350,20 @@ function table() {
 function legend() {
   const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
   document.getElementById("legend").innerHTML =
-    `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
+    `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה${st.period === "all" ? " (ממוצע על פני היום, 06:00–24:00)" : ""}</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
     `<span>${sw(css("--better-1"), 10)}האזור משתפר בפחות מ-10%</span><span>${sw(css("--better-2"), 10)}10%–20%</span><span>${sw(css("--better-3"), 10)}יותר מ-20%</span><span>${sw(css("--worse"), 10)}האזור נפגע</span>`;
 }
 
 function render() {
   seg("opt", Object.keys(D.options).filter((k) => k !== "today").map((k) => [k, OPT_HE[k]]), st.opt);
   seg("season", D.seasons.map((s) => [s, SNAME[s]]), st.season);
-  seg("period", D.periods.map((p) => [p, p]), st.period);
+  seg("period", [["all", "כל היום"], ...D.periods.map((p) => [p, p])], st.period);
   document.getElementById("optName").textContent = OPT_HE[st.opt];
-  const busesL = (D.net.today[st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
-  const busesR = (D.net[st.opt][st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
-  document.getElementById("capL").textContent = `ברחוב העמוס ביותר: ${busesL.toFixed(0)} אוטובוסים בשעה`;
-  document.getElementById("capR").textContent = `ברחוב העמוס ביותר: ${busesR.toFixed(0)} אוטובוסים בשעה`;
+  const busesL = segsFor("today").reduce((m, x) => Math.max(m, x[2]), 0);
+  const busesR = segsFor(st.opt).reduce((m, x) => Math.max(m, x[2]), 0);
+  const cap = (b) => st.period === "all" ? `ברחוב העמוס ביותר: ${Math.round(b * DAY_H)} נסיעות ביום` : `ברחוב העמוס ביותר: ${b.toFixed(0)} אוטובוסים בשעה`;
+  document.getElementById("capL").textContent = cap(busesL);
+  document.getElementById("capR").textContent = cap(busesR);
   lineList("linesL", "today", "selL"); lineList("linesR", st.opt, "selR");
   drawMap(document.getElementById("mapL"), "today", false);
   drawMap(document.getElementById("mapR"), st.opt, true);
