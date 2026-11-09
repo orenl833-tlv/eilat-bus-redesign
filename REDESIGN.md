@@ -174,6 +174,33 @@ People with luggage, and patients, shouldn't have to walk.
   - **Verdict:** a 300-person crush at a school gate is not a risk in any option, because the staggered
     bells spread students over four waves.
 
+## Timetables and buses: does it really fit? (`scripts/blocking.py`)
+
+- **Method:**
+  - Each option gets a real departure timetable: every `headway` minutes per period, directions offset by
+    half a headway.
+  - Every trip is assigned to a bus: the minimum fleet that covers all trips, with at least 5 minutes'
+    layover, empty runs between terminals, buses shared between lines, and runs from and to the depot.
+- **Validation on today's timetable:** 35 buses, against 36-38 measured at the peak. The gap is normal
+  slack: driver breaks and reserves for delays.
+
+| | Buses | Bus-hours incl. layovers and empty runs | km per bus a day (mean / max) | Buses over 250 km | Driver shifts (rough) |
+|---|---|---|---|---|---|
+| Today | 35 | 504 | 248 / 300 | 23 of 35 | 71 |
+| Option 1 | 31-35 | 518-543 (+3-8%) | 262-284 / 339 | 25-26 | 81-84 |
+| Option 2 | 31-33 | 503-531 (0 to +5%) | 273-282 / 349 | 24-26 | 82-85 |
+| Option 3 | 31 | 510-532 (+1-5%) | 283-294 / 342 | 25-28 | 83-87 |
+
+- **The fleet constraint holds.** No option needs more buses than today.
+- **Paid bus-hours come out 0-8% above today.** The budget formula counted service time; real blocks have
+  longer layovers. Better-aligned timetables between lines can probably absorb most of this; the
+  offsets here are naive. It should be checked before claiming "same cost".
+- **Charging is a constraint already today.** Most of today's buses run more than an e-bus's ~250 km a
+  day without charging. The options, with fewer buses doing the same work, raise km per bus by 10-15%.
+  Charging in the 10:00-12:00 lull (the depot is next to the centre) is needed in every case.
+- **Driver shifts.** A shift is at most 8.5 h per bus block, so the numbers are only indicative.
+  Fewer, longer bus days mean more split shifts.
+
 ## What I would check before anyone acts on this
 
 - **Lines 1 and 2 carry ~3,300 boardings a day today.** The model says their riders are better served by

@@ -1,0 +1,11 @@
+option,season,trips,buses,out_at_once_max,bus_hours,bus_span_hours,km_per_bus_max,km_per_bus_mean,buses_over_250km,empty_km_share,driver_shifts
+today,winter,441,35,35,504.1,519.7,300,248,23,0.143,71
+keep,winter,474,34,34,531.6,553.3,339,268,25,0.185,81
+keep,spring_autumn,465,35,35,542.8,568.7,324,262,25,0.187,84
+keep,summer,430,31,31,517.5,518.7,337,284,26,0.168,83
+full_warm,winter,460,31,31,507.5,510.5,349,282,24,0.163,83
+full_warm,spring_autumn,459,33,33,531.0,543.4,335,273,26,0.181,85
+full_warm,summer,438,31,31,502.8,504.9,346,280,25,0.17,82
+full_peak-3_warm,winter,459,31,31,523.1,524.0,341,291,26,0.165,84
+full_peak-3_warm,spring_autumn,461,31,31,531.6,531.9,336,294,28,0.169,87
+full_peak-3_warm,summer,453,31,31,509.6,512.4,342,283,25,0.163,83
