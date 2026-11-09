@@ -72,10 +72,12 @@ def trips_today():
     return g.reset_index(drop=True)[["line", "start", "end", "o", "d"]]
 
 
-def block(trips, st):
+def block(trips, st, recovery=0.0):
+    """recovery: terminal layover as a share of the trip's run time (at least LAYOVER_MIN)."""
     trips = trips.sort_values("start").reset_index(drop=True)
     n = len(trips)
     ends, starts = trips.end.values, trips.start.values
+    lay = np.maximum(LAYOVER_MIN, recovery * (ends - starts))
     rows, cols = [], []
     cache = {}
     for i in range(n):
@@ -83,7 +85,7 @@ def block(trips, st):
             key = (trips.d[i], trips.o[j])
             if key not in cache:
                 cache[key] = 0.0 if key[0] == key[1] else km_between(st, *key) / DEAD_KMH * 60
-            if ends[i] + LAYOVER_MIN + cache[key] <= starts[j]:
+            if ends[i] + lay[i] + cache[key] <= starts[j]:
                 rows.append(i); cols.append(j)
     G = csr_matrix((np.ones(len(rows)), (rows, cols)), shape=(n, n))
     match = maximum_bipartite_matching(G, perm_type="column")   # match[i] = j that follows i, or -1
