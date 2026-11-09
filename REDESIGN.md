@@ -1,7 +1,7 @@
 # Eilat urban buses: a better network on the same budget
 
 **The answer:** yes. With the same buses and the same bus-hours as today, a reorganised network cuts the
-door-to-door time residents and tourists feel by about 20%, and no residential area is worse off. Three
+door-to-door time residents and tourists feel by about 20%, and no residential area is worse off (options 2 and 3). Three
 options follow, from the most cautious to the cheapest.
 
 Everything is in this folder:
@@ -58,11 +58,11 @@ Everything is in this folder:
 | | 1. Keep every line | 2. Restructure | 3. Restructure, 3 fewer buses |
 |---|---|---|---|
 | Lines | all of today's, re-routed and re-timed | 3, 5, 6 families + coast; 1, 2, 4 merged away | as 2 |
-| Perceived door-to-door time vs today (calibration A / B) | KEEP_A / KEEP_B | **0.796 / 0.812** | **0.785 / 0.802** |
-| Worst-off area | KEEP_W | every area better by ≥ 2% | every area better by ≥ 2.6% |
-| Buses at once (peak) | KEEP_P | 32 (today 35) | 31-32 |
-| Bus-hours a weekday (model) | KEEP_H | 395 (today 395) | 405 |
-| Bus trips vs today | KEEP_T | +3% | +4% |
+| Perceived door-to-door time vs today (calibration A / B) | **0.863 / 0.876** | **0.796 / 0.812** | **0.785 / 0.802** |
+| Worst-off area | areas 33-34 up to 2% worse in their worst season; the rest better (up to 21%) | every area better by ≥ 2% | every area better by ≥ 2.6% |
+| Buses at once (peak) | 32-35 | 32 (today 35) | 31-32 |
+| Bus-hours a weekday (model) | 395 | 395 (today 395) | 405 |
+| Bus trips vs today | +2% | +3% | +4% |
 
 - **Option 3 costs about the same as today:**
   - 3 fewer peak buses ≈ 1.05 M NIS a year less;
@@ -89,7 +89,27 @@ Everything is in this folder:
 
 ## The future (Star Eilat, old airport, Shifolei HaHar)
 
-FUTURE_TEXT
+- **Demand.** The two planned districts add about 12,300 residents, ~5,900 jobs and ~3,150 hotel rooms.
+  With them, bus trips on today's network grow by **8-10%**, from ~7,600 to ~8,250 a weekday.
+- **Budget.** Following your rule (grow the budget with demand), that's about **+3 buses at the peak and
+  +32-40 bus-hours** a weekday.
+- **Still better than today.** Under the future demand, without re-tuning and on today's budget, the options
+  still beat today's network:
+
+  | Option | Perceived time vs today, future demand |
+  |---|---|
+  | 1 | 0.90-0.93 |
+  | 2 | 0.84-0.86 |
+  | 3 | 0.83-0.86 |
+
+- **But someone is worse off** (worst area 1.02-1.07): the new districts are served only by today's
+  streets and stops.
+- **The old airport district** has stops about 200 m away, so it works.
+- **Shifolei HaHar** is about 850 m from the nearest stop. It needs new streets and stops, which are
+  outside the rules we agreed (existing stops only). A short extension of a south-western line into it
+  is the obvious next design step once its streets exist.
+- **Star Eilat.** Every option already runs through the old central station, where the Star Eilat terminal
+  will open.
 
 ## What I would check before anyone acts on this
 
@@ -104,3 +124,29 @@ FUTURE_TEXT
 - **The summer holiday is the least certain season.** There is no summer quarter in the Rav-Kav file.
 - **The model compares networks;** it doesn't promise a ridership number. The bus-trip change (+3-4%) is
   the model's elasticity, not a forecast.
+
+## Decisions taken overnight, and errors found and fixed
+
+**Decisions**
+- **Stop cost.** A real stop costs ~30 s (slow down, doors, pull out, accelerate). Passing a stop saves 30 s ×
+  the chance the bus would have stopped there. The measured average per *scheduled* stop is only 11 s in
+  Eilat, because many stops are passed anyway.
+- **Calibration** on 2025 Q4 only. 2025 Q2 contains the June 2025 war and 2026 Q1 the March 2026 war; both
+  are used only as checks.
+- **Two demand calibrations** (A and B). The purpose mix can't be identified from 8 lines, so every option
+  must win under both.
+- **Usability rules added after the first search.** That search produced lines switching on and off
+  between periods, which no passenger could use.
+- **A conservative option** (every line kept) was added, because the best solutions merge lines 1, 2 and 4,
+  a big step.
+- **Future districts are evaluated, not designed for.** Shifolei HaHar has no stops yet, and new stops were
+  outside the agreed rules.
+
+**Errors found and fixed** (each one followed by a recalibration and new runs; earlier results are in
+`data/superseded/`)
+1. **Riders assigned to a single line.** The first evaluator sent every rider to one line, so lines sharing
+   a street got no riders. Replaced with common-lines assignment (board the first attractive bus).
+   Calibration error fell from 34% to 13%.
+2. **Bus trips with no ride in them.** A "bus" path could walk to a stop and on to the destination without
+   riding, and earned a 5-minute bonus. Stops are now split into before-ride and after-ride nodes.
+3. **Purpose scales applied twice** in the objective and the reports. Now applied once.
