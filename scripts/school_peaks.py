@@ -6,7 +6,8 @@ matriculation prep in 10-12; 08:00 start, 45-minute periods, two breaks):
   grades 7-9:   35% / 45% / 20% / 0%      grades 10-12: 15% / 35% / 35% / 15%
 Comprehensive schools (7-12) are taken as half each. Bus share of students: 4% (the calibrated model: school
 lines 80-82 carry ~110 a direction a day) and 10% (high case). Supply: places on buses calling at a stop within
-300 m of the school in the 15 minutes after the bell = sum over lines (15 / headway) x 85, plus school-line trips
+300 m of the school in the 15 minutes from EXIT_LAG_MIN after the bell (leaving class and the building)
+= sum over lines (15 / headway) x 85, plus school-line trips
 leaving in that window (GTFS times). Output: data/school_peaks.csv
 """
 import json
@@ -23,6 +24,7 @@ BELLS = {"13:15": (0.35, 0.15), "14:10": (0.45, 0.35), "15:00": (0.20, 0.35), "1
 SCHOOLS = {"Rabin": (29.5534, 34.9358, 1191), "Begin": (29.5622, 34.9379, 1084), "Goldwater": (29.5536, 34.9481, 1067)}
 SHARES = (0.04, 0.10)
 CAP = 85
+EXIT_LAG_MIN = 7      # assumption: bell -> at the stop (packing up, corridors, gate, walk)
 SCHOOL_LINES = {"80", "80א", "81", "82"}
 
 
@@ -56,8 +58,8 @@ def main():
                     h = p.headway.get(q, math.inf)
                     if math.isfinite(h) and any(s in near and s not in p.skip for s in p.stops[:-1]):
                         seats += 15 / h * CAP; lines.append(p.name)
-                # school lines: trips leaving within 30 min after the bell that call near the school
-                t0 = int(bell[:2]) * 3600 + int(bell[3:]) * 60
+                # school lines: trips calling near the school within 30 min from EXIT_LAG_MIN after the bell
+                t0 = int(bell[:2]) * 3600 + int(bell[3:]) * 60 + EXIT_LAG_MIN * 60
                 sl = tr[tr.route_short_name.astype(str).isin(SCHOOL_LINES)]
                 x = st[st.trip_id.isin(sl.trip_id) & st.stop_id.isin(near) & st.dep.between(t0, t0 + 1800)]
                 seats += x.trip_id.nunique() * CAP

@@ -257,7 +257,8 @@ How the earlier end enters the model:
 
 - **Ending at 23:00 removes most of the extra-driver problem and most of the extra cost.** It keeps 80-90%
   of each option's gain.
-- **The realistic package is option 2 ending at 23:00 all year, with overtime as today:**
+- **The realistic package is option 2 ending at 23:00 all year, with overtime as today** (plus four hotel
+  shift trips, below: +2 drivers, +NIS 0.9 M a year):
   - 14% shorter perceived trips;
   - no area more than 1.1% worse than today;
   - one more driver;
@@ -268,6 +269,39 @@ How the earlier end enters the model:
   what the worst-area column shows: up to 6.6% worse in option 1.
 - **Option 3's saving in buses never materialises in real blocks.** Its bus-hours stay 3% above today even
   at 23:00.
+
+### Keeping the hotels' 23:00 shift change (`scripts/shift_trips.py`)
+
+**Ending every line at 23:00 would strand hotel workers.** Today's timetable is a strong hint:
+- loops 1 and 2 pass the North Beach hotels at 23:21-23:28 and 23:51-23:58, just after a 23:00 shift end;
+- these are most of the "3 trips after 23:00" that the plain cut removes.
+
+Shift times are an assumption:
+- 07-15-23 is the common hotel pattern;
+- Eilat job postings also show 06-14-22, and some hotels run staff shuttles;
+- the hotels' real shift times and staff numbers should be asked for before the timetable is fixed.
+
+**The fix: four shift trips.** Each option keeps 4 trips after 23:00, as today. They run on the two lines
+that, after the hotels, reach the most residential stops, and reach the first hotel stop 15 min after the
+shift ends, then again 30 min later. The 15 min are an assumption for clocking out, changing and walking to
+the stop.
+
+| Evening ends at 23:00 | Lines | Extra drivers, standard / overtime | Operating cost a year |
+|---|---|---|---|
+| Option 1, no shift trips | – | +4 / +5 | −NIS 0.7 M |
+| Option 1 + 4 shift trips | 1, 6א | +4 / +4 | NIS 0.0 M |
+| Option 2, no shift trips | – | +4 / +1 | +NIS 0.5 M |
+| **Option 2 + 4 shift trips** | **6, 6א** | **+6 / +2** | **+NIS 0.9 M** |
+| Option 3 + 4 shift trips | 2, 6 | +7 / 0 | +NIS 2.1 M |
+
+- **The cost of the 4 trips is about NIS 0.4-0.7 M a year.** In option 2 they need one more driver.
+- **Perceived time is about as in the 23:00 rows above.** The 4 trips are not in the evaluation's evening
+  average, so if anything they make it slightly better.
+- **Early shifts:** a 07:00 start is reachable in every option, since the first buses leave at 06:00. A
+  06:00 start is not reachable today either; today's 05:15-05:55 trips go to the city entrance, not the
+  hotels. Hotels with 06:00 shifts would rely on their own shuttles.
+- **Time to reach the stop:** the school dismissal check now counts buses from 7 min after the bell, for
+  leaving class and the building. Buses still have room for at least 8 times the students who take them.
 
 ## GTFS export (`scripts/export_gtfs.py`)
 
