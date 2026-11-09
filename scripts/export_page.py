@@ -26,6 +26,19 @@ def nets(prob, tag):
             for s in P.SEASONS}
 
 
+def lines(net, sid, names):
+    """Each line pattern: name, start and end stop names, the stop indices it passes (skipped ones flagged) and
+    its headway per period."""
+    out = []
+    for p in net:
+        if all(not math.isfinite(p.headway.get(q, math.inf)) for q in P.PERIODS):
+            continue
+        out.append(dict(name=p.name, line=p.line, start=names.get(p.stops[0], ""), end=names.get(p.stops[-1], ""),
+                        stops=[sid[x] for x in p.stops if x in sid], skip=[sid[x] for x in p.skip if x in sid],
+                        hw={q: (round(p.headway[q]) if math.isfinite(p.headway.get(q, math.inf)) else None) for q in P.PERIODS}))
+    return out
+
+
 def segments(net, period, sid):
     seg = {}
     for p in net:
@@ -58,6 +71,8 @@ def main():
         prob = prob_keep if tag == "keep" else prob_full
         ns = nets(prob, tag)
         out["net"][tag] = {s: {q: segments(ns[s], q, sid) for q in P.PERIODS} for s in P.SEASONS}
+        names = dict(zip(stops.stop_id, stops.stop_name, strict=True))
+        out.setdefault("lines", {})[tag] = {s: lines(ns[s], sid, names) for s in P.SEASONS}
         if tag != "today":
             A = pd.read_csv(f"data/assess_{tag}_areas.csv", index_col=0)
             T = pd.read_csv(f"data/assess_{tag}_traveltime.csv", header=[0, 1], index_col=0)
