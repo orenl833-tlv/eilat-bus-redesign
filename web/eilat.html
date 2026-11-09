@@ -1,23 +1,23 @@
 <meta charset="utf-8">
-<title>Eilat Bus Network Redesign</title>
+<title>רשת האוטובוסים של אילת</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Hebrew:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&display=swap">
 <style>
-/* Layout: a header with the thesis, one control bar, two maps side by side (today | option), then the numbers. */
+/* פריסה: כותרת עם הטענה, שורת בקרה אחת, שתי מפות זו לצד זו (היום | ההצעה), ואחריהן המספרים. */
 :root {
-  --bg: #f6f2ea;          /* desert sand */
+  --bg: #f6f2ea;          /* חול מדבר */
   --panel: #fffdf8;
   --ink: #1d2328;
   --ink-2: #5a6168;
   --rule: #e2dbcd;
-  --sea-1: #b9d4e6; --sea-2: #5f9cc6; --sea-3: #1f5f8f; --sea-4: #0b3a5c;   /* buses an hour */
-  --coral: #d8573c;       /* accent: the option */
-  --better-1: #dcefe0; --better-2: #9fd1ab; --better-3: #4fa66a;           /* areas that gain */
+  --sea-1: #b9d4e6; --sea-2: #5f9cc6; --sea-3: #1f5f8f; --sea-4: #0b3a5c;   /* אוטובוסים בשעה */
+  --coral: #d8573c;       /* צבע ההדגשה */
+  --better-1: #dcefe0; --better-2: #9fd1ab; --better-3: #4fa66a;           /* אזורים שמשתפרים */
   --worse: #f1c9bd;
   --land: #ebe5d8;
-  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
-  --body: "IBM Plex Sans", "IBM Plex Sans Hebrew", system-ui, sans-serif;
+  --display: "Rubik", "IBM Plex Sans Hebrew", system-ui, sans-serif;
+  --body: "IBM Plex Sans Hebrew", "Rubik", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
@@ -28,15 +28,15 @@
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e; color-scheme: dark }
 * { box-sizing: border-box }
-body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); margin: 0;
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
 .wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px }
-header h1 { font: 700 clamp(28px, 4.4vw, 46px)/1.05 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance }
+header h1 { font: 700 clamp(28px, 4.4vw, 46px)/1.1 var(--display); margin: 0; text-wrap: balance }
 header p { margin: 8px 0 0; max-width: 68ch; color: var(--ink-2) }
 header strong { color: var(--ink) }
 .controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; padding: 14px 16px; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px }
 .ctl { display: grid; gap: 6px }
-.ctl > span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2) }
+.ctl > span { font-size: 12px; font-weight: 600; color: var(--ink-2) }
 .seg { display: flex; flex-wrap: wrap; gap: 4px }
 .seg button { font: 500 13px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer }
 .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink) }
@@ -50,78 +50,82 @@ figcaption span { font-size: 13px; color: var(--ink-2); font-variant-numeric: ta
 svg { width: 100%; height: auto; display: block }
 .lines { margin-top: 10px; border-top: 1px solid var(--rule); padding-top: 8px; display: grid; gap: 2px; max-height: 260px; overflow-y: auto }
 .lines .hint { font-size: 12px; color: var(--ink-2); margin-bottom: 4px }
-.lines button { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; text-align: left;
+.lines button { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; text-align: start;
   font: 13px var(--body); color: var(--ink); background: transparent; border: 0; border-radius: 6px; padding: 5px 8px; cursor: pointer }
 .lines button:hover { background: var(--bg) }
 .lines button[aria-pressed="true"] { background: var(--coral); color: #fff }
 .lines button:focus-visible { outline: 2px solid var(--coral); outline-offset: 1px }
 .lines .no { font-weight: 600; font-variant-numeric: tabular-nums }
-.lines .route { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: "IBM Plex Sans Hebrew", var(--body) }
+.lines .route { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .lines .hw { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .8 }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--ink-2); align-items: center }
-.legend i { display: inline-block; width: 26px; vertical-align: middle; margin-right: 6px; border-radius: 3px }
+.legend i { display: inline-block; width: 26px; vertical-align: middle; margin-inline-end: 6px; border-radius: 3px }
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
 @media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 .tile { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px }
-.tile span { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2) }
-.tile b { font: 700 28px/1.2 var(--display); font-variant-numeric: tabular-nums }
+.tile span { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2) }
+.tile b { font: 700 28px/1.25 var(--display); font-variant-numeric: tabular-nums }
 .tile small { display: block; color: var(--ink-2) }
 .tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 13px }
-th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap }
-th:first-child, td:first-child { text-align: left }
+th, td { padding: 8px 10px; text-align: start; border-bottom: 1px solid var(--rule); white-space: nowrap }
 th { font-weight: 600; color: var(--ink-2); font-size: 12px }
-td .d { font-size: 11px; margin-left: 4px }
+td .d { font-size: 11px; margin-inline-start: 4px }
 .good { color: var(--better-3) } .bad { color: var(--coral) }
 #tip { position: fixed; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 12px;
-  box-shadow: 0 6px 20px rgb(0 0 0 / .12); max-width: 260px; z-index: 20 }
+  box-shadow: 0 6px 20px rgb(0 0 0 / .12); max-width: 270px; z-index: 20 }
 .note { font-size: 13px; color: var(--ink-2); max-width: 75ch }
 h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 @media (prefers-reduced-motion: no-preference) { path.street { transition: stroke-width .25s, stroke .25s } }
 </style>
 
-<div class="wrap">
+<div class="wrap" dir="rtl" lang="he">
   <header>
-    <h1>Eilat's buses, reorganised on the same budget</h1>
-    <p>No more buses at the midday peak than today, the same bus-hours, existing streets and stops. Calibrated on Rav-Kav boardings, checked against real
-      bus movements. <strong id="headline">…</strong></p>
+    <h1>האוטובוסים של אילת, מאורגנים מחדש באותו תקציב</h1>
+    <p>לא יותר אוטובוסים בשיא הצהריים מהיום, אותן שעות שירות, רחובות ותחנות קיימים. מכויל על נתוני תיקופי רב-קו, ונבדק מול תנועת
+      האוטובוסים בפועל. <strong id="headline">…</strong></p>
   </header>
 
-  <div class="controls" role="group" aria-label="What to show">
-    <div class="ctl"><span>Option</span><div class="seg" id="opt"></div></div>
-    <div class="ctl"><span>Season</span><div class="seg" id="season"></div></div>
-    <div class="ctl"><span>Time of day</span><div class="seg" id="period"></div></div>
+  <div class="controls" role="group" aria-label="מה להציג">
+    <div class="ctl"><span>אפשרות</span><div class="seg" id="opt"></div></div>
+    <div class="ctl"><span>עונה</span><div class="seg" id="season"></div></div>
+    <div class="ctl"><span>שעות היום</span><div class="seg" id="period"></div></div>
   </div>
 
   <div class="maps">
-    <figure><figcaption><b>Today</b><span id="capL"></span></figcaption><svg id="mapL" role="img" aria-label="Today's bus network"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">Option</b><span id="capR"></span></figcaption><svg id="mapR" role="img" aria-label="Proposed bus network"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
   <div class="tiles" id="tiles"></div>
 
   <div>
-    <h2>Door to door, by neighbourhood</h2>
-    <p class="note">Perceived minutes at 09:00-12:00 in winter: walking and waiting count 1.6 × a minute on the bus, a transfer adds 5 minutes.
-      The change column is the year-round average over all trip purposes, both calibrations. Hover an area on the map for the same numbers.</p>
+    <h2>מדלת לדלת, לפי שכונה</h2>
+    <p class="note">דקות מורגשות בין 09:00 ל-12:00 בחורף: דקת הליכה או המתנה נחשבת כמו 1.6 דקות באוטובוס, ומעבר מוסיף 5 דקות.
+      עמודת השינוי היא הממוצע השנתי על פני כל מטרות הנסיעה ושני הכיולים. אפשר לעמוד עם העכבר על אזור במפה כדי לראות את אותם מספרים.</p>
   </div>
   <div class="tablewrap"><table id="tbl"></table></div>
-  <p class="note">Data: Ministry of Transport GTFS and ridership per line, Open Bus Stride SIRI (Public Knowledge Workshop), CBS census 2022 and statistical
-    areas. Model and code: eilat-transit. Stop names are as in the timetable.</p>
+  <p class="note">נתונים: משרד התחבורה (GTFS ונסועה לפי קו), Open Bus Stride של הסדנא לידע ציבורי (SIRI), הלמ"ס (מפקד 2022 ואזורים סטטיסטיים).
+    מודל וקוד: eilat-transit. שמות התחנות כפי שהם בלוח הזמנים.</p>
 </div>
-<div id="tip" hidden></div>
+<div id="tip" dir="rtl" lang="he" hidden></div>
 
 <script>
-const PNAME = {"06-09": "06-09", "09-12": "09-12", "12-15": "12-15", "15-19": "15-19", "19-24": "19-24"};
-const SNAME = {winter: "Winter", spring_autumn: "Spring & autumn", summer: "Summer holiday"};
+document.documentElement.setAttribute("lang", "he");
+const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "full_peak-3_warm": "3 · ארגון מחדש, פחות אוטובוסים"};
+const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer: "החופש הגדול"};
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
+const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
+  "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
 const st = {opt: "full_warm", season: "winter", period: "09-12", selL: null, selR: null};
 const B = {lon0: 34.900, lon1: 34.985, lat0: 29.492, lat1: 29.582};
 const K = Math.cos(29.55 * Math.PI / 180);
 const W = 600, H = Math.round(W * (B.lat1 - B.lat0) / ((B.lon1 - B.lon0) * K));
 const sx = (lon) => (lon - B.lon0) / (B.lon1 - B.lon0) * W;
 const sy = (lat) => (B.lat1 - lat) / (B.lat1 - B.lat0) * H;
+const num = (s) => `<bdi dir="ltr">${s}</bdi>`;
+const signed = (x, d = 0) => `${x > 0 ? "+" : x < 0 ? "−" : ""}${Math.abs(x).toFixed(d)}`;
 let D = null;
 
 function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() }
@@ -144,7 +148,7 @@ function seg(id, items, current) {
 
 function drawMap(svg, tag, showChange) {
   const ns = "http://www.w3.org/2000/svg";
-  svg.innerHTML = ""; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = ""; svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("direction", "ltr");
   const g = document.createElementNS(ns, "g"); svg.appendChild(g);
   const change = showChange ? D.summary[tag]?.area : null;
   for (const a of D.areas) {
@@ -163,13 +167,12 @@ function drawMap(svg, tag, showChange) {
       const ring = a.rings[0]; const cx = ring.reduce((s, q) => s + q[0], 0) / ring.length, cy = ring.reduce((s, q) => s + q[1], 0) / ring.length;
       const t = document.createElementNS(ns, "text");
       t.setAttribute("x", sx(cx)); t.setAttribute("y", sy(cy)); t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", "11");
-      t.setAttribute("fill", css("--ink")); t.setAttribute("pointer-events", "none"); t.setAttribute("font-family", "IBM Plex Sans, sans-serif");
-      t.textContent = `${change[a.id] > 0 ? "+" : ""}${Math.round(change[a.id])}%`;
+      t.setAttribute("fill", css("--ink")); t.setAttribute("pointer-events", "none"); t.setAttribute("font-family", "IBM Plex Sans Hebrew, sans-serif");
+      t.textContent = `${signed(change[a.id])}%`;
       g.appendChild(t);
     }
   }
   const segs = (D.net[tag]?.[st.season]?.[st.period] || []).slice().sort((x, y) => x[2] - y[2]);
-  let total = 0;
   for (const [i, j, b] of segs) {
     const [la1, lo1] = D.stops[i], [la2, lo2] = D.stops[j];
     const p = document.createElementNS(ns, "path");
@@ -177,7 +180,7 @@ function drawMap(svg, tag, showChange) {
     p.setAttribute("d", `M${sx(lo1).toFixed(1)},${sy(la1).toFixed(1)}L${sx(lo2).toFixed(1)},${sy(la2).toFixed(1)}`);
     p.setAttribute("stroke", seaColor(b)); p.setAttribute("stroke-width", (1 + Math.min(b, 12) * 0.45).toFixed(2));
     p.setAttribute("stroke-linecap", "round"); p.setAttribute("fill", "none"); p.setAttribute("pointer-events", "none");
-    g.appendChild(p); total += b;
+    g.appendChild(p);
   }
   const sel = tag === "today" ? st.selL : st.selR;
   const ln = sel && (D.lines[tag]?.[st.season] || []).find((x) => x.name === sel);
@@ -196,7 +199,6 @@ function drawMap(svg, tag, showChange) {
       c.setAttribute("stroke-width", "1.4"); c.setAttribute("pointer-events", "none"); g.appendChild(c);
     }
   }
-  return segs.length;
 }
 
 function lineList(id, tag, selKey) {
@@ -204,13 +206,13 @@ function lineList(id, tag, selKey) {
   const ls = (D.lines[tag]?.[st.season] || []).slice().sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
   if (st[selKey] && !ls.some((x) => x.name === st[selKey])) st[selKey] = null;
   const label = (n) => n.replace(/\/\d/, "");
-  el.innerHTML = `<div class="hint">${ls.length} line patterns. Select one to see its route; hollow dots are stops it passes without stopping.</div>`;
+  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. בחרו קו כדי לראות את המסלול שלו; נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>`;
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
     const h = l.hw[st.period];
-    b.innerHTML = `<span class="no">${label(l.name)}</span><span class="route" dir="rtl">${l.start} ← ${l.end}</span>` +
-      `<span class="hw">${h ? "every " + h + " min" : "no service"}${l.skip.length ? " · passes " + l.skip.length : ""}</span>`;
+    b.innerHTML = `<span class="no">${num(label(l.name))}</span><span class="route">${l.start} ← ${l.end}</span>` +
+      `<span class="hw">${h ? "כל " + h + " דק'" : "אין שירות"}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
     b.onclick = () => { st[selKey] = st[selKey] === l.name ? null : l.name; render() };
     el.appendChild(b);
   }
@@ -220,38 +222,38 @@ function tip(e, a, tag) {
   const el = document.getElementById("tip");
   const s = D.summary[tag === "today" ? st.opt : tag];
   const tt = s?.tt?.[a.id];
-  let h = `<b>Area ${a.id}</b><br>${a.pop ? a.pop.toLocaleString() + " residents · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% of households without a car" : ""}`;
-  if (s?.area?.[a.id] != null) h += `<br>Perceived time per trip: <b>${s.area[a.id] > 0 ? "+" : ""}${s.area[a.id]}%</b>`;
-  if (tt) h += "<br>" + PLACES.filter((p) => tt[p]).map((p) => `${p.replace(" (Star Eilat)", "")}: ${tt[p][0]} → ${tt[p][1]} min`).join("<br>");
+  let h = `<b>אזור ${a.id}</b><br>${a.pop ? a.pop.toLocaleString("he-IL") + " תושבים · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% ממשקי הבית בלי רכב" : ""}`;
+  if (s?.area?.[a.id] != null) h += `<br>זמן מורגש לנסיעה: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
+  if (tt) h += "<br>" + PLACES.filter((p) => tt[p]).map((p) => `${PLACE_HE[p]}: היום ${tt[p][0]}, בהצעה ${tt[p][1]} דק'`).join("<br>");
   el.innerHTML = h; el.hidden = false;
-  const x = Math.min(e.clientX + 14, window.innerWidth - 270), y = Math.min(e.clientY + 14, window.innerHeight - 160);
+  const x = Math.min(e.clientX + 14, window.innerWidth - 280), y = Math.min(e.clientY + 14, window.innerHeight - 170);
   el.style.left = x + "px"; el.style.top = y + "px";
 }
 
 function tiles() {
   const s = D.summary[st.opt], t = D.summary.today;
-  const pct = (x) => `${Math.round((x - 1) * 100)}%`;
+  const pct = (x) => num(`${signed((x - 1) * 100)}%`);
   const items = [
-    ["Perceived door-to-door time", `${pct((s.year_A + s.year_B) / 2)}`, "year-round, vs today"],
-    ["Worst-off neighbourhood", s.worst_area <= 1 ? `${pct(s.worst_area)}` : `+${Math.round((s.worst_area - 1) * 100)}%`, s.worst_area <= 1 ? "every area gains at least this" : "one area loses this much (limit 10%)"],
-    ["Buses at once, peak", `${s.peak[st.season]}`, `today ${t.peak}`],
-    ["Bus-hours a weekday", `${Math.round(s.hours[st.season])}`, `today ${Math.round(t.hours)} (budget model)`],
+    ["זמן מורגש מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום"],
+    ["האזור שמשתפר הכי פחות", pct(s.worst_area), s.worst_area <= 1 ? "כל האזורים משתפרים לפחות בזה" : "אזור אחד נפגע בשיעור הזה (המגבלה: 10%)"],
+    ["אוטובוסים בבת אחת, בשיא", num(s.peak[st.season]), `היום ${t.peak}`],
+    ["שעות אוטובוס ביום חול", num(Math.round(s.hours[st.season])), `היום ${Math.round(t.hours)} (לפי מודל התקציב)`],
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
   const avg = (s.year_A + s.year_B) / 2;
-  document.getElementById("headline").textContent = `${D.options[st.opt].replace(/^\d · /, "")}: about ${Math.round((1 - avg) * 100)}% less perceived door-to-door time.`;
+  document.getElementById("headline").textContent = `${OPT_HE[st.opt].replace(/^\d · /, "")}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מורגש מדלת לדלת.`;
 }
 
 function table() {
   const s = D.summary[st.opt];
   const ids = D.areas.map((a) => a.id).filter((id) => s.tt[id]);
-  let h = "<thead><tr><th>Area</th><th>Residents</th><th>No car</th><th>Change</th>" + PLACES.map((p) => `<th>${p.replace(" (Star Eilat)", "").replace(", North Beach", "")}</th>`).join("") + "</tr></thead><tbody>";
+  let h = "<thead><tr><th>אזור</th><th>תושבים</th><th>בלי רכב</th><th>שינוי</th>" + PLACES.map((p) => `<th>${PLACE_HE[p]}</th>`).join("") + "</tr></thead><tbody>";
   for (const id of ids) {
     const a = D.areas.find((x) => x.id === id), tt = s.tt[id], c = s.area[id];
-    h += `<tr><td>${id}</td><td>${a.pop ? a.pop.toLocaleString() : "–"}</td><td>${a.nocar != null ? Math.round(a.nocar) + "%" : "–"}</td>` +
-      `<td class="${c < 0 ? "good" : "bad"}">${c > 0 ? "+" : ""}${c}%</td>` +
+    h += `<tr><td>${id}</td><td>${a.pop ? a.pop.toLocaleString("he-IL") : "–"}</td><td>${a.nocar != null ? Math.round(a.nocar) + "%" : "–"}</td>` +
+      `<td class="${c < 0 ? "good" : "bad"}">${num(signed(c, 1) + "%")}</td>` +
       PLACES.map((p) => { const v = tt[p]; if (!v) return "<td>–</td>"; const d = v[1] - v[0];
-        return `<td>${v[1].toFixed(0)}<span class="d ${d < -0.5 ? "good" : d > 0.5 ? "bad" : ""}">${d > 0 ? "+" : ""}${d.toFixed(0)}</span></td>` }).join("") + "</tr>";
+        return `<td>${v[1].toFixed(0)}<span class="d ${d < -0.5 ? "good" : d > 0.5 ? "bad" : ""}">${num(signed(d))}</span></td>` }).join("") + "</tr>";
   }
   document.getElementById("tbl").innerHTML = h + "</tbody>";
 }
@@ -259,19 +261,19 @@ function table() {
 function legend() {
   const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
   document.getElementById("legend").innerHTML =
-    `<span>${sw(css("--sea-1"), 2)}1-2 buses an hour</span><span>${sw(css("--sea-2"), 3)}3-5</span><span>${sw(css("--sea-3"), 4)}6-8</span><span>${sw(css("--sea-4"), 6)}9+</span>` +
-    `<span>${sw(css("--better-1"), 10)}area gains < 10%</span><span>${sw(css("--better-2"), 10)}10-20%</span><span>${sw(css("--better-3"), 10)}> 20%</span><span>${sw(css("--worse"), 10)}area loses</span>`;
+    `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
+    `<span>${sw(css("--better-1"), 10)}האזור משתפר בפחות מ-10%</span><span>${sw(css("--better-2"), 10)}10%–20%</span><span>${sw(css("--better-3"), 10)}יותר מ-20%</span><span>${sw(css("--worse"), 10)}האזור נפגע</span>`;
 }
 
 function render() {
-  seg("opt", Object.entries(D.options).filter(([k]) => k !== "today"), st.opt);
+  seg("opt", Object.keys(D.options).filter((k) => k !== "today").map((k) => [k, OPT_HE[k]]), st.opt);
   seg("season", D.seasons.map((s) => [s, SNAME[s]]), st.season);
-  seg("period", D.periods.map((p) => [p, PNAME[p]]), st.period);
-  document.getElementById("optName").textContent = D.options[st.opt];
+  seg("period", D.periods.map((p) => [p, p]), st.period);
+  document.getElementById("optName").textContent = OPT_HE[st.opt];
   const busesL = (D.net.today[st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
   const busesR = (D.net[st.opt][st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
-  document.getElementById("capL").textContent = `busiest street ${busesL.toFixed(0)} buses/h`;
-  document.getElementById("capR").textContent = `busiest street ${busesR.toFixed(0)} buses/h`;
+  document.getElementById("capL").textContent = `ברחוב העמוס ביותר: ${busesL.toFixed(0)} אוטובוסים בשעה`;
+  document.getElementById("capR").textContent = `ברחוב העמוס ביותר: ${busesR.toFixed(0)} אוטובוסים בשעה`;
   lineList("linesL", "today", "selL"); lineList("linesR", st.opt, "selR");
   drawMap(document.getElementById("mapL"), "today", false);
   drawMap(document.getElementById("mapR"), st.opt, true);
@@ -279,6 +281,6 @@ function render() {
 }
 
 fetch("data.json").then((r) => r.json()).then((d) => { D = d; render() })
-  .catch(() => { document.getElementById("headline").textContent = "The data file didn't load. Reload the page to try again." });
+  .catch(() => { document.getElementById("headline").textContent = "קובץ הנתונים לא נטען. רעננו את הדף כדי לנסות שוב." });
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => D && render());
 </script>
