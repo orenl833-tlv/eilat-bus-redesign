@@ -69,9 +69,35 @@ def areas(n_points=6):
     return a, pd.DataFrame(rows)
 
 
+# future scenario (EILAT_FUTURE=1): planned districts from the master plan and land tenders (press, see FUTURE notes)
+FUTURE_HOMES = [  # area code, name, lat, lon, residents (units x 2.4), share of households without a car (assumption)
+    (901, "Old airport district", 29.5620, 34.9590, 2469 * 2.4, 0.25),
+    (902, "Shifolei HaHar (north-west)", 29.5680, 34.9260, 2680 * 2.4, 0.10),
+]
+FUTURE_JOBS = ("Old airport district", 29.5620, 34.9590, 5900, 0, 3.0, 1.0, 0.5)  # 88k m2 offices + 95k m2 retail
+FUTURE_ROOMS = 2776 + 373
+
+
+def future():
+    import os
+    return os.environ.get("EILAT_FUTURE") == "1"
+
+
 def points():
     """All trip ends: home sample points, then attractors."""
+    global ATTRACTORS
     a, homes = areas()
+    if future():
+        rng = np.random.default_rng(9)
+        extra = []
+        for code, _, lat, lon, pop, nc in FUTURE_HOMES:
+            for _ in range(6):
+                extra.append(dict(kind="home", area=code, lat=lat + rng.normal(0, .002), lon=lon + rng.normal(0, .002),
+                                  pop=pop / 6, nocar=nc))
+        homes = pd.concat([homes, pd.DataFrame(extra)], ignore_index=True)
+        if FUTURE_JOBS[0] not in set(ATTRACTORS.name):
+            ATTRACTORS = pd.concat([ATTRACTORS, pd.DataFrame([FUTURE_JOBS], columns=ATTRACTORS.columns)], ignore_index=True)
+            P.HOTEL_ROOMS = 11_500 + FUTURE_ROOMS
     att = ATTRACTORS.assign(kind="attractor", area=-1, pop=0.0, nocar=np.nan)
     pts = pd.concat([homes, att[["kind", "area", "lat", "lon", "pop", "nocar", "name"]]], ignore_index=True)
     return a, pts

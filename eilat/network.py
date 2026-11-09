@@ -95,5 +95,6 @@ def fleet(pats, periods=None):
             by_line.setdefault((pt.line, p), 0.0)
             by_line[(pt.line, p)] += (run + lay) / h
     buses = {p: sum(math.ceil(v - 1e-9) for (ln, pp), v in by_line.items() if pp == p) for p in periods}
-    hours = sum(buses[p] * (b - a) for p, (a, b) in P.PERIODS.items() if p in buses)
+    # bus-hours from the fractional need (ceil per period would overstate a whole period's worth)
+    hours = sum(v * (P.PERIODS[pp][1] - P.PERIODS[pp][0]) for (ln, pp), v in by_line.items())
     return buses, hours

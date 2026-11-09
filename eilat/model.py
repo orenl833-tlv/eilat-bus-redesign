@@ -33,7 +33,12 @@ class Model:
         K = K or {p: 1.0 for p in D.PURPOSES}
         pot, prop, tour, hotel = D.potential(self.pts, season, car_prop=car_prop)
         res = {"board": {p: np.zeros(len(pats)) for p in D.PURPOSES}, "trips": {p: 0.0 for p in D.PURPOSES},
-               "stop_use": {}, "cost": 0.0, "cost_by_area": {}, "potential": 0.0}
+               "stop_use": {}, "cost": 0.0, "potential": 0.0,
+               "cost_p": {p: 0.0 for p in D.PURPOSES},
+               "home_cost": {p: np.zeros(len(self.homes)) for p in D.PURPOSES},
+               "home_trips": {p: np.zeros(len(self.homes)) for p in D.PURPOSES}}
+        nocar = self.pts.nocar.values[self.homes]
+        eq = (P.NOCAR_EQUITY_WEIGHT * nocar + car_prop * (1 - nocar)) / (nocar + car_prop * (1 - nocar))
         hotel_pt = self.att[hotel]
         for k, period in enumerate(P.PERIODS):
             ww = walk_heat if hot_midday(season, period) else P.W_WALK
@@ -62,7 +67,16 @@ class Model:
                     res["potential"] += trips.sum()
                     # objective: expected perceived minutes (logsum) over all potential travellers of the bus market
                     ls = -np.logaddexp(-lam * gcb + const, -lam * wk) / lam
-                    res["cost"] += float((trips * ls).sum())
+                    tl = trips * ls
+                    res["cost"] += float(tl.sum())
+                    if p == "tourist":
+                        res["cost_p"][p] += float(tl.sum())
+                    elif which == "out":   # rows are homes
+                        res["cost_p"][p] += float((tl * eq[:, None]).sum())
+                        res["home_cost"][p] += tl.sum(axis=1); res["home_trips"][p] += trips.sum(axis=1)
+                    else:                  # columns are homes
+                        res["cost_p"][p] += float((tl * eq[None, :]).sum())
+                        res["home_cost"][p] += tl.sum(axis=0); res["home_trips"][p] += trips.sum(axis=0)
                     if track:
                         r = out if which == "out" else back
                         full = np.zeros((len(rows_), self.ev.points.shape[0]))
