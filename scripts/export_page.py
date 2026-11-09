@@ -26,6 +26,19 @@ def nets(prob, tag):
             for s in P.SEASONS}
 
 
+# public names: a variant keeps its line's number; a line invented by the search gets a free urban number
+NEW_LINE_NAMES = {"A14H": ("7", "קו חדש: קמפוס – תחנה מרכזית – מלונות")}
+VARIANT_HE = {"x": "מדלג על תחנות שקטות", "s": "מסלול מקוצר"}
+
+
+def public_name(line):
+    if line in NEW_LINE_NAMES:
+        return NEW_LINE_NAMES[line]
+    base = line.rstrip("xs")
+    note = VARIANT_HE.get(line[len(base):], "")
+    return base, note
+
+
 def lines(net, sid, names):
     """Each line pattern: name, start and end stop names, the stop indices it passes (skipped ones flagged) and
     its headway per period."""
@@ -33,7 +46,8 @@ def lines(net, sid, names):
     for p in net:
         if all(not math.isfinite(p.headway.get(q, math.inf)) for q in P.PERIODS):
             continue
-        out.append(dict(name=p.name, line=p.line, start=names.get(p.stops[0], ""), end=names.get(p.stops[-1], ""),
+        disp, note = public_name(p.line)
+        out.append(dict(name=p.name, line=p.line, display=disp, note=note, start=names.get(p.stops[0], ""), end=names.get(p.stops[-1], ""),
                         stops=[sid[x] for x in p.stops if x in sid], skip=[sid[x] for x in p.skip if x in sid],
                         hw={q: (round(p.headway[q]) if math.isfinite(p.headway.get(q, math.inf)) else None) for q in P.PERIODS}))
     return out

@@ -60,6 +60,7 @@ svg { width: 100%; height: auto; display: block }
 .lines button:focus-visible { outline: 2px solid var(--coral); outline-offset: 1px }
 .lines .no { font-weight: 600; font-variant-numeric: tabular-nums }
 .lines .route { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.lines .route small { display: block; font-size: 11px; opacity: .75; white-space: normal }
 .lines .hw { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .8 }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--ink-2); align-items: center }
 .legend i { display: inline-block; width: 26px; vertical-align: middle; margin-inline-end: 6px; border-radius: 3px }
@@ -255,7 +256,8 @@ function selectLine(selKey, name) {
   st[selKey] = name;
   st[other] = counterpart(name, otherTag);
   st.noteIn = other;
-  const fam = parts(name).fam;
+  const me = (D.lines[selKey === "selL" ? "today" : st.opt]?.[st.season] || []).find((x) => x.name === name);
+  const fam = me?.display || parts(name).fam;
   st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt].replace(/^\d · /, "")}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
   render();
 }
@@ -282,7 +284,7 @@ function lineList(id, tag, selKey) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
     const h = l.hw[st.period];
-    b.innerHTML = `<span class="no">${num(label(l.name))}</span><span class="route">${l.start} ← ${l.end}</span>` +
+    b.innerHTML = `<span class="no">${num(l.display || label(l.name))}</span><span class="route">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</span>` +
       `<span class="hw">${h ? "כל " + h + " דק'" : "אין שירות"}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
     b.onclick = () => selectLine(selKey, st[selKey] === l.name ? null : l.name);
     el.appendChild(b);
