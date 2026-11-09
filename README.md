@@ -9,6 +9,10 @@ door-to-door time, no neighbourhood more than 3% worse, and no extra buses.**
 **Read first:** [REDESIGN.md](REDESIGN.md), the three options, who gains and who loses, the checks and the
 caveats.
 
+**Explore it:** [interactive comparison page](https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV) (Hebrew),
+today's lines next to each option, by season and time of day, with travel times from every neighbourhood.
+Source: `web/eilat.html`, data built by `scripts/export_page.py`.
+
 ## What's in it
 
 | Step | What | Where |
