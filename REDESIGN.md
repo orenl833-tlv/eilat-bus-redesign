@@ -106,8 +106,23 @@ Everything is in this folder:
   streets and stops.
 - **The old airport district** has stops about 200 m away, so it works.
 - **Shifolei HaHar** is about 850 m from the nearest stop. It needs new streets and stops, which are
-  outside the rules we agreed (existing stops only). A short extension of a south-western line into it
-  is the obvious next design step once its streets exist.
+  outside the rules we agreed (existing stops only), so it gets a spur, below.
+
+### A spur into Shifolei HaHar (`scripts/spur.py`)
+
+- **The design.** Lines 5 and 6 (and their variants) leave Yahel St. at their nearest stops, run out into the
+  district through 3 new stops and come back: about 1.2 km each way, ~9-10 minutes more per trip.
+- **An assumption.** The district's streets couldn't be downloaded (OpenStreetMap is blocked from this
+  environment), so the spur runs straight toward the district centre reported in the press, at 25 km/h.
+- **Results under the future demand:**
+
+| Option | vs today, without spur | with spur | Shifolei HaHar residents vs today | Peak buses | Bus-hours |
+|---|---|---|---|---|---|
+| 1 | 0.90-0.91 | **0.85-0.86** | 0.99 → **0.46** | 35 → 36 | 397 → 423 |
+| 2 | 0.84-0.85 | **0.78-0.79** | 0.99 → **0.45** | 33 → 36 | 394 → 427 |
+| 3 | 0.84 | **0.77-0.78** | 0.99 → **0.44** | 32 → 36 | 404 → 439 |
+
+- **It fits the budget growth** that the extra demand justifies (about +3 buses and +32-40 bus-hours).
 - **Star Eilat.** Every option already runs through the old central station, where the Star Eilat terminal
   will open.
 

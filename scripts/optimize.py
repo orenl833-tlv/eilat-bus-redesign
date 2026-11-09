@@ -206,7 +206,11 @@ def main():
     mode = sys.argv[1]; iters = int(sys.argv[2]) if len(sys.argv) > 2 else 1500
     peak_delta = int(sys.argv[3]) if len(sys.argv) > 3 else 0
     tag = f"{mode}" + (f"_peak{peak_delta:+d}" if peak_delta else "")
-    random.seed(1)
+    import os
+    seed = int(os.environ.get("SEED", "1"))
+    random.seed(seed)
+    if seed != 1:
+        tag += f"_seed{seed}"
     prob = Problem(mode, peak_delta)
     cur = prob.state0
     if len(sys.argv) > 4:   # warm start from another run's best (lines missing from this pool are dropped)

@@ -1,0 +1,50 @@
+{
+ "keep": {
+  "without": {
+   "vs_today_A": 0.9015,
+   "vs_today_B": 0.9077,
+   "district_902_vs_today": 0.993,
+   "peak": 35,
+   "hours": 397.1
+  },
+  "with spur": {
+   "vs_today_A": 0.845,
+   "vs_today_B": 0.8553,
+   "district_902_vs_today": 0.457,
+   "peak": 36,
+   "hours": 423.4
+  }
+ },
+ "full_warm": {
+  "without": {
+   "vs_today_A": 0.8413,
+   "vs_today_B": 0.8476,
+   "district_902_vs_today": 0.995,
+   "peak": 33,
+   "hours": 394.1
+  },
+  "with spur": {
+   "vs_today_A": 0.779,
+   "vs_today_B": 0.7901,
+   "district_902_vs_today": 0.453,
+   "peak": 36,
+   "hours": 426.7
+  }
+ },
+ "full_peak-3_warm": {
+  "without": {
+   "vs_today_A": 0.8353,
+   "vs_today_B": 0.8422,
+   "district_902_vs_today": 0.994,
+   "peak": 32,
+   "hours": 404.1
+  },
+  "with spur": {
+   "vs_today_A": 0.7734,
+   "vs_today_B": 0.7848,
+   "district_902_vs_today": 0.444,
+   "peak": 36,
+   "hours": 438.7
+  }
+ }
+}

@@ -23,6 +23,9 @@ class Model:
         import pandas as pd
         self.areas, self.pts = D.points()
         stops = pd.read_csv("data/stops_all.csv")
+        import os
+        if os.environ.get("EILAT_NEW_STOPS") and os.path.exists(os.environ["EILAT_NEW_STOPS"]):
+            stops = pd.concat([stops, pd.read_csv(os.environ["EILAT_NEW_STOPS"])], ignore_index=True)
         self.ev = Evaluator(stops, self.pts)
         self.homes = np.where(self.pts.kind == "home")[0]
         self.att = np.where(self.pts.kind == "attractor")[0]
