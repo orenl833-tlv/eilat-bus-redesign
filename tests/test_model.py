@@ -94,3 +94,29 @@ def test_fleet_counts_run_plus_layover_over_headway():
 def test_bus_share_rises_when_the_bus_gets_faster():
     walk = np.array([30.0])
     assert bus_share(np.array([10.0]), walk, 0.3, 0.0)[0] > bus_share(np.array([25.0]), walk, 0.3, 0.0)[0]
+
+
+def _scripts():
+    import os
+    import sys
+    d = os.path.join(os.path.dirname(__file__), "..", "scripts")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+
+
+def test_driver_duties_cut_at_depot_gap_and_length():
+    """A bus day of 1-hour trips 06:00-22:00 with a 2-hour midday gap: the duty ends at the gap, no duty is
+    longer than the limit, and a long run with no break gets a reliever."""
+    _scripts()
+    import shifts as SH
+    trips = [dict(start=60 * h, end=60 * h + 55) for h in list(range(6, 12)) + list(range(14, 22))]
+    res = SH.duties(pd.DataFrame(trips))
+    assert all((e - s + SH.SIGN_ON_MIN) / 60 <= SH.DUTY_MAX_H for s, e, _ in res)
+    assert any(e <= 12 * 60 for _, e, _ in res) and all(not (s < 12 * 60 < e) for s, e, _ in res)   # cut at the gap
+    assert sum(r for *_, r in res) >= 1   # 8 hours of 5-minute layovers needs a break relief
+
+
+def test_gtfs_time_format():
+    _scripts()
+    import export_gtfs as EG
+    assert EG.hms(6 * 60 + 0.5) == "06:00:30" and EG.hms(24 * 60 + 5) == "24:05:00"

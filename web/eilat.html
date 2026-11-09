@@ -17,6 +17,7 @@
   --worse: #f1c9bd;
   --land: #ebe5d8;
   --outside: #ece6db; --land-base: #f4efe5; --sea-bg: #cfe3ee; --sea-ink: #3f7397; --poi: #1d2328;
+  --s-today: #1d2328; --s-keep: #2a78d6; --s-full_warm: #eb6834; --s-full_peak-3_warm: #1baf7a;   /* סדרות בגרף הקווים */
   --display: "Rubik", "IBM Plex Sans Hebrew", system-ui, sans-serif;
   --body: "IBM Plex Sans Hebrew", "Rubik", system-ui, sans-serif;
 }
@@ -24,12 +25,12 @@
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; color-scheme: dark } }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-full_peak-3_warm: #199e70; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; color-scheme: dark }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-full_peak-3_warm: #199e70; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
@@ -81,6 +82,11 @@ td .d { font-size: 11px; margin-inline-start: 4px }
   box-shadow: 0 6px 20px rgb(0 0 0 / .12); max-width: 270px; z-index: 20 }
 .note { font-size: 13px; color: var(--ink-2); max-width: 75ch }
 h2 { font: 700 20px var(--display); margin: 6px 0 0 }
+.chart { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px }
+.chart svg text { font: 11px var(--body); fill: var(--ink-2) }
+.chart .grid { stroke: var(--rule); stroke-width: 1 }
+.chart details { margin-top: 8px; font-size: 13px }
+.chart summary { cursor: pointer; color: var(--ink-2) }
 @media (prefers-reduced-motion: no-preference) { path.street { transition: stroke-width .25s, stroke .25s } }
 </style>
 
@@ -104,6 +110,13 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   <div class="legend" id="legend"></div>
 
   <div class="tiles" id="tiles"></div>
+
+  <div>
+    <h2>כמה קווים פועלים בכל שעה</h2>
+    <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול, <span id="actseason"></span>. גרסה של קו (מדלגת על תחנות שקטות או במסלול מקוצר) נספרת יחד עם הקו המקורי. קווי בתי הספר 80–82 כלולים, חוץ מבחופש הגדול. לוח הזמנים של היום זהה בכל העונות. בהצעות, התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
+  </div>
+  <div class="chart"><div class="legend" id="actlegend"></div><svg id="act" dir="ltr" role="img" aria-label="מספר הקווים הפעילים בכל שעה, היום ובכל אחת מההצעות"></svg>
+    <details><summary>הצג כטבלה</summary><div class="tablewrap"><table id="acttbl"></table></div></details></div>
 
   <div>
     <h2>מדלת לדלת, לפי שכונה</h2>
@@ -363,6 +376,55 @@ function legend() {
     `<span>${sw(css("--better-1"), 10)}האזור משתפר בפחות מ-10%</span><span>${sw(css("--better-2"), 10)}10%–20%</span><span>${sw(css("--better-3"), 10)}יותר מ-20%</span><span>${sw(css("--worse"), 10)}האזור נפגע</span>`;
 }
 
+// lines running per hour: today and every option, the chosen season (step lines: an hour's value holds until the next hour)
+const SERIES = ["today", "keep", "full_warm", "full_peak-3_warm"];
+const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
+function activeChart() {
+  const A = D.active; if (!A) return;
+  document.getElementById("actseason").textContent = SNAME[st.season];
+  const hrs = A.hours, svg = document.getElementById("act");
+  const w = 760, h = 260, m = {l: 36, r: 16, t: 12, b: 30};
+  const x0 = hrs[0], x1 = hrs[hrs.length - 1] + 1;
+  const ymax = Math.max(...SERIES.flatMap((k) => A.data[k][st.season].lines)) + 1;
+  // RTL page, but time runs left to right as on every clock and timetable
+  const X = (hr) => m.l + (hr - x0) / (x1 - x0) * (w - m.l - m.r), Y = (v) => h - m.b - v / ymax * (h - m.t - m.b);
+  let g = "";
+  for (let v = 0; v <= ymax; v += 2) g += `<line class="grid" x1="${m.l}" x2="${w - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
+  for (let hr = 6; hr <= 24; hr += 3) g += `<text x="${X(hr)}" y="${h - 10}" text-anchor="middle">${String(hr).padStart(2, "0")}:00</text>`;
+  for (const k of SERIES) {
+    const v = A.data[k][st.season].lines;
+    let d = `M${X(hrs[0])},${Y(v[0])}`;
+    hrs.forEach((hr, i) => { d += `H${X(hr)}V${Y(v[i])}`; });
+    d += `H${X(x1)}`;
+    const strong = k === "today" || k === st.opt;
+    g += `<path d="${d}" fill="none" stroke="var(--s-${k})" stroke-width="${strong ? 2.5 : 1.5}" stroke-linejoin="round" ${k === "today" ? 'stroke-dasharray="6 4"' : ""} opacity="${strong ? 1 : .55}"/>`;
+  }
+  g += `<line id="actx" y1="${m.t}" y2="${h - m.b}" stroke="var(--ink-2)" stroke-width="1" visibility="hidden"/><rect id="acthit" x="${m.l}" y="0" width="${w - m.l - m.r}" height="${h}" fill="transparent"/>`;
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`); svg.innerHTML = g;
+  const hit = svg.querySelector("#acthit"), cross = svg.querySelector("#actx"), el = document.getElementById("tip");
+  hit.addEventListener("pointermove", (e) => {
+    const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const i = Math.max(0, Math.min(hrs.length - 1, Math.floor(x0 + (p.x - m.l) / (w - m.l - m.r) * (x1 - x0)) - x0));
+    cross.setAttribute("x1", X(hrs[i] + .5)); cross.setAttribute("x2", X(hrs[i] + .5)); cross.setAttribute("visibility", "visible");
+    el.textContent = "";
+    const b = document.createElement("b"); b.textContent = `${String(hrs[i]).padStart(2, "0")}:00–${String(hrs[i] + 1).padStart(2, "0")}:00`; el.appendChild(b);
+    for (const k of SERIES) {
+      const r = A.data[k][st.season], div = document.createElement("div");
+      div.textContent = `${SER_HE(k)}: ${r.lines[i]} קווים, ${r.departures[i]} יציאות, ${r.buses_out[i]} אוטובוסים בדרכים`;
+      el.appendChild(div);
+    }
+    el.hidden = false;
+    el.style.left = Math.min(e.clientX + 14, window.innerWidth - 280) + "px"; el.style.top = Math.min(e.clientY + 14, window.innerHeight - 130) + "px";
+  });
+  hit.addEventListener("pointerleave", () => { el.hidden = true; cross.setAttribute("visibility", "hidden") });
+  const sw = (k) => `<i style="height:${k === "today" || k === st.opt ? 3 : 2}px;background:var(--s-${k})${k === "today" ? ";background:repeating-linear-gradient(90deg,var(--s-today) 0 6px,transparent 6px 10px)" : ""}"></i>`;
+  document.getElementById("actlegend").innerHTML = SERIES.map((k) => `<span>${sw(k)}${SER_HE(k)}</span>`).join("");
+  let t = "<thead><tr><th>שעה</th>" + SERIES.map((k) => `<th>${SER_HE(k)}</th>`).join("") + "</tr></thead><tbody>";
+  hrs.forEach((hr, i) => { t += `<tr><td>${num(String(hr).padStart(2, "0") + ":00")}</td>` + SERIES.map((k) => `<td>${A.data[k][st.season].lines[i]}</td>`).join("") + "</tr>"; });
+  document.getElementById("acttbl").innerHTML = t + "</tbody>";
+}
+
 function render() {
   seg("opt", Object.keys(D.options).filter((k) => k !== "today").map((k) => [k, OPT_HE[k]]), st.opt);
   seg("season", D.seasons.map((s) => [s, SNAME[s]]), st.season);
@@ -376,7 +438,7 @@ function render() {
   lineList("linesL", "today", "selL"); lineList("linesR", st.opt, "selR");
   drawMap(document.getElementById("mapL"), "today", false);
   drawMap(document.getElementById("mapR"), st.opt, true);
-  tiles(); table(); legend();
+  tiles(); activeChart(); table(); legend();
 }
 
 fetch("data.json").then((r) => r.json()).then((d) => { D = d; render() })

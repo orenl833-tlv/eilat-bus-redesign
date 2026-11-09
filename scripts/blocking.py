@@ -121,28 +121,40 @@ def block(trips, st):
     cur = peak = 0
     for _, d in ev:
         cur += d; peak = max(peak, cur)
-    return B, peak
+    return B, peak, [trips.loc[ch] for ch in blocks]
+
+
+_PROBS = {}
+
+
+def option_net(tag, season):
+    """The network of an option in a season (seasonal frequencies)."""
+    if tag not in _PROBS:
+        _PROBS[tag] = O.Problem("keep" if tag == "keep" else "full", -3 if "peak-3" in tag else 0)
+    prob = _PROBS[tag]
+    sr = json.load(open(f"data/opt_{tag}_seasonal.json"))[season]
+    return prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in prob.lines})
+
+
+def option_trips(tag, season, st):
+    """A weekday's trips: today's real GTFS trips, or an option's timetable; school lines keep today's real trips
+    (none in the summer holiday)."""
+    if tag == "today":
+        trips = trips_today()
+    else:
+        net = option_net(tag, season)
+        trips = pd.concat([trips_from_network([p for p in net if p.line not in SCHOOL]),
+                           trips_today()[lambda x: x.line.isin(SCHOOL)] if season != "summer" else None], ignore_index=True)
+    return trips[trips.o.isin(st.index) & trips.d.isin(st.index)].reset_index(drop=True)
 
 
 def main():
     st = pd.concat([pd.read_csv("data/stops_all.csv")], ignore_index=True).set_index("stop_id")
     rows = []
-    sets = [("today", "winter", None)] + [(t, s, t) for t in ["keep", "full_warm", "full_peak-3_warm"] for s in P.SEASONS]
-    prob_cache = {}
-    for name, season, tag in sets:
-        if tag is None:
-            trips = trips_today()
-        else:
-            if tag not in prob_cache:
-                prob_cache[tag] = O.Problem("keep" if tag == "keep" else "full", -3 if "peak-3" in tag else 0)
-            prob = prob_cache[tag]
-            sr = json.load(open(f"data/opt_{tag}_seasonal.json"))[season]
-            net = prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in prob.lines})
-            # school lines keep today's real trips
-            trips = pd.concat([trips_from_network([p for p in net if p.line not in SCHOOL]),
-                               trips_today()[lambda x: x.line.isin(SCHOOL)] if season != "summer" else None], ignore_index=True)
-        trips = trips[trips.o.isin(st.index) & trips.d.isin(st.index)]
-        B, peak = block(trips, st)
+    sets = [("today", "winter")] + [(t, s) for t in ["keep", "full_warm", "full_peak-3_warm"] for s in P.SEASONS]
+    for name, season in sets:
+        trips = option_trips(name, season, st)
+        B, peak, _ = block(trips, st)
         rows.append(dict(option=name, season=season, trips=len(trips), buses=len(B), out_at_once_max=peak,
                          bus_hours=round(B.hours_out.sum(), 1), bus_span_hours=round(B.span_h.sum(), 1), km_per_bus_max=round(B.km.max()),
                          km_per_bus_mean=round(B.km.mean()),

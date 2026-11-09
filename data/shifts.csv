@@ -1,0 +1,11 @@
+option,season,buses,pieces,full_duties,short_pieces,drivers_needed,paid_driver_hours,mean_duty_h,break_reliefs,first_out,last_in
+today,winter,35,87,65,22,76,495.0,7.23,37,05:15,24:07
+keep,winter,33,85,65,20,75,505.4,7.27,36,06:00,24:59
+keep,spring_autumn,33,101,66,35,84,522.8,7.1,26,06:00,24:59
+keep,summer,31,97,60,37,79,493.0,7.32,27,06:00,24:45
+full_warm,winter,34,102,70,32,86,535.0,6.94,18,06:00,24:54
+full_warm,spring_autumn,32,91,63,28,77,513.0,7.37,40,06:00,24:58
+full_warm,summer,30,85,58,27,72,508.7,7.98,26,06:00,24:55
+full_peak-3_warm,winter,33,90,66,24,78,529.3,7.47,32,06:00,24:56
+full_peak-3_warm,spring_autumn,34,90,67,23,79,536.9,7.43,33,06:00,24:56
+full_peak-3_warm,summer,30,89,64,25,77,510.2,7.31,39,06:00,24:59

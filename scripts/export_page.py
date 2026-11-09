@@ -66,6 +66,15 @@ def segments(net, period, sid):
     return [[a, b, round(v, 1)] for (a, b), v in seg.items()]
 
 
+def active():
+    """Lines running, departures and buses out in each hour (from scripts/active_lines.py)."""
+    A = pd.read_csv("data/active_lines.csv")
+    A = A[A.hour < 24]   # nothing leaves after midnight
+    return {"hours": sorted(A.hour.unique().tolist()),
+            "data": {t: {se: {c: g[c].tolist() for c in ["lines", "departures", "buses_out"]} for se, g in d.groupby("season")}
+                     for t, d in A.sort_values("hour").groupby("option")}}
+
+
 def main():
     os.makedirs("web", exist_ok=True)
     prob_full = O.Problem("full"); prob_keep = O.Problem("keep")
@@ -123,6 +132,7 @@ def main():
             per["all"] = day
             out["tt"][tag][se] = {q: {str(int(a)): [round(float(v), 1) for v in row] for a, row in df.iterrows()} for q, df in per.items()}
     out["tt_keys"] = keys
+    out["active"] = active()
     out["summary"]["today"] = dict(peak=json.load(open("data/assess_full_warm.json"))["fleet_today"]["peak"],
                                    hours=json.load(open("data/assess_full_warm.json"))["fleet_today"]["hours"])
     # base map: the city's whole area (land), the gulf (frame south of North Beach minus the city; the city's boundary

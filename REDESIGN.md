@@ -150,6 +150,78 @@ Three options follow, from the most cautious to the most far-reaching. The inter
 - **Driver shifts** (≤ 8.5 h per bus block) are indicative only. Fewer, longer bus days mean more split
   shifts.
 
+## Lines running by hour (`scripts/active_lines.py`)
+
+![Lines running in each hour](figs/active_lines.png)
+
+| Departures a weekday, winter | 05-06 | 21-22 | 22-23 | 23-24 | Whole day |
+|---|---|---|---|---|---|
+| Today | 5 | 21 | 10 | 3 | 441 |
+| Option 1 | 0 | 27 | 27 | 27 | 471 |
+| Option 2 | 0 | 23 | 22 | 23 | 482 |
+| Option 3 | 0 | 28 | 28 | 28 | 516 |
+
+- **Evenings are where the options spend their hours.** Today most lines stop around 21:00. Every option
+  keeps 8-10 lines running until midnight.
+- **No option has trips before 06:00, because the model's day starts at 06:00.** Today 5 trips of lines 3
+  and 4 leave between 05:15 and 06:00 towards the park-and-ride at the city entrance, for early shifts and
+  intercity connections. **Keep them** in any option. They cost about 2 bus-hours a day.
+- **Fewer lines at once** in options 2 and 3 (8-12 lines in daytime against today's 10-13) is the merging. The lines that
+  remain run more often.
+
+## Driver duties, rough (`scripts/shifts.py`)
+
+The bus days from the blocks are cut into driver duties between trips. The rules are assumptions, not the
+legal text:
+- a duty lasts at most 8.5 h incl. 15 min sign-on;
+- it always ends where the bus goes back to the depot;
+- after 4.5 h driving without a 30-min layover, a reliever takes one trip;
+- pieces under 3 h pair into split shifts.
+
+| | Drivers a weekday | Paid driver hours | Short pieces (split shifts) | Break reliefs |
+|---|---|---|---|---|
+| Today (winter) | 76 | 495 | 22 | 37 |
+| Option 1 | 75-84 | 493-523 | 20-37 | 26-36 |
+| Option 2 | 72-86 | 509-535 | 27-32 | 18-40 |
+| Option 3 | 77-79 | 510-537 | 23-25 | 32-39 |
+
+- **Every option can be staffed under these rules.** Driver hours are 0-8% above today.
+- **Option 2's winter timetable needs the most drivers (+13%)** and has more split shifts: its midday peak
+  is short and sharp. A rostering tool should smooth it before any claim of equal cost.
+
+## GTFS export (`scripts/export_gtfs.py`)
+
+Each option is in `exports/gtfs_<option>.zip`:
+- weekdays Sun-Thu, with three seasonal timetables over Nov 2026 - Oct 2027 (`calendar_dates.txt`);
+- measured run times;
+- quiet stops left out of the lines that pass them;
+- school lines with today's real trips;
+- a `block_id` per trip, from the vehicle blocks.
+
+The export checks every reference, stop sequence and time, and that every trip has a bus. Trip counts
+match `data/blocking.csv`. No holidays are marked, and Friday and Saturday are not included.
+
+## Phased introduction
+
+1. **Prepare (2 months).**
+   - Walk every passed stop, for accessibility.
+   - Ask for stop-level Rav-Kav data.
+   - Hand the GTFS to the operator.
+   - Align timetables between lines to close the bus-hour gap.
+2. **Option 1, with today's pre-06:00 trips kept.** Every line and number stays, and it delivers most of
+   the gain (~12%).
+3. **Measure 3-6 months.**
+   - Boardings per line, SIRI lateness, complaints.
+   - Go on only if trips haven't fallen and no area lost more than expected.
+4. **Option 2 in two steps.** Run line 7 as a pilot next to lines 1 and 4; merge 1 and 4 only if line 7
+   holds its riders. That adds ~4%.
+5. **With the new districts:** the Shifolei HaHar spur (+3 buses justified by the new demand), planned on
+   the real street map.
+
+**Option 3 is not recommended now.** Its saving in buses mostly disappears in real blocks.
+
+A Hebrew decision summary is in [SUMMARY_HE.md](SUMMARY_HE.md).
+
 ## Reliability (SIRI)
 
 - **Gaps between buses vary** (CV 0.43), so a random passenger waits 19% longer than the timetable implies.
@@ -220,7 +292,7 @@ The spur fits within the budget growth the extra demand justifies.
   merging should wait for stop-level Rav-Kav data.
 - **Dropped and passed stops:** check them one by one, especially for elderly riders.
 - **Paid bus-hours (+1-9%):** close the gap by aligning timetables before claiming equal cost.
-- **Not modelled:** driver rostering, depot capacity, charging infrastructure.
+- **Not modelled:** a full driver roster (only the rough check above), depot capacity, charging infrastructure.
 - **The summer holiday** is the least certain season: there is no summer Rav-Kav quarter.
 - **What the model does:** it compares networks. The +1-3% bus trips is its elasticity, not a forecast.
 
