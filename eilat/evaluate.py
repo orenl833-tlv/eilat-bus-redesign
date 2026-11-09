@@ -1,7 +1,7 @@
 """Perceived door-to-door time ("generalised cost", in in-vehicle minutes) on any network, frequency based,
 with common lines.
 
-The graph has stop nodes and point nodes only. A "ride leg" edge joins any two stops i -> j that some line
+The graph has two nodes per stop (before and after a ride) and point nodes. A "ride leg" edge joins any two stops i -> j that some line
 serves in that order (both stops served, not skipped). Where several lines serve the same i -> j, the
 passenger boards the first attractive one: lines whose ride time is within COMMON_SLACK minutes of the
 fastest are attractive; the wait is half their combined headway; riders split by frequency.
@@ -70,26 +70,30 @@ class Evaluator:
         return L
 
     def run(self, pats, period, w_walk=P.W_WALK, sources=None, transfer_penalty=P.TRANSFER_PENALTY):
+        """Nodes: stops before a ride [0, ns), stops after a ride [ns, 2ns), points out, points in. Every bus path
+        is out -> pre-stop -> (ride leg) -> post-stop [-> walk/stay -> pre-stop -> leg -> post-stop]* -> in,
+        so it always contains at least one ride."""
         ns, npt = len(self.stops), len(self.points)
         L = self.legs(pats, period)
         g = L.groupby(["u", "v"])
         F = g.f.sum()
         ivt = (L.ivt * L.f).groupby([L.u, L.v]).sum() / F
         leg_cost = (P.W_WAIT * 0.5 / F + ivt * P.W_INVEHICLE + transfer_penalty)
-        e = [pd.DataFrame({"u": leg_cost.index.get_level_values(0), "v": leg_cost.index.get_level_values(1),
-                           "w": leg_cost.values, "t": 1})]
+        u = leg_cost.index.get_level_values(0).values; v = leg_cost.index.get_level_values(1).values
+        e = [pd.DataFrame({"u": u, "v": ns + v, "w": leg_cost.values, "t": 1})]
         a, b = np.nonzero((self.tr <= self.tmax) & (self.tr > 0))
-        e.append(pd.DataFrame({"u": a, "v": b, "w": self.tr[a, b] * w_walk, "t": 0}))
+        e.append(pd.DataFrame({"u": ns + a, "v": b, "w": self.tr[a, b] * w_walk, "t": 0}))       # walk to transfer
+        e.append(pd.DataFrame({"u": ns + np.arange(ns), "v": np.arange(ns), "w": 1e-6, "t": 0}))  # transfer in place
         pi, si = np.nonzero(self.acc <= self.wmax)
-        e.append(pd.DataFrame({"u": ns + pi, "v": si, "w": self.acc[pi, si] * w_walk, "t": 2}))
-        e.append(pd.DataFrame({"u": si, "v": ns + npt + pi, "w": self.acc[pi, si] * w_walk, "t": 3}))
+        e.append(pd.DataFrame({"u": 2 * ns + pi, "v": si, "w": self.acc[pi, si] * w_walk, "t": 2}))
+        e.append(pd.DataFrame({"u": ns + si, "v": 2 * ns + npt + pi, "w": self.acc[pi, si] * w_walk, "t": 3}))
         E = pd.concat(e).sort_values("w").drop_duplicates(["u", "v"])
-        n = ns + 2 * npt
+        n = 2 * ns + 2 * npt
         G = csr_matrix((E.w.values, (E.u.values, E.v.values)), shape=(n, n))
         src = np.arange(npt) if sources is None else np.asarray(sources)
-        dist, pred = dijkstra(G, directed=True, indices=ns + src, return_predecessors=True)
-        gc = dist[:, ns + npt: ns + 2 * npt] - transfer_penalty
-        leg_type = {(int(u), int(v)): int(t) for u, v, t in zip(E.u.values, E.v.values, E.t.values, strict=True)}
+        dist, pred = dijkstra(G, directed=True, indices=2 * ns + src, return_predecessors=True)
+        gc = dist[:, 2 * ns + npt: 2 * ns + 2 * npt] - transfer_penalty
+        leg_type = {(int(a_), int(b_)): int(t) for a_, b_, t in zip(E.u.values, E.v.values, E.t.values, strict=True)}
         return dict(gc_bus=gc, walk=self.direct[src] * w_walk, pred=pred, ns=ns, npt=npt, legs=L,
                     leg_type=leg_type, src=src)
 
@@ -109,16 +113,17 @@ class Evaluator:
         by_pat = np.zeros(n_pats); by_stop = {}
         srcs, dsts = np.nonzero(od_trips > 0)
         for i, j in zip(srcs, dsts, strict=True):
-            node = ns + npt + j; q = od_trips[i, j]; guard = 0
-            while guard < 200:
+            node = 2 * ns + npt + j; q = od_trips[i, j]; guard = 0
+            while guard < 300:
                 guard += 1
                 p = pred[i, node]
                 if p < 0:
                     break
-                if lt.get((int(p), int(node))) == 1:
-                    for k, s in share[(int(p), int(node))]:
-                        by_pat[k] += q * s
-                    by_stop[int(p)] = by_stop.get(int(p), 0) + q
-                    by_stop[int(node)] = by_stop.get(int(node), 0) + q
+                if lt.get((int(p), int(node))) == 1:          # pre-stop p -> post-stop node: one ride leg
+                    a, b = int(p), int(node) - ns
+                    for k, s_ in share[(a, b)]:
+                        by_pat[k] += q * s_
+                    by_stop[a] = by_stop.get(a, 0) + q
+                    by_stop[b] = by_stop.get(b, 0) + q
                 node = p
         return by_pat, by_stop
