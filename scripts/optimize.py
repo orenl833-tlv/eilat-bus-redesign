@@ -189,7 +189,8 @@ class Problem:
         total = obj + pen
         if detail:
             return dict(total=total, obj=obj, pen=pen, buses=buses, hours=hours, worst_area=worst,
-                        violations=self.violations(state), protected_lost=self.protected_lost(pats), by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
+                        violations=self.violations(state), protected_lost=self.protected_lost(pats),
+                        by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
         return total
 
 

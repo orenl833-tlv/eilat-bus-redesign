@@ -10,11 +10,9 @@ import json
 import math
 import os
 
-import numpy as np
 import pandas as pd
 
 import optimize as O
-from eilat import demand as D
 from eilat import params as P
 
 CAP_FULL, CAP_COMFORT = 85, 65

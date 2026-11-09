@@ -144,7 +144,8 @@ def main():
         trips = trips[trips.o.isin(st.index) & trips.d.isin(st.index)]
         B, peak = block(trips, st)
         rows.append(dict(option=name, season=season, trips=len(trips), buses=len(B), out_at_once_max=peak,
-                         bus_hours=round(B.hours_out.sum(), 1), bus_span_hours=round(B.span_h.sum(), 1), km_per_bus_max=round(B.km.max()), km_per_bus_mean=round(B.km.mean()),
+                         bus_hours=round(B.hours_out.sum(), 1), bus_span_hours=round(B.span_h.sum(), 1), km_per_bus_max=round(B.km.max()),
+                         km_per_bus_mean=round(B.km.mean()),
                          buses_over_250km=int((B.km > 250).sum()), empty_km_share=round(B.empty_km.sum() / B.km.sum(), 3),
                          driver_shifts=int(np.ceil(B.hours_out / SHIFT_H).sum())))
         print(rows[-1], flush=True)

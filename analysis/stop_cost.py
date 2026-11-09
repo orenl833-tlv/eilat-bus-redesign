@@ -2,7 +2,8 @@
 within 35 m of a stop), stopped elsewhere (traffic lights, junctions), and slowing/accelerating (moving time
 beyond what the trip would take at cruising speed). Cruising speed = 75th percentile of the ride's speeds
 away from stops. Days: school-term weekdays without feed gaps (Dec 2025, Feb 2026)."""
-import numpy as np, pandas as pd
+import numpy as np
+import pandas as pd
 from scipy.spatial import cKDTree
 
 r = pd.read_csv('data/raw/gtfs_20261107/routes.txt', encoding='utf-8-sig')

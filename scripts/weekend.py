@@ -15,7 +15,6 @@ import json
 import math
 import random
 
-import numpy as np
 import pandas as pd
 
 import optimize as O
