@@ -45,8 +45,9 @@ def eval_net(prob, nets, **over):
     for s in P.SEASONS:
         kw = dict(prob.kw); kw.update({k: v for k, v in over.items() if k in ("lam", "const", "car_prop")})
         extra = {k: v for k, v in over.items() if k in ("walk_heat", "transfer_penalty")}
-        r = prob.m.run(nets[s], s, K=prob.cal["K"], track=False, **kw, **extra)
-        r0 = prob.m.run(prob.base, s, K=prob.cal["K"], track=False, **kw, **extra)
+        one = {q: 1.0 for q in D.PURPOSES}   # per-purpose results at scale 1; each calibration's K applied once below
+        r = prob.m.run(nets[s], s, K=one, track=False, **kw, **extra)
+        r0 = prob.m.run(prob.base, s, K=one, track=False, **kw, **extra)
         for v, K in (("A", prob.cal["K"]), ("B", prob.cal["K_prior"])):
             c = sum(K[p] * r["cost_p"][p] for p in D.PURPOSES); c0 = sum(K[p] * r0["cost_p"][p] for p in D.PURPOSES)
             hc = sum(K[p] * r["home_cost"][p] for p in D.PURPOSES if p != "tourist")

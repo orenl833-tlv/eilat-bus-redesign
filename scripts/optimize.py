@@ -107,7 +107,7 @@ class Problem:
         """Perceived cost per season and calibration, and per area (calibration A and B)."""
         out = {}
         for s in SEASONS:
-            r = self.m.run(pats, s, K=self.cal["K"], track=False, **self.kw)
+            r = self.m.run(pats, s, K={q: 1.0 for q in D.PURPOSES}, track=False, **self.kw)
             for v, K in (("A", self.cal["K"]), ("B", self.cal["K_prior"])):
                 cost = sum(K[p] * r["cost_p"][p] for p in D.PURPOSES)
                 hc = sum(K[p] * r["home_cost"][p] for p in D.PURPOSES if p != "tourist")

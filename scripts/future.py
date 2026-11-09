@@ -28,7 +28,7 @@ def run(tags, future):
     out = {}
     trips_today = {}
     for s in P.SEASONS:
-        r = prob.m.run(prob.base, s, K=prob.cal["K"], track=False, **prob.kw)
+        r = prob.m.run(prob.base, s, K={q: 1.0 for q in D.PURPOSES}, track=False, **prob.kw)
         trips_today[s] = {v: sum(K[p] * r["trips"][p] for p in D.PURPOSES) for v, K in (("A", prob.cal["K"]), ("B", prob.cal["K_prior"]))}
     out["bus_trips_today_network"] = trips_today
     for tag in tags:
