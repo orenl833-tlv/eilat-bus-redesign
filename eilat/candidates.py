@@ -20,6 +20,8 @@ from . import params as P
 from .evaluate import walk_min
 from .network import Pattern
 
+# stops never skipped or cut: luggage (hotels, terminals, border crossings, airport), the hospital, malls
+PROTECTED_RE = "בית חולים|יוספטל|מלון|תחנה מרכזית|חנה וסע|מעבר גבול|קניון|נמל תעופה"
 MIN_SAVE = 3.0
 MAX_SPAN = 10      # a detour cut spans at most this many stops
 MIN_SAVE_SHARE = 0.3  # and saves at least this share of the stretch's time
@@ -54,6 +56,7 @@ class StopGraph:
                         per_edge.setdefault((u, v, p), []).append(float(f.iloc[0]))
         self.efac = {k: float(np.median(v)) for k, v in per_edge.items()}
         self.pfac = fac.groupby("period").factor.median().to_dict()
+        self.protected = set(self.stops[self.stops.stop_name.str.contains(PROTECTED_RE, na=False)].stop_id)
 
     def seg_minutes(self, stops):
         out = {}
@@ -109,6 +112,8 @@ def straightened(sg, pt):
                 continue
             sp = d[sg.ix[stops[j]]] * sg.pfac.get("09-12", 1.25)
             save = (cum[j] - cum[i]) - sp
+            if any(x in sg.protected for x in stops[i + 1:j]):
+                continue
             if math.isfinite(sp) and save >= MIN_SAVE and save >= MIN_SAVE_SHARE * (cum[j] - cum[i]):
                 best.append((save, i, j))
     best.sort(reverse=True)
@@ -136,7 +141,7 @@ def skipping(sg, pt, stop_use, trips_per_day):
     for i, s in enumerate(pt.stops[1:-1], start=1):
         per_trip = use[i] / max(trips_per_day, 1)
         p_served[s] = 1 - math.exp(-per_trip)
-        if use[i] <= cut:
+        if use[i] <= cut and s not in sg.protected:
             near = [t for t in pt.stops if t != s and t not in skip and t in lat and s in lat and
                     walk_min(lat[s], lon[s], lat[t], lon[t]) * (P.WALK_KMH * 1000 / 60) <= SKIP_WALK_M * P.DETOUR]
             if near:

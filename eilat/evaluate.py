@@ -59,9 +59,10 @@ class Evaluator:
             ia, ib = ii[a], ii[b]
             u = np.array([self.sid[pt.stops[x]] for x in ia]); v = np.array([self.sid[pt.stops[x]] for x in ib])
             ok = u != v
-            rows.append(pd.DataFrame({"u": u[ok], "v": v[ok], "ivt": (cum[ib] - cum[ia])[ok], "f": 1 / h, "k": k}))
+            rows.append(pd.DataFrame({"u": u[ok], "v": v[ok], "ivt": (cum[ib] - cum[ia])[ok], "f": 1 / h, "k": k,
+                                      "ia": ia[ok], "ib": ib[ok]}))
         if not rows:
-            return pd.DataFrame(columns=["u", "v", "ivt", "f", "k"])
+            return pd.DataFrame(columns=["u", "v", "ivt", "f", "k", "ia", "ib"])
         L = pd.concat(rows)
         # a line serving i->j twice (loops) keeps its fastest ride
         L = L.sort_values("ivt").drop_duplicates(["u", "v", "k"])
@@ -98,7 +99,7 @@ class Evaluator:
                     leg_type=leg_type, src=src)
 
     @staticmethod
-    def boardings(res, od_trips, n_pats):
+    def boardings(res, od_trips, n_pats, loads=None):
         """Bus trips on the best paths -> boardings per pattern (split by frequency on common legs) and
         boardings+alightings per stop. od_trips: (len(src) x npt) array."""
         ns, npt, pred, lt = res["ns"], res["npt"], res["pred"], res["leg_type"]
@@ -108,7 +109,7 @@ class Evaluator:
             L = L.assign(sh=L.f / L.groupby(["u", "v"]).f.transform("sum"))
             share = {}
             for (u, v), grp in L.groupby(["u", "v"]):
-                share[(int(u), int(v))] = list(zip(grp.k.values, grp.sh.values, strict=True))
+                share[(int(u), int(v))] = list(zip(grp.k.values, grp.sh.values, grp.ia.values, grp.ib.values, strict=True))
             res["_share"] = share
         by_pat = np.zeros(n_pats); by_stop = {}
         srcs, dsts = np.nonzero(od_trips > 0)
@@ -121,8 +122,10 @@ class Evaluator:
                     break
                 if lt.get((int(p), int(node))) == 1:          # pre-stop p -> post-stop node: one ride leg
                     a, b = int(p), int(node) - ns
-                    for k, s_ in share[(a, b)]:
+                    for k, s_, ia, ib in share[(a, b)]:
                         by_pat[k] += q * s_
+                        if loads is not None:
+                            loads[k][int(ia):int(ib)] += q * s_
                     by_stop[a] = by_stop.get(a, 0) + q
                     by_stop[b] = by_stop.get(b, 0) + q
                 node = p

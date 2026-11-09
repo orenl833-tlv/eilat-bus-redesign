@@ -36,7 +36,8 @@ class Model:
                "stop_use": {}, "cost": 0.0, "potential": 0.0,
                "cost_p": {p: 0.0 for p in D.PURPOSES},
                "home_cost": {p: np.zeros(len(self.homes)) for p in D.PURPOSES},
-               "home_trips": {p: np.zeros(len(self.homes)) for p in D.PURPOSES}}
+               "home_trips": {p: np.zeros(len(self.homes)) for p in D.PURPOSES},
+               "load": {q: [np.zeros(max(len(pt.stops) - 1, 1)) for pt in pats] for q in P.PERIODS}}
         nocar = self.pts.nocar.values[self.homes]
         eq = (P.NOCAR_EQUITY_WEIGHT * nocar + car_prop * (1 - nocar)) / (nocar + car_prop * (1 - nocar))
         hotel_pt = self.att[hotel]
@@ -84,7 +85,7 @@ class Model:
                         sub = dict(r); sub["pred"] = r["pred"][rows_]
                         if "_share" in r:
                             sub["_share"] = r["_share"]
-                        bp, bs = Evaluator.boardings(sub, full, len(pats))
+                        bp, bs = Evaluator.boardings(sub, full, len(pats), loads=res["load"][period])
                         r["_share"] = sub["_share"]
                         res["board"][p] += bp
                         for s, q in bs.items():
