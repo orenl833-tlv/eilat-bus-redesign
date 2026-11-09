@@ -16,17 +16,20 @@
   --better-1: #dcefe0; --better-2: #9fd1ab; --better-3: #4fa66a;           /* אזורים שמשתפרים */
   --worse: #f1c9bd;
   --land: #ebe5d8;
+  --outside: #ece6db; --land-base: #f4efe5; --sea-bg: #cfe3ee; --sea-ink: #3f7397; --poi: #1d2328;
   --display: "Rubik", "IBM Plex Sans Hebrew", system-ui, sans-serif;
   --body: "IBM Plex Sans Hebrew", "Rubik", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
-  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e; color-scheme: dark } }
+  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
-  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e; color-scheme: dark }
+  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
@@ -162,6 +165,16 @@ function drawMap(svg, tag, showChange) {
   svg.innerHTML = ""; svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("direction", "ltr");
   const g = document.createElementNS(ns, "g"); svg.appendChild(g);
   const change = showChange ? D.summary[tag]?.area : null;
+  const poly = (rings, fill, stroke) => { for (const ring of rings) { const p = document.createElementNS(ns, "path");
+    p.setAttribute("d", "M" + ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L") + "Z");
+    p.setAttribute("fill", fill); if (stroke) { p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", "1") }
+    p.setAttribute("pointer-events", "none"); g.appendChild(p) } };
+  const bg = document.createElementNS(ns, "rect"); bg.setAttribute("width", W); bg.setAttribute("height", H); bg.setAttribute("fill", css("--outside")); g.appendChild(bg);
+  poly(D.land || [], css("--land-base"), css("--rule"));
+  poly(D.sea || [], css("--sea-bg"), null);
+  const seaT = document.createElementNS(ns, "text"); seaT.setAttribute("x", sx(34.963)); seaT.setAttribute("y", sy(29.515));
+  seaT.setAttribute("text-anchor", "middle"); seaT.setAttribute("font-size", "15"); seaT.setAttribute("font-style", "italic");
+  seaT.setAttribute("fill", css("--sea-ink")); seaT.setAttribute("font-family", "Rubik, sans-serif"); seaT.textContent = "מפרץ אילת"; g.appendChild(seaT);
   for (const a of D.areas) {
     for (const ring of a.rings) {
       const p = document.createElementNS(ns, "path");
@@ -192,6 +205,12 @@ function drawMap(svg, tag, showChange) {
     p.setAttribute("stroke", seaColor(b)); p.setAttribute("stroke-width", (1 + Math.min(b, 12) * 0.45).toFixed(2));
     p.setAttribute("stroke-linecap", "round"); p.setAttribute("fill", "none"); p.setAttribute("pointer-events", "none");
     g.appendChild(p);
+    const hit = document.createElementNS(ns, "path");
+    hit.setAttribute("d", p.getAttribute("d")); hit.setAttribute("stroke", "transparent"); hit.setAttribute("stroke-width", "12");
+    hit.setAttribute("fill", "none"); hit.setAttribute("pointer-events", "stroke"); hit.style.cursor = "pointer";
+    hit.addEventListener("click", () => clickStreet(tag, i, j));
+    hit.addEventListener("mouseenter", () => { document.getElementById("tip").hidden = true });
+    g.appendChild(hit);
   }
   const sel = tag === "today" ? st.selL : st.selR;
   const ln = sel && (D.lines[tag]?.[st.season] || []).find((x) => x.name === sel);
@@ -210,6 +229,45 @@ function drawMap(svg, tag, showChange) {
       c.setAttribute("stroke-width", "1.4"); c.setAttribute("pointer-events", "none"); g.appendChild(c);
     }
   }
+  // landmarks: label side per place so the crowded centre stays readable
+  const SIDE = {"עירייה": [-6, -6, "end"], "התחנה המרכזית (Star Eilat)": [6, -6, "start"], "תיכון גולדווטר": [-6, 12, "end"],
+    "קניון מול הים": [-4, 13, "end"], "בית החולים יוספטל": [-6, 4, "end"], "קמפוס אילת": [-6, -4, "end"], "מרכז ביג": [6, 4, "start"],
+    "חנה וסע, כניסה לעיר": [6, 4, "start"], "חניון אגד": [6, -4, "start"], "המלונות והחוף הצפוני": [6, 14, "start"], "קניון אייס מול": [6, -4, "start"],
+    "תיכון רבין": [-6, 12, "end"], "תיכון בגין": [-6, -4, "end"], "נמל אילת": [-6, 4, "end"], "חוף הדקל": [6, 4, "start"],
+    "חוף האלמוגים": [6, 4, "start"], "מעבר טאבה": [6, -4, "start"], "מעבר רבין": [-6, 10, "end"]};
+  for (const [name, lat, lon, kind] of D.pois || []) {
+    const x = sx(lon), y = sy(lat); if (x < 0 || x > W || y < 0 || y > H) continue;
+    const m = document.createElementNS(ns, "rect"); m.setAttribute("x", x - 3.5); m.setAttribute("y", y - 3.5); m.setAttribute("width", 7); m.setAttribute("height", 7);
+    m.setAttribute("transform", `rotate(45 ${x} ${y})`); m.setAttribute("fill", kind === "beach" ? css("--sea-ink") : css("--poi"));
+    m.setAttribute("stroke", css("--panel")); m.setAttribute("stroke-width", "1.5"); m.setAttribute("pointer-events", "none"); g.appendChild(m);
+    const [dx, dy, anchor] = SIDE[name] || [6, 4, "start"];
+    const t = document.createElementNS(ns, "text"); t.setAttribute("x", x + dx); t.setAttribute("y", y + dy);
+    t.setAttribute("text-anchor", anchor); t.setAttribute("font-size", "10.5"); t.setAttribute("font-weight", "500");
+    t.setAttribute("font-family", "IBM Plex Sans Hebrew, sans-serif"); t.setAttribute("fill", css("--poi"));
+    t.setAttribute("stroke", css("--panel")); t.setAttribute("stroke-width", "3"); t.setAttribute("paint-order", "stroke");
+    t.setAttribute("stroke-linejoin", "round"); t.setAttribute("pointer-events", "none"); t.textContent = name; g.appendChild(t);
+  }
+}
+
+function selectLine(selKey, name) {
+  const other = selKey === "selL" ? "selR" : "selL", otherTag = selKey === "selL" ? st.opt : "today";
+  if (!name) { st.selL = st.selR = null; st.note = ""; render(); return }
+  st[selKey] = name;
+  st[other] = counterpart(name, otherTag);
+  st.noteIn = other;
+  const fam = parts(name).fam;
+  st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt].replace(/^\d · /, "")}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
+  render();
+}
+
+// clicking a street on a map: the lines running on it now, most frequent first; each click moves to the next one
+function clickStreet(tag, i, j) {
+  const selKey = tag === "today" ? "selL" : "selR";
+  const on = (D.lines[tag]?.[st.season] || []).filter((l) => l.hw[st.period] && l.stops.some((s, k) => k > 0 &&
+    ((l.stops[k - 1] === i && s === j) || (l.stops[k - 1] === j && s === i)))).sort((a, b) => a.hw[st.period] - b.hw[st.period]);
+  if (!on.length) return;
+  const k = on.findIndex((l) => l.name === st[selKey]);
+  selectLine(selKey, on[(k + 1) % on.length].name);
 }
 
 function lineList(id, tag, selKey) {
@@ -225,16 +283,7 @@ function lineList(id, tag, selKey) {
     const h = l.hw[st.period];
     b.innerHTML = `<span class="no">${num(label(l.name))}</span><span class="route">${l.start} ← ${l.end}</span>` +
       `<span class="hw">${h ? "כל " + h + " דק'" : "אין שירות"}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
-    b.onclick = () => {
-      const other = selKey === "selL" ? "selR" : "selL", otherTag = selKey === "selL" ? st.opt : "today";
-      if (st[selKey] === l.name) { st.selL = st.selR = null; st.note = ""; render(); return }
-      st[selKey] = l.name;
-      st[other] = counterpart(l.name, otherTag);
-      st.noteIn = other;
-      const fam = parts(l.name).fam;
-      st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt].replace(/^\d · /, "")}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
-      render();
-    };
+    b.onclick = () => selectLine(selKey, st[selKey] === l.name ? null : l.name);
     el.appendChild(b);
   }
 }

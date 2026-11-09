@@ -85,6 +85,30 @@ def main():
                                   for k in T.columns.get_level_values(1).unique()} for i in T.index})
     out["summary"]["today"] = dict(peak=json.load(open("data/assess_full_warm.json"))["fleet_today"]["peak"],
                                    hours=json.load(open("data/assess_full_warm.json"))["fleet_today"]["hours"])
+    # base map: the city's whole area (land), the gulf (frame south of North Beach minus the city; the city's boundary
+    # there follows the shore), and landmarks
+    from shapely.geometry import Point, box
+    from shapely.ops import unary_union
+    allareas = gpd.read_file("data/areas.geojson")
+    land = unary_union(list(allareas.geometry)).buffer(0)
+    ring = lambda g: [[round(x, 5), round(y, 5)] for x, y in g.exterior.coords]  # noqa: E731
+    out["land"] = [ring(g.simplify(0.00008)) for g in (land.geoms if land.geom_type == "MultiPolygon" else [land])]
+    sea = box(34.900, 29.492, 34.985, 29.552).difference(land)
+    parts = list(sea.geoms) if sea.geom_type == "MultiPolygon" else [sea]
+    corner = Point(34.984, 29.493)
+    sea_part = min(parts, key=lambda g: g.distance(corner))
+    out["sea"] = [ring(sea_part.simplify(0.0002))]
+    out["pois"] = [
+        ["בית החולים יוספטל", 29.5549, 34.9401, "health"], ["חוף האלמוגים", 29.5082, 34.9207, "beach"],
+        ["חוף הדקל", 29.5413, 34.9470, "beach"], ["המלונות והחוף הצפוני", 29.5535, 34.9625, "hotel"],
+        ["קניון אייס מול", 29.5549, 34.9661, "shop"], ["קניון מול הים", 29.5511, 34.9550, "shop"],
+        ["מרכז ביג", 29.5677, 34.9596, "shop"], ["קמפוס אילת", 29.5665, 34.9522, "school"],
+        ["תיכון רבין", 29.5534, 34.9358, "school"], ["תיכון בגין", 29.5622, 34.9379, "school"],
+        ["תיכון גולדווטר", 29.5536, 34.9481, "school"], ["עירייה", 29.5561, 34.9520, "civic"],
+        ["התחנה המרכזית (Star Eilat)", 29.5577, 34.9536, "terminal"], ["חנה וסע, כניסה לעיר", 29.5713, 34.9623, "terminal"],
+        ["חניון אגד", 29.5742, 34.9612, "depot"], ["נמל אילת", 29.5355, 34.9404, "port"],
+        ["מעבר טאבה", 29.4931, 34.9051, "border"], ["מעבר רבין", 29.5818, 34.9698, "border"],
+    ]
     json.dump(out, open("web/data.json", "w"), ensure_ascii=False, separators=(",", ":"))
     print("web/data.json", round(os.path.getsize("web/data.json") / 1e3), "kB")
 
