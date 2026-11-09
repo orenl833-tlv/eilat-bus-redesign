@@ -36,7 +36,8 @@ def km_between(st, a, b):
     return float(walk_min(x.stop_lat, x.stop_lon, y.stop_lat, y.stop_lon)) * P.WALK_KMH / 60  # includes DETOUR
 
 
-def trips_from_network(net):
+def trips_from_network(net, last=None):
+    """Departures every headway; `last` = latest departure hour (e.g. 23 ends the evening at 23:00)."""
     rows = []
     for k, p in enumerate(net):
         off = 0.5 if p.name.endswith("/1") or "/1" in p.name else 0.0
@@ -45,6 +46,7 @@ def trips_from_network(net):
             if not math.isfinite(h):
                 continue
             t = a * 60 + off * h
+            b = min(b, last) if last else b
             while t < b * 60:
                 run = p.run_min(q)
                 rows.append(dict(line=p.line, start=t, end=t + run, o=p.stops[0], d=p.stops[-1],
@@ -136,14 +138,14 @@ def option_net(tag, season):
     return prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in prob.lines})
 
 
-def option_trips(tag, season, st):
+def option_trips(tag, season, st, last=None):
     """A weekday's trips: today's real GTFS trips, or an option's timetable; school lines keep today's real trips
     (none in the summer holiday)."""
     if tag == "today":
         trips = trips_today()
     else:
         net = option_net(tag, season)
-        trips = pd.concat([trips_from_network([p for p in net if p.line not in SCHOOL]),
+        trips = pd.concat([trips_from_network([p for p in net if p.line not in SCHOOL], last),
                            trips_today()[lambda x: x.line.isin(SCHOOL)] if season != "summer" else None], ignore_index=True)
     return trips[trips.o.isin(st.index) & trips.d.isin(st.index)].reset_index(drop=True)
 
