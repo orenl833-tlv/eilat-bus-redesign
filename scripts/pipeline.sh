@@ -25,4 +25,6 @@ wait
 python3 scripts/future.py keep full_warm full_peak-3_warm > $L/p_future.log 2>&1
 python3 scripts/export_gtfs.py > $L/p_gtfs.log 2>&1
 python3 scripts/export_page.py > $L/p_page.log 2>&1
+python3 scripts/journeys.py > $L/p_journeys.log 2>&1
+python3 scripts/build_brief.py
 echo PIPELINE DONE

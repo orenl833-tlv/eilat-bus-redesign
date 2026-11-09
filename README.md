@@ -6,7 +6,7 @@ door-to-door time, no neighbourhood more than 3% worse, and no extra buses.**
 
 ![Today vs restructured network](figs/proposal_full_warm.png)
 
-**Read first:** [SUMMARY_HE.md](SUMMARY_HE.md) (Hebrew, for decision makers), or [REDESIGN.md](REDESIGN.md), the three options, who gains and who loses, the checks and the
+**Read first:** the [decision brief](https://claude.ai/artifact/EhZ6aFgBzyymEFFGG5fVSP) (Hebrew, `web/brief.html`), [SUMMARY_HE.md](SUMMARY_HE.md), or [REDESIGN.md](REDESIGN.md), the three options, who gains and who loses, the checks and the
 caveats.
 
 **Explore it:** [interactive comparison page](https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV) (Hebrew),
@@ -25,6 +25,7 @@ Source: `web/eilat.html`, data built by `scripts/export_page.py`.
 | Evaluation | Frequency-based assignment with common lines; perceived time with walk, wait, transfer and heat weights | `eilat/evaluate.py` |
 | Design | Candidate lines (detours cut, quiet stops passed, new direct lines) + simulated annealing under fleet, bus-hour, equity, coverage and usability constraints; seasonal timetables | `eilat/candidates.py`, `scripts/optimize.py`, `scripts/seasonal.py` |
 | Timetables | Lines running per hour, rough driver duties, and each option as a GTFS feed with vehicle blocks | `scripts/active_lines.py`, `shifts.py`, `export_gtfs.py`, `exports/` |
+| Riders | Example journeys traced through each network (walk, wait, ride, lines, stops) | `scripts/journeys.py`, `scripts/build_brief.py` |
 | Checks | Sensitivity of every assumed number, capacity per bus, school dismissal waves, vehicle blocks and e-bus range, reliability, weekends, a future scenario with a new district | `scripts/assess.py`, `capacity.py`, `school_peaks.py`, `blocking.py`, `analysis/reliability.py`, `weekend.py`, `future.py`, `spur.py` |
 
 ## Data (all public)

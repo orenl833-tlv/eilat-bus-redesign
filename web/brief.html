@@ -1,0 +1,292 @@
+<title>אוטובוסים לאילת 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: a deep Red Sea band carries the thesis over the real route map; below it, a single reading column
+   (≤ 1040px) of decision blocks: the choice, the people, the plan, the fine print. */
+:root {
+  --bg: #f3f6f6; --surface: #ffffff; --ink: #0f232a; --ink-2: #4b5f66; --rule: #dbe3e4;
+  --sea: #0c3a47; --sea-ink: #e7f3f3; --sea-ink-2: #a6c8cc; --route: #47c3b0;
+  --stone: #0b8f7c; --stone-soft: #dff1ed; --loss: #b8453a; --loss-soft: #f8e5e2;
+  --walk: #4f78d6; --wait: #e0861a; --ride: #0b8f7c;
+  --display: "Secular One", "Assistant", "Arial Hebrew", system-ui, sans-serif;
+  --body: "Assistant", "Arial Hebrew", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0b161a; --surface: #12222a; --ink: #e5eef0; --ink-2: #9db1b7; --rule: #223740;
+  --sea: #071f27; --sea-ink: #e5f1f1; --sea-ink-2: #8fb3b8; --route: #2fa896;
+  --stone: #2bb3a2; --stone-soft: #12352f; --loss: #e2766a; --loss-soft: #3a1d1a;
+  --walk: #6f90e8; --wait: #c77818; --ride: #1fa48f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0b161a; --surface: #12222a; --ink: #e5eef0; --ink-2: #9db1b7; --rule: #223740;
+  --sea: #071f27; --sea-ink: #e5f1f1; --sea-ink-2: #8fb3b8; --route: #2fa896;
+  --stone: #2bb3a2; --stone-soft: #12352f; --loss: #e2766a; --loss-soft: #3a1d1a;
+  --walk: #6f90e8; --wait: #c77818; --ride: #1fa48f; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 17px/1.65 var(--body); margin: 0 }
+.band { background: var(--sea); color: var(--sea-ink); position: relative; overflow: hidden }
+.inner { max-width: 1040px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)) }
+.hero .inner { padding-block: 56px 48px; position: relative; z-index: 1; display: grid; gap: 28px }
+.hero svg.map { position: absolute; inset-block: -30px; inset-inline-end: -20px; height: calc(100% + 60px); width: auto; opacity: .6; z-index: 0 }
+@media (max-width: 900px) { .hero svg.map { opacity: .18 } }
+bdi { unicode-bidi: isolate; direction: ltr }
+.map path.r { fill: none; stroke: var(--route); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round }
+.map path.s { fill: var(--sea-ink); opacity: .06 }
+.eyebrow { font-size: 14px; font-weight: 700; letter-spacing: .06em; color: var(--sea-ink-2) }
+h1 { font: 400 clamp(34px, 5.6vw, 60px)/1.08 var(--display); margin: 0; max-width: 16ch; text-wrap: balance }
+.lede { font-size: 19px; max-width: 58ch; margin: 0; color: var(--sea-ink-2) }
+.lede b { color: var(--sea-ink) }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: color-mix(in srgb, var(--sea-ink) 18%, transparent); border-radius: 14px; overflow: hidden; max-width: 820px }
+.kpi { background: color-mix(in srgb, var(--sea) 88%, #000); padding: 16px 18px; display: grid; gap: 2px }
+.kpi b { font: 400 clamp(28px, 4vw, 40px)/1.1 var(--display); font-variant-numeric: tabular-nums }
+.kpi span { font-size: 14px; color: var(--sea-ink-2) }
+@media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+main .inner { padding-block: 8px 64px; display: grid; gap: 64px }
+section { display: grid; gap: 18px; min-width: 0 }
+h2 { font: 400 clamp(26px, 3.4vw, 34px)/1.2 var(--display); margin: 0; text-wrap: balance }
+h3 { font-size: 19px; margin: 0 }
+.sub { color: var(--ink-2); margin: 0; max-width: 68ch }
+.num { font-variant-numeric: tabular-nums }
+/* decision matrix */
+.matrix { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px }
+.matrix table { border-collapse: collapse; width: 100%; min-width: 640px }
+.matrix th, .matrix td { padding: 14px 16px; text-align: start; border-bottom: 1px solid var(--rule); vertical-align: top }
+.matrix tr:last-child td { border-bottom: 0 }
+.matrix thead th { font-size: 14px; color: var(--ink-2); font-weight: 700 }
+.matrix th[scope=row] { font-weight: 700; white-space: nowrap }
+.matrix th[scope=row] small { display: block; font-weight: 400; color: var(--ink-2); font-size: 14px }
+.cell { display: grid; gap: 2px }
+.cell .t { font: 400 26px/1.1 var(--display); font-variant-numeric: tabular-nums }
+.cell .m { font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums }
+.cell .warn { color: var(--loss) }
+td.pick { background: var(--stone-soft); box-shadow: inset 0 0 0 2px var(--stone) }
+.tag { display: inline-block; font-size: 13px; font-weight: 700; color: var(--surface); background: var(--stone); border-radius: 999px; padding: 1px 10px; margin-top: 6px; width: fit-content }
+/* journeys */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; color: var(--ink-2) }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-inline-end: 6px }
+.jgroup { display: grid; gap: 14px }
+.jgroup > h3 { display: flex; gap: 10px; align-items: baseline }
+.jgroup > h3 small { font-weight: 400; color: var(--ink-2); font-size: 15px }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; align-items: start }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 18px; display: grid; gap: 12px; min-width: 0 }
+.who { display: grid; gap: 2px }
+.who b { font-size: 18px }
+.who span { color: var(--ink-2); font-size: 15px }
+.delta { font: 400 15px var(--display); padding: 2px 10px; border-radius: 999px; width: fit-content }
+.delta.good { background: var(--stone-soft); color: var(--stone) }
+.delta.bad { background: var(--loss-soft); color: var(--loss) }
+.delta.flat { background: var(--bg); color: var(--ink-2) }
+.rows { display: grid; gap: 4px }
+.row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 52px; gap: 10px; align-items: center; border: 0; background: none; font: inherit; color: inherit; text-align: start; padding: 4px 6px; border-radius: 8px; cursor: pointer }
+.row:hover { background: var(--bg) }
+.row:focus-visible { outline: 2px solid var(--stone); outline-offset: 1px }
+.row[aria-pressed="true"] { background: var(--bg) }
+.row .lab { font-size: 14px; color: var(--ink-2); white-space: nowrap }
+.row .tot { font: 400 18px var(--display); font-variant-numeric: tabular-nums; text-align: end }
+.bar { display: flex; gap: 2px; height: 14px; min-width: 0 }
+.bar span { height: 100%; border-radius: 4px; min-width: 2px }
+.plan { font-size: 15px; background: var(--bg); border-radius: 10px; padding: 10px 12px; display: grid; gap: 4px }
+.plan .step { display: flex; gap: 8px; align-items: baseline }
+.plan .chip { font-weight: 700; font-size: 13px; color: var(--surface); background: var(--ride); border-radius: 6px; padding: 0 7px; white-space: nowrap }
+.plan .w { color: var(--ink-2) }
+/* phases */
+.phases { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: ph }
+.phase { position: relative; padding: 18px 16px 0 0; border-top: 3px solid var(--rule); display: grid; gap: 6px; align-content: start }
+.phase::before { content: ""; position: absolute; top: -9px; inset-inline-start: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--surface); border: 3px solid var(--rule) }
+.phase.on { border-top-color: var(--stone) }
+.phase.on::before { border-color: var(--stone); background: var(--stone) }
+.phase .when { font-size: 13px; font-weight: 700; color: var(--ink-2); letter-spacing: .04em }
+.phase b { font: 400 19px/1.25 var(--display) }
+.phase p { margin: 0; font-size: 15px; color: var(--ink-2) }
+.gate { font-size: 13px; font-weight: 700; color: var(--loss) }
+@media (max-width: 820px) { .phases { grid-template-columns: 1fr; gap: 0 } .phase { border-top: 0; border-inline-start: 3px solid var(--rule); padding: 0 18px 22px 0; padding-inline-start: 18px } .phase.on { border-inline-start-color: var(--stone) } .phase::before { top: 2px; inset-inline-start: -9px } }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr } }
+.note { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px; display: grid; gap: 8px }
+.note ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px }
+.note p { margin: 0 }
+details summary { cursor: pointer; color: var(--stone); font-weight: 700 }
+footer { color: var(--ink-2); font-size: 14px }
+footer .inner { padding-block: 0 48px }
+a { color: var(--stone) }
+#tip { position: fixed; z-index: 20; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 10px; font-size: 14px; box-shadow: 0 6px 20px rgb(0 0 0 / .15) }
+@media (prefers-reduced-motion: no-preference) { .bar span { transition: width .3s } }
+</style>
+
+<div dir="rtl" lang="he">
+<header class="band hero">
+  <svg class="map" id="map" aria-hidden="true"></svg>
+  <div class="inner">
+    <div class="eyebrow">תוכנית לרשת האוטובוסים העירונית של אילת · סיכום למקבלי החלטות</div>
+    <h1><bdi>14%</bdi> פחות זמן בדרך. אותם אוטובוסים.</h1>
+    <p class="lede">רשת מאורגנת מחדש ברחובות ובתחנות הקיימים. <b>שירות הערב נגמר ב-23:00, כמו היום</b>, ולכן צריך רק נהג אחד נוסף.
+      השכונה שנפגעת הכי הרבה מאבדת כ-1%.</p>
+    <div class="kpis">
+      <div class="kpi"><b class="num"><bdi>−14%</bdi></b><span>זמן נסיעה מורגש, מהדלת לדלת</span></div>
+      <div class="kpi"><b class="num">34</b><span>אוטובוסים (היום 35)</span></div>
+      <div class="kpi"><b class="num"><bdi>+1</bdi></b><span>נהג (כ-94 היום)</span></div>
+      <div class="kpi"><b class="num"><bdi>+0.5</bdi></b><span>מיליון ₪ בשנה, עלות תפעול</span></div>
+    </div>
+  </div>
+</header>
+
+<main><div class="inner">
+
+<section aria-labelledby="h-choice">
+  <h2 id="h-choice">ההחלטה: איזו רשת, ועד איזו שעה בערב</h2>
+  <p class="sub">כל תא הוא גרסה שנבדקה במודל: השינוי בזמן הנסיעה, בעלות התפעול השנתית ובמספר הנהגים, לעומת היום.
+    שירות עד חצות נראה טוב במודל, אבל מאריך את יום העבודה של כל אוטובוס מעבר לשתי משמרות ודורש 10–17 נהגים נוספים.</p>
+  <div class="matrix"><table id="matrix"></table></div>
+  <p class="sub" style="font-size:15px">נהגים: עם שעות נוספות במשמרת השנייה (עד 10.5 שעות), כפי שעובדים היום. עלות: 360 ₪ לשעת אוטובוס,
+    כולל נהג, דלק ותחזוקה.</p>
+</section>
+
+<section aria-labelledby="h-people">
+  <h2 id="h-people">איך זה נראה לנוסע</h2>
+  <p class="sub">מסלולים אמיתיים מהמודל, ביום חול בחורף: מהבית ליעד, בכל רשת. בחרנו את המקרים שמרוויחים הכי הרבה, את אלה שמפסידים
+    הכי הרבה, ושני מקרים רגילים. לחצו על שורה כדי לראות את המסלול.</p>
+  <div class="legend"><span><i style="background:var(--walk)"></i>הליכה</span><span><i style="background:var(--wait)"></i>המתנה לאוטובוס</span><span><i style="background:var(--ride)"></i>נסיעה</span><span>דקות בפועל, מהדלת לדלת</span></div>
+  <div id="journeys" class="jgroup-wrap" style="display:grid;gap:36px"></div>
+</section>
+
+<section aria-labelledby="h-plan">
+  <h2 id="h-plan">תוכנית מעבר בשלבים</h2>
+  <p class="sub">לא עוברים לרשת חדשה ביום אחד. השלב הראשון כמעט בלי סיכון, וכל שלב הבא מותנה במה שנמדד בשטח.</p>
+  <div class="phases">
+    <div class="phase on"><span class="when">חודשיים</span><b>הכנה</b><p>בדיקה בשטח של כל תחנה שקו מדלג עליה, נגישות, נתוני תיקופים לפי תחנה, ולוח זמנים למפעיל (GTFS). מתחילים לגייס 5 נהגים.</p></div>
+    <div class="phase on"><span class="when">החלפת לוח החורף</span><b>אפשרות 1, עד 23:00</b><p>כל הקווים והמספרים נשארים. כ-10% שיפור, ו-0.7 מיליון ₪ בשנה פחות מהיום. נשמרות 5 הנסיעות של קווים 3 ו-4 לפני 06:00.</p></div>
+    <div class="phase"><span class="when">3–6 חודשים</span><b>מדידה</b><p>תיקופים, איחורים ופניות ציבור.</p><span class="gate">ממשיכים רק אם הנסיעות לא ירדו ואף שכונה לא נפגעה מעבר לצפוי</span></div>
+    <div class="phase"><span class="when">אחרי המדידה</span><b>אפשרות 2, עד 23:00</b><p>קודם קו 7 החדש כפיילוט, ורק אחר כך איחוד קווים 1 ו-4. מגיעים ל-14%.</p><span class="gate">לקווים 1, 2 ו-4 יש כ-5,000 עליות ביום</span></div>
+    <div class="phase"><span class="when">עם האכלוס</span><b>שיפולי ההר</b><p>שלוחה של קווים 5 ו-6 עם 3 תחנות חדשות. הביקוש החדש מצדיק כ-3 אוטובוסים נוספים.</p></div>
+  </div>
+</section>
+
+<section aria-labelledby="h-fine">
+  <h2 id="h-fine">מי משלם, ומה צריך לדעת</h2>
+  <div class="two">
+    <div class="note">
+      <h3>מי משלם על השינוי</h3>
+      <ul>
+        <li><b>מי שמחליף קו שבוטל.</b> קו 4 מתאחד לתוך קו 3, ולכן חלק מהנסיעות בערב לחנה וסע בכניסה לעיר ארוכות יותר. ראו בדוגמאות למעלה.</li>
+        <li><b>מי שעולה בתחנה שהקו מדלג עליה.</b> הוא הולך לתחנה אחרת של אותו קו, עד כ-450 מטר.</li>
+        <li><b>מי שנוסע היום אחרי 23:00.</b> מדובר ב-3 נסיעות ביום, והן מתבטלות.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h3>מה המודל יודע, ומה לא</h3>
+      <ul>
+        <li><b>מספר העולים לכל קו ידוע.</b> הוא לקוח מנתוני רב-קו הפומביים (סך לרבעון), והמודל מכויל עליהם בטעות של כ-14% לקו.</li>
+        <li><b>לא ידוע איפה ומתי כל נוסע עלה וירד, ומי הוא.</b> כמה נוסעים יש באוטובוס ברגע נתון זו הערכה של המודל.</li>
+        <li><b>זמני הנסיעה אמיתיים.</b> הם נמדדו ממיקומי האוטובוסים בפועל (SIRI).</li>
+        <li><b>המתנה מחושבת כמחצית הזמן בין אוטובוסים.</b> מי שמתכנן לפי לוח הזמנים ממתין פחות, אבל אז נקבע לו מתי לצאת.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div></main>
+<footer><div class="inner">נתונים: משרד התחבורה (GTFS, נסועה לפי קו), Open Bus Stride של הסדנא לידע ציבורי (SIRI), הלמ"ס (מפקד 2022), תקנה 168 לתקנות התעבורה.
+  הפירוט המלא והקוד: eilat-transit. השוואה אינטראקטיבית על המפה: <a href="https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV" target="_blank" rel="noopener">דף ההשוואה</a>.</div></footer>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const D = {"W":600,"H":730,"routes":["M305,295 L286,317 L280,303 L269,296 L261,312 L256,318 L244,307 L230,324 L215,325 L203,312 L204,296 L216,290 L236,299 L251,287 L242,279 L229,270 L220,285 L238,293 L257,289 L270,268 L275,253 L257,250 L274,237 L279,215 L282,184 L288,166 L326,186 L331,223 L329,242 L345,245","M345,245 L351,239 L361,206 L356,203 L342,209 L327,186 L321,172 L306,160 L288,166 L280,185 L272,235 L257,250 L269,267 L242,279 L229,270 L220,285 L238,293 L244,307 L193,338 L184,317 L204,296 L236,299 L254,317 L262,310 L281,305 L277,358 L270,364 L240,361 L248,375 L232,385","M277,358 L270,364 L240,361 L248,375 L232,385 L193,338 L184,317 L242,279 L229,270 L220,285 L238,293 L257,289 L257,250 L279,215 L282,184 L288,166 L299,156 L326,186 L329,242 L345,245","M280,185 L272,187 L256,193 L245,195 L239,202 L251,213 L256,230 L246,239 L230,236 L224,228 L234,224 L246,226 L256,230 L257,250 L274,253 L269,267 L242,279 L229,270 L218,267 L220,285 L238,293 L244,307 L230,324 L193,338 L184,317 L216,290 L236,299 L254,317 L262,310 L281,305","M333,260 L321,274 L257,250 L246,239 L246,226 L251,211 L256,194 L273,190 L282,184 L326,186 L331,223 L345,245","M348,240 L280,243 L257,250 L246,239 L224,228 L246,226 L251,211 L239,201 L256,194 L282,184 L299,156 L384,132 L397,129 L393,143 L383,151 L366,150 L359,185","M390,188 L391,165 L385,116 L384,132 L392,127 L397,129 L377,158 L377,178 L359,185 L333,179 L321,172 L306,160 L287,155 L288,166 L280,185 L256,193 L245,195 L256,230 L257,250 L283,244 L318,241 L329,242 L345,245","M378,227 L365,232 L377,244 L384,252 L386,276 L401,269 L414,276 L414,265 L407,248 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L402,256 L374,283 L369,292 L357,328 L327,358 L285,402 L267,425 L243,479 L184,550 L174,579 L146,623 L130,642 L117,663 L103,689 L81,705 L53,723 L42,735","M60,721 L109,681 L121,656 L154,615 L171,588 L179,572 L201,529 L248,473 L266,433 L307,386 L336,352 L349,340 L370,293 L386,276 L401,269 L414,276 L414,265 L407,248 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L402,256 L389,274 L385,257 L375,241 L369,236 L377,223","M192,357 L211,359 L215,372 L235,383 L248,380 L240,360 L266,362 L279,367 L258,333 L256,318 L244,307 L230,324 L193,338 L188,331 L184,317 L204,296 L216,290 L236,299 L251,287 L242,279 L229,270 L218,267 L220,285 L238,293 L257,289 L270,268 L275,253 L274,237 L246,239 L230,236 L224,228 L234,224 L246,226 L251,211 L239,201 L245,195 L256,194 L273,190 L282,184 L288,166 L299,156 L326,186 L324,199 L310,212 L297,223 L293,236 L298,258 L304,269 L326,272 L345,245 L351,239 L377,223 L365,232 L377,244 L384,252 L386,276 L407,248 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L390,188 L391,165 L396,139 L402,133 L420,141 L430,125 L440,111","M432,87 L440,111 L429,126 L421,141 L397,129 L389,162 L389,189 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L402,256 L389,274 L385,257 L375,241 L369,236 L378,221 L354,234 L348,240 L333,260 L321,274 L304,265 L300,257 L296,236 L296,225 L315,209 L323,200 L327,186 L321,172 L306,160 L288,166 L280,185 L272,187 L256,193 L245,195 L239,202 L251,213 L256,230 L246,239 L230,236 L224,228 L234,224 L246,226 L272,235 L274,253 L269,267 L251,287 L242,279 L229,270 L218,267 L220,285 L238,293 L238,298 L217,289 L182,317 L186,332 L230,342 L277,358 L270,364 L260,355 L240,361 L248,375 L232,385 L215,372 L214,362 L206,353 L198,350","M432,87 L440,111 L429,126 L421,141 L385,116 L384,132 L392,127 L397,129 L389,162 L389,189 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L402,256 L389,274 L385,257 L375,241 L369,236 L378,221 L354,234 L348,240 L333,260 L321,274 L304,265 L300,257 L296,236 L296,225 L315,209 L323,200 L327,186 L321,172 L306,160 L288,166 L280,185 L272,187 L256,193 L245,195 L239,202 L251,213 L256,230 L246,239 L230,236 L224,228 L234,224 L246,226 L272,235 L274,253 L269,267 L251,287 L242,279 L229,270 L218,267 L220,285 L238,293 L238,298 L217,289 L182,317 L186,332 L230,342 L277,358 L270,364 L260,355 L240,361 L248,375 L232,385 L215,372 L214,362 L206,353 L198,350","M378,227 L402,256 L401,269 L415,274 L414,265 L389,274 L385,257 L375,241 L369,236 L361,218 L361,206 L374,200 L390,188 L391,165 L383,151 L366,150 L357,155 L357,165 L359,185 L353,188 L341,188 L333,179 L321,172 L305,176 L290,196 L272,187 L256,193 L245,195 L239,202 L251,213 L256,230 L246,239 L230,236 L224,228 L234,224 L246,226 L256,230 L272,235 L274,253 L269,267 L251,287 L242,279 L229,270 L218,267 L220,285 L238,293 L244,307 L230,324 L215,325 L203,312 L204,296 L216,290 L236,299 L254,317 L262,310 L270,297 L281,305 L293,320 L309,290 L304,265 L300,257 L318,241 L331,225 L343,210 L354,205 L360,214 L365,232 L377,244 L384,252 L386,276 L415,274 L377,223","M192,357 L193,338 L188,331 L184,317 L204,296 L236,299 L252,298 L257,289 L270,268 L275,253 L283,244 L318,241 L329,242 L338,247 L345,245 L351,239 L377,223 L361,218 L361,206 L374,200 L390,188 L391,165 L396,139 L402,133 L420,141 L430,125 L440,111","M432,87 L440,111 L429,126 L421,141 L397,129 L393,143 L389,162 L389,189 L365,200 L360,214 L378,221 L354,234 L348,240 L339,246 L321,240 L280,243 L274,253 L269,267 L256,288 L254,317 L253,339 L227,338 L215,325 L203,312 L182,317 L186,332 L198,350","M192,357 L211,359 L215,372 L235,383 L248,380 L240,360 L266,362 L279,367 L258,333 L256,318 L244,307 L230,324 L193,338 L188,331 L184,317 L204,296 L216,290 L236,299 L251,287 L242,279 L229,270 L218,267 L220,285 L238,293 L257,289 L270,268 L275,253 L274,237 L246,239 L230,236 L224,228 L234,224 L246,226 L251,211 L239,201 L245,195 L256,194 L273,190 L282,184 L288,166 L299,156 L326,186 L324,199 L310,212 L297,223 L293,236 L298,258 L304,269 L326,272 L345,245 L351,239 L377,223 L365,232 L377,244 L384,252 L386,276 L407,248 L425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L390,188 L391,165 L396,139 L385,116 L384,132 L392,127 L396,139 L402,133 L420,141 L430,125 L440,111","M372,151 L383,152 L389,162 L389,189 L365,200 L360,214 L378,221 L365,232 L384,252 L386,276 L407,248 L425,243","M425,243 L442,249 L444,285 L472,287 L466,244 L448,238 L438,235 L402,256 L389,274 L385,257 L375,241 L369,236 L378,221 L354,234 L348,240 L333,260 L321,274 L304,265 L300,257 L318,241 L331,225 L343,210 L354,205 L359,166 L372,151"],"sea":["M600,268 L600,754 L31,754 L50,728 L61,724 L72,713 L95,703 L112,683 L127,672 L129,668 L131,651 L137,641 L152,628 L154,620 L159,621 L167,597 L179,594 L186,585 L188,570 L182,560 L205,535 L217,525 L225,505 L231,497 L241,490 L248,490 L254,476 L268,463 L270,458 L280,453 L303,421 L304,416 L300,419 L296,417 L310,402 L307,395 L316,382 L327,369 L334,365 L336,357 L343,351 L347,348 L356,348 L363,337 L364,338 L370,327 L368,330 L364,328 L380,295 L386,289 L393,287 L435,294 L525,330 L552,344 L553,268 L600,268Z"],"journeys":[{"group":"best","area":24,"home_stop":"שד.ששת הימים/שד.ארגמן","place":"מלון הנסיכה ומעבר טאבה","period":"06-09","when":"בבוקר (7:30)","nocar":17,"delta":-75,"options":{"היום":{"mode":"bus","total":129,"walk":8,"wait":101,"ride":20,"transfers":1,"perceived":199,"steps":[{"kind":"walk","min":4.1,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"5א","note":"","every":90,"stops":10,"ride":7.2},{"line":"5","note":"","every":30,"stops":10,"ride":7.2}],"wait":11.2,"ride":7.2,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":180,"stops":14,"ride":12.4}],"wait":90.0,"ride":12.4,"board":"קניון מול הים/דרך מצריים","alight":"דרך מצרים/מלון הנסיכה"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":57,"walk":16,"wait":22,"ride":19,"transfers":1,"perceived":85,"steps":[{"kind":"walk","min":12.4,"to":"דרך יותם/אילות"},{"kind":"ride","lines":[{"line":"5","note":"מסלול מקוצר","every":30,"stops":8,"ride":6.5},{"line":"5א","note":"מסלול מקוצר","every":60,"stops":8,"ride":6.5}],"wait":10.0,"ride":6.5,"board":"דרך יותם/אילות","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":24,"stops":14,"ride":12.4}],"wait":12.0,"ride":12.4,"board":"קניון מול הים/דרך מצריים","alight":"דרך מצרים/מלון הנסיכה"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":54,"walk":8,"wait":27,"ride":20,"transfers":1,"perceived":79,"steps":[{"kind":"walk","min":4.1,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"5","note":"","every":20,"stops":10,"ride":7.2},{"line":"5א","note":"מדלג על תחנות שקטות","every":40,"stops":10,"ride":7.2}],"wait":6.7,"ride":7.2,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":40,"stops":14,"ride":12.4}],"wait":20.0,"ride":12.4,"board":"קניון מול הים/דרך מצריים","alight":"דרך מצרים/מלון הנסיכה"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":48,"walk":8,"wait":21,"ride":20,"transfers":1,"perceived":70,"steps":[{"kind":"walk","min":4.1,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"5","note":"","every":12,"stops":10,"ride":7.2}],"wait":6.0,"ride":7.2,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":30,"stops":14,"ride":12.4}],"wait":15.0,"ride":12.4,"board":"קניון מול הים/דרך מצריים","alight":"דרך מצרים/מלון הנסיכה"},{"kind":"walk","min":0.1,"to":"היעד"}]}}},{"group":"best","area":24,"home_stop":"שד.ששת הימים/שד.ארגמן","place":"חוף האלמוגים","period":"19-24","when":"בערב (21:00)","nocar":17,"delta":-52,"options":{"היום":{"mode":"bus","total":96,"walk":7,"wait":59,"ride":31,"transfers":1,"perceived":140,"steps":[{"kind":"walk","min":3.0,"to":"ששת הימים/יהושפט"},{"kind":"ride","lines":[{"line":"1","note":"","every":38,"stops":27,"ride":21.0},{"line":"1א","note":"","every":150,"stops":27,"ride":21.2},{"line":"5א","note":"","every":150,"stops":28,"ride":21.7},{"line":"5","note":"","every":60,"stops":28,"ride":21.7}],"wait":8.8,"ride":21.3,"board":"ששת הימים/יהושפט","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":100,"stops":9,"ride":9.3}],"wait":50.0,"ride":9.3,"board":"קניון מול הים/דרך מצריים","alight":"בית ספר שדה/שמורת חוף האלמוגים"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":56,"walk":12,"wait":28,"ride":15,"transfers":1,"perceived":85,"steps":[{"kind":"walk","min":8.9,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"2","note":"מדלג על תחנות שקטות","every":19,"stops":9,"ride":5.9}],"wait":9.4,"ride":5.9,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":38,"stops":9,"ride":9.3}],"wait":18.8,"ride":9.3,"board":"קניון מול הים/דרך מצריים","alight":"בית ספר שדה/שמורת חוף האלמוגים"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":44,"walk":8,"wait":21,"ride":16,"transfers":1,"perceived":66,"steps":[{"kind":"walk","min":4.1,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"5א","note":"מדלג על תחנות שקטות","every":50,"stops":10,"ride":6.5},{"line":"5","note":"","every":25,"stops":10,"ride":6.5}],"wait":8.3,"ride":6.5,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":25,"stops":9,"ride":9.3}],"wait":12.5,"ride":9.3,"board":"קניון מול הים/דרך מצריים","alight":"בית ספר שדה/שמורת חוף האלמוגים"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":39,"walk":8,"wait":16,"ride":16,"transfers":1,"perceived":59,"steps":[{"kind":"walk","min":4.1,"to":"ארגמן/דרך יותם"},{"kind":"ride","lines":[{"line":"5","note":"","every":30,"stops":10,"ride":6.5},{"line":"5א","note":"מדלג על תחנות שקטות","every":25,"stops":10,"ride":6.5}],"wait":6.8,"ride":6.5,"board":"ארגמן/דרך יותם","alight":"קניון מול הים"},{"kind":"walk","min":3.4,"to":"קניון מול הים/דרך מצריים"},{"kind":"ride","lines":[{"line":"15","note":"","every":19,"stops":9,"ride":9.3}],"wait":9.4,"ride":9.3,"board":"קניון מול הים/דרך מצריים","alight":"בית ספר שדה/שמורת חוף האלמוגים"},{"kind":"walk","min":0.1,"to":"היעד"}]}}},{"group":"best","area":36,"home_stop":"דרך התבלינים/דודאים","place":"המלונות בחוף הצפוני","period":"19-24","when":"בערב (21:00)","nocar":17,"delta":-43,"options":{"היום":{"mode":"bus","total":78,"walk":10,"wait":21,"ride":47,"transfers":0,"perceived":97,"steps":[{"kind":"walk","min":8.3,"to":"דודאים/דרך התבלינים"},{"kind":"ride","lines":[{"line":"5","note":"","every":60,"stops":55,"ride":47.2},{"line":"5א","note":"","every":150,"stops":55,"ride":47.2}],"wait":21.4,"ride":47.2,"board":"דודאים/דרך התבלינים","alight":"מלון אסטרל וילג'/מתחם רד"},{"kind":"walk","min":1.5,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":38,"walk":15,"wait":12,"ride":11,"transfers":0,"perceived":55,"steps":[{"kind":"walk","min":13.1,"to":"דרך מצרים/נמל שער דרומי"},{"kind":"ride","lines":[{"line":"16","note":"מדלג על תחנות שקטות","every":25,"stops":9,"ride":11.3}],"wait":12.5,"ride":11.3,"board":"דרך מצרים/נמל שער דרומי","alight":"מלון אסטרל וילג'/מתחם רד"},{"kind":"walk","min":1.5,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":35,"walk":15,"wait":9,"ride":11,"transfers":0,"perceived":50,"steps":[{"kind":"walk","min":13.1,"to":"דרך מצרים/נמל שער דרומי"},{"kind":"ride","lines":[{"line":"16","note":"","every":19,"stops":11,"ride":11.3}],"wait":9.4,"ride":11.3,"board":"דרך מצרים/נמל שער דרומי","alight":"מלון אסטרל וילג'/מתחם רד"},{"kind":"walk","min":1.5,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":41,"walk":15,"wait":15,"ride":11,"transfers":0,"perceived":59,"steps":[{"kind":"walk","min":13.1,"to":"דרך מצרים/נמל שער דרומי"},{"kind":"ride","lines":[{"line":"16","note":"","every":30,"stops":11,"ride":11.3}],"wait":15.0,"ride":11.3,"board":"דרך מצרים/נמל שער דרומי","alight":"מלון אסטרל וילג'/מתחם רד"},{"kind":"walk","min":1.5,"to":"היעד"}]}}},{"group":"worst","area":33,"home_stop":"החשמונאים/המדיינים","place":"חנה וסע בכניסה לעיר","period":"19-24","when":"בערב (21:00)","nocar":17,"delta":23,"options":{"היום":{"mode":"bus","total":30,"walk":10,"wait":9,"ride":12,"transfers":0,"perceived":42,"steps":[{"kind":"walk","min":9.6,"to":"ששת הימים/האגס"},{"kind":"ride","lines":[{"line":"4","note":"","every":38,"stops":18,"ride":11.4},{"line":"3","note":"","every":33,"stops":19,"ride":12.5}],"wait":8.8,"ride":12.0,"board":"ששת הימים/האגס","alight":"חנה וסע מבואות אילת"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":31,"walk":10,"wait":8,"ride":13,"transfers":0,"perceived":42,"steps":[{"kind":"walk","min":9.6,"to":"ששת הימים/האגס"},{"kind":"ride","lines":[{"line":"4","note":"מדלג על תחנות שקטות","every":30,"stops":17,"ride":11.4},{"line":"3","note":"מסלול מקוצר","every":38,"stops":19,"ride":14.8}],"wait":8.3,"ride":12.9,"board":"ששת הימים/האגס","alight":"חנה וסע מבואות אילת"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":53,"walk":2,"wait":8,"ride":43,"transfers":0,"perceived":59,"steps":[{"kind":"walk","min":1.9,"to":"החשמונאים/המדיינים"},{"kind":"ride","lines":[{"line":"5","note":"","every":25,"stops":50,"ride":41.4},{"line":"5א","note":"מדלג על תחנות שקטות","every":50,"stops":45,"ride":46.4}],"wait":8.3,"ride":43.1,"board":"החשמונאים/המדיינים","alight":"חנה וסע מבואות אילת"},{"kind":"walk","min":0.1,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":37,"walk":10,"wait":12,"ride":15,"transfers":0,"perceived":50,"steps":[{"kind":"walk","min":9.6,"to":"ששת הימים/האגס"},{"kind":"ride","lines":[{"line":"3","note":"מסלול מקוצר","every":25,"stops":19,"ride":14.8}],"wait":12.5,"ride":14.8,"board":"ששת הימים/האגס","alight":"חנה וסע מבואות אילת"},{"kind":"walk","min":0.1,"to":"היעד"}]}}},{"group":"worst","area":24,"home_stop":"דקר/חלילן","place":"מרכז ביג","period":"19-24","when":"בערב (21:00)","nocar":17,"delta":20,"options":{"היום":{"mode":"bus","total":27,"walk":10,"wait":9,"ride":9,"transfers":0,"perceived":38,"steps":[{"kind":"walk","min":9.5,"to":"ששת הימים/דרך יותם"},{"kind":"ride","lines":[{"line":"4","note":"","every":38,"stops":14,"ride":8.2},{"line":"3","note":"","every":33,"stops":15,"ride":9.2}],"wait":8.8,"ride":8.7,"board":"ששת הימים/דרך יותם","alight":"מרכז ביג/הסתת"},{"kind":"walk","min":0.3,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":28,"walk":10,"wait":8,"ride":10,"transfers":0,"perceived":39,"steps":[{"kind":"walk","min":9.5,"to":"ששת הימים/דרך יותם"},{"kind":"ride","lines":[{"line":"4","note":"מדלג על תחנות שקטות","every":30,"stops":14,"ride":8.2},{"line":"3","note":"מסלול מקוצר","every":38,"stops":15,"ride":11.2}],"wait":8.3,"ride":9.5,"board":"ששת הימים/דרך יותם","alight":"מרכז ביג/הסתת"},{"kind":"walk","min":0.3,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":47,"walk":2,"wait":12,"ride":32,"transfers":0,"perceived":56,"steps":[{"kind":"walk","min":1.8,"to":"דקר/חלילן"},{"kind":"ride","lines":[{"line":"5","note":"","every":25,"stops":40,"ride":32.2}],"wait":12.5,"ride":32.2,"board":"דקר/חלילן","alight":"מרכז ביג/הסתת"},{"kind":"walk","min":0.3,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":33,"walk":10,"wait":12,"ride":11,"transfers":0,"perceived":47,"steps":[{"kind":"walk","min":9.5,"to":"ששת הימים/דרך יותם"},{"kind":"ride","lines":[{"line":"3","note":"מסלול מקוצר","every":25,"stops":15,"ride":11.2}],"wait":12.5,"ride":11.2,"board":"ששת הימים/דרך יותם","alight":"מרכז ביג/הסתת"},{"kind":"walk","min":0.3,"to":"היעד"}]}}},{"group":"worst","area":36,"home_stop":"דרך התבלינים/דודאים","place":"קמפוס אילת","period":"09-12","when":"באמצע הבוקר (10:30)","nocar":17,"delta":15,"options":{"היום":{"mode":"bus","total":42,"walk":9,"wait":10,"ride":23,"transfers":0,"perceived":53,"steps":[{"kind":"walk","min":8.3,"to":"דודאים/דרך התבלינים"},{"kind":"ride","lines":[{"line":"4","note":"","every":20,"stops":24,"ride":22.9}],"wait":10.0,"ride":22.9,"board":"דודאים/דרך התבלינים","alight":"קמפוס אילת/המלחה"},{"kind":"walk","min":0.8,"to":"היעד"}]},"אפשרות 1":{"mode":"bus","total":51,"walk":9,"wait":20,"ride":22,"transfers":0,"perceived":69,"steps":[{"kind":"walk","min":8.3,"to":"דודאים/דרך התבלינים"},{"kind":"ride","lines":[{"line":"4","note":"מדלג על תחנות שקטות","every":40,"stops":16,"ride":22.4}],"wait":20.0,"ride":22.4,"board":"דודאים/דרך התבלינים","alight":"קמפוס אילת/המלחה"},{"kind":"walk","min":0.8,"to":"היעד"}]},"אפשרות 2":{"mode":"bus","total":57,"walk":15,"wait":14,"ride":29,"transfers":1,"perceived":79,"steps":[{"kind":"walk","min":8.3,"to":"דודאים/דרך התבלינים"},{"kind":"ride","lines":[{"line":"5א","note":"מדלג על תחנות שקטות","every":30,"stops":8,"ride":15.3},{"line":"5","note":"","every":20,"stops":14,"ride":15.9}],"wait":6.0,"ride":15.7,"board":"דודאים/דרך התבלינים","alight":"עין נטפים/ששת הימים"},{"kind":"ride","lines":[{"line":"3","note":"מסלול מקוצר","every":15,"stops":16,"ride":13.5}],"wait":7.5,"ride":13.5,"board":"עין נטפים/ששת הימים","alight":"חטיבת גולני/המליחה"},{"kind":"walk","min":6.3,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":54,"walk":15,"wait":10,"ride":29,"transfers":1,"perceived":74,"steps":[{"kind":"walk","min":8.3,"to":"דודאים/דרך התבלינים"},{"kind":"ride","lines":[{"line":"5א","note":"מדלג על תחנות שקטות","every":30,"stops":8,"ride":15.3},{"line":"5","note":"","every":15,"stops":14,"ride":15.9}],"wait":5.0,"ride":15.7,"board":"דודאים/דרך התבלינים","alight":"עין נטפים/ששת הימים"},{"kind":"ride","lines":[{"line":"3","note":"מסלול מקוצר","every":10,"stops":16,"ride":13.5}],"wait":5.0,"ride":13.5,"board":"עין נטפים/ששת הימים","alight":"חטיבת גולני/המליחה"},{"kind":"walk","min":6.3,"to":"היעד"}]}}},{"group":"typical","area":21,"home_stop":"ירושלים השלמה/פארן","place":"בית החולים יוספטל","period":"06-09","when":"בבוקר (7:30)","nocar":53,"delta":-3,"options":{"היום":{"mode":"walk","total":17,"walk":17,"perceived":27},"אפשרות 1":{"mode":"walk","total":17,"walk":17,"perceived":27},"אפשרות 2":{"mode":"bus","total":14,"walk":4,"wait":7,"ride":4,"transfers":0,"perceived":20,"steps":[{"kind":"walk","min":0.5,"to":"ירושלים השלמה/פארן"},{"kind":"ride","lines":[{"line":"5","note":"","every":20,"stops":4,"ride":4.1},{"line":"5א","note":"מדלג על תחנות שקטות","every":40,"stops":4,"ride":4.1}],"wait":6.7,"ride":4.1,"board":"ירושלים השלמה/פארן","alight":"ארגמן/דרך יותם"},{"kind":"walk","min":3.1,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":14,"walk":4,"wait":6,"ride":4,"transfers":0,"perceived":19,"steps":[{"kind":"walk","min":0.5,"to":"ירושלים השלמה/פארן"},{"kind":"ride","lines":[{"line":"5","note":"","every":12,"stops":4,"ride":4.1}],"wait":6.0,"ride":4.1,"board":"ירושלים השלמה/פארן","alight":"ארגמן/דרך יותם"},{"kind":"walk","min":3.1,"to":"היעד"}]}}},{"group":"typical","area":16,"home_stop":"ספריה עירונית/חטיבת הנגב","place":"קמפוס אילת","period":"06-09","when":"בבוקר (7:30)","nocar":56,"delta":-3,"options":{"היום":{"mode":"bus","total":18,"walk":3,"wait":9,"ride":5,"transfers":0,"perceived":25,"steps":[{"kind":"walk","min":2.8,"to":"מרכז רזין/מרכז הוכמן"},{"kind":"ride","lines":[{"line":"2","note":"","every":18,"stops":6,"ride":5.1}],"wait":9.0,"ride":5.1,"board":"מרכז רזין/מרכז הוכמן","alight":"קמפוס אילת/המלחה"},{"kind":"walk","min":0.6,"to":"היעד"}]},"אפשרות 1":{"mode":"walk","total":18,"walk":18,"perceived":28},"אפשרות 2":{"mode":"bus","total":15,"walk":4,"wait":8,"ride":3,"transfers":0,"perceived":22,"steps":[{"kind":"walk","min":3.4,"to":"אילות/ירושלים השלמה"},{"kind":"ride","lines":[{"line":"7","note":"קו חדש: קמפוס – תחנה מרכזית – מלונות","every":15,"stops":3,"ride":3.4}],"wait":7.5,"ride":3.4,"board":"אילות/ירושלים השלמה","alight":"קמפוס אילת/המלחה"},{"kind":"walk","min":0.8,"to":"היעד"}]},"אפשרות 3":{"mode":"bus","total":17,"walk":9,"wait":4,"ride":4,"transfers":0,"perceived":25,"steps":[{"kind":"walk","min":2.8,"to":"מרכז רזין/מרכז הוכמן"},{"kind":"ride","lines":[{"line":"3","note":"מסלול מקוצר","every":10,"stops":4,"ride":3.6},{"line":"2","note":"מסלול מקוצר","every":60,"stops":4,"ride":3.6}],"wait":4.3,"ride":3.6,"board":"מרכז רזין/מרכז הוכמן","alight":"חטיבת גולני/המליחה"},{"kind":"walk","min":6.3,"to":"היעד"}]}}}],"evening":[{"option":"keep","variant":"as proposed","perceived_A":"0.8698","perceived_B":"0.8827","worst_area":"1.029","extra_drivers_standard":"14","driver_cost_mnis_standard":"0.5","extra_drivers_overtime":"11","driver_cost_mnis_overtime":"0.65","buses":"33","bus_hours_pct":"5.1","operating_cost_mnis":"2.74"},{"option":"keep","variant":"23:00 in winter and spring/autumn","perceived_A":"0.889","perceived_B":"0.8992","worst_area":"1.037","extra_drivers_standard":"9","driver_cost_mnis_standard":"-0.15","extra_drivers_overtime":"5","driver_cost_mnis_overtime":"0.02","buses":"33","bus_hours_pct":"-0.5","operating_cost_mnis":"-0.27"},{"option":"keep","variant":"23:00 all year","perceived_A":"0.8937","perceived_B":"0.9031","worst_area":"1.053","extra_drivers_standard":"4","driver_cost_mnis_standard":"-0.26","extra_drivers_overtime":"5","driver_cost_mnis_overtime":"-0.12","buses":"33","bus_hours_pct":"-1.3","operating_cost_mnis":"-0.7"},{"option":"keep","variant":"22:00 in winter and spring/autumn","perceived_A":"0.918","perceived_B":"0.9239","worst_area":"1.066","extra_drivers_standard":"9","driver_cost_mnis_standard":"-0.82","extra_drivers_overtime":"2","driver_cost_mnis_overtime":"-0.79","buses":"33","bus_hours_pct":"-5.8","operating_cost_mnis":"-3.13"},{"option":"full_warm","variant":"as proposed","perceived_A":"0.8287","perceived_B":"0.8465","worst_area":"0.993","extra_drivers_standard":"17","driver_cost_mnis_standard":"0.59","extra_drivers_overtime":"10","driver_cost_mnis_overtime":"0.81","buses":"34","bus_hours_pct":"7.4","operating_cost_mnis":"3.98"},{"option":"full_warm","variant":"23:00 in winter and spring/autumn","perceived_A":"0.8446","perceived_B":"0.8602","worst_area":"1.002","extra_drivers_standard":"9","driver_cost_mnis_standard":"0.03","extra_drivers_overtime":"1","driver_cost_mnis_overtime":"0.07","buses":"34","bus_hours_pct":"1.9","operating_cost_mnis":"1.03"},{"option":"full_warm","variant":"23:00 all year","perceived_A":"0.8484","perceived_B":"0.8634","worst_area":"1.011","extra_drivers_standard":"4","driver_cost_mnis_standard":"-0.11","extra_drivers_overtime":"1","driver_cost_mnis_overtime":"-0.1","buses":"34","bus_hours_pct":"1.0","operating_cost_mnis":"0.52"},{"option":"full_warm","variant":"22:00 in winter and spring/autumn","perceived_A":"0.8696","perceived_B":"0.8818","worst_area":"1.027","extra_drivers_standard":"9","driver_cost_mnis_standard":"-0.63","extra_drivers_overtime":"-4","driver_cost_mnis_overtime":"-0.52","buses":"34","bus_hours_pct":"-2.8","operating_cost_mnis":"-1.53"},{"option":"full_peak-3_warm","variant":"as proposed","perceived_A":"0.8152","perceived_B":"0.83","worst_area":"0.982","extra_drivers_standard":"17","driver_cost_mnis_standard":"0.84","extra_drivers_overtime":"1","driver_cost_mnis_overtime":"1.14","buses":"34","bus_hours_pct":"9.1","operating_cost_mnis":"4.89"},{"option":"full_peak-3_warm","variant":"23:00 in winter and spring/autumn","perceived_A":"0.8331","perceived_B":"0.8451","worst_area":"0.999","extra_drivers_standard":"14","driver_cost_mnis_standard":"0.23","extra_drivers_overtime":"-2","driver_cost_mnis_overtime":"0.26","buses":"34","bus_hours_pct":"3.9","operating_cost_mnis":"2.07"},{"option":"full_peak-3_warm","variant":"23:00 all year","perceived_A":"0.8366","perceived_B":"0.8481","worst_area":"0.999","extra_drivers_standard":"9","driver_cost_mnis_standard":"0.11","extra_drivers_overtime":"-2","driver_cost_mnis_overtime":"0.1","buses":"34","bus_hours_pct":"3.1","operating_cost_mnis":"1.66"},{"option":"full_peak-3_warm","variant":"22:00 in winter and spring/autumn","perceived_A":"0.8607","perceived_B":"0.8685","worst_area":"1.026","extra_drivers_standard":"14","driver_cost_mnis_standard":"-0.56","extra_drivers_overtime":"-2","driver_cost_mnis_overtime":"-0.5","buses":"34","bus_hours_pct":"-1.9","operating_cost_mnis":"-1.02"}]};
+// map
+(() => {
+  const svg = document.getElementById("map");
+  svg.setAttribute("viewBox", `0 0 ${D.W} ${D.H}`);
+  svg.innerHTML = D.routes.map((p) => `<path class="r" d="${p}"/>`).join("");
+})();
+
+// decision matrix
+(() => {
+  const OPT = [["keep", "1 · כל הקווים נשמרים", "מדלגים על תחנות שקטות, תדירויות חדשות"],
+               ["full_warm", "2 · ארגון מחדש", "קווים 1 ו-4 מתאחדים; קו 7 חדש"],
+               ["full_peak-3_warm", "3 · ארגון מחדש, פחות אוטובוסים", "כמו 2, בתדירויות אחרות"]];
+  const VAR = [["as proposed", "עד חצות"], ["23:00 all year", "עד 23:00 כל השנה"], ["22:00 in winter and spring/autumn", "עד 22:00 בעונות השקטות"]];
+  const sgn = (x, d = 1) => `<bdi>${(x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toFixed(d)}</bdi>`;
+  let h = "<thead><tr><th>רשת</th>" + VAR.map(([, l]) => `<th>${l}</th>`).join("") + "</tr></thead><tbody>";
+  for (const [k, name, desc] of OPT) {
+    h += `<tr><th scope="row">${name}<small>${desc}</small></th>`;
+    for (const [v] of VAR) {
+      const r = D.evening.find((e) => e.option === k && e.variant === v);
+      const t = ((+r.perceived_A + +r.perceived_B) / 2 - 1) * 100, w = (+r.worst_area - 1) * 100;
+      const pick = k === "full_warm" && v === "23:00 all year";
+      h += `<td class="${pick ? "pick" : ""}"><div class="cell"><span class="t"><bdi>${sgn(t).replace(/<\/?bdi>/g, "")}%</bdi></span>` +
+        `<span class="m">${sgn(+r.operating_cost_mnis)} מ' ₪ בשנה · ${sgn(+r.extra_drivers_overtime, 0)} נהגים</span>` +
+        `<span class="m ${w > 2 ? "warn" : ""}">השכונה הכי נפגעת: <bdi>${sgn(w).replace(/<\/?bdi>/g, "")}%</bdi></span>` +
+        (pick ? `<span class="tag">ההמלצה</span>` : "") + `</div></td>`;
+    }
+    h += "</tr>";
+  }
+  document.getElementById("matrix").innerHTML = h + "</tbody>";
+})();
+
+// journeys
+(() => {
+  const WHO = {
+    "24|מלון הנסיכה ומעבר טאבה|06-09": "עובדת במלון הנסיכה, משמרת בוקר",
+    "24|חוף האלמוגים|19-24": "בני נוער בדרך לחוף האלמוגים",
+    "36|המלונות בחוף הצפוני|19-24": "עובד במשמרת ערב במלונות",
+    "33|חנה וסע בכניסה לעיר|19-24": "נוסעת לאוטובוס הבין-עירוני",
+    "24|מרכז ביג|19-24": "קניות בערב במרכז ביג",
+    "36|קמפוס אילת|09-12": "סטודנט בדרך לקמפוס",
+    "21|בית החולים יוספטל|06-09": "אחות במשמרת בוקר ביוספטל",
+    "16|קמפוס אילת|06-09": "סטודנטית לשיעור של שמונה",
+  };
+  const GROUPS = {best: ["מרוויחים הכי הרבה", "בעיקר מי שנוסע בערב או לחוף הדרומי"],
+                  worst: ["מפסידים", "בעיקר מי שקו 4 שלו התאחד, ומי שגר רחוק מקו מהיר"],
+                  typical: ["נסיעה רגילה", "רוב הנסיעות היומיות משתנות במעט"]};
+  const NETS = ["היום", "אפשרות 1", "אפשרות 2", "אפשרות 3"];
+  const max = Math.max(...D.journeys.flatMap((j) => NETS.map((n) => j.options[n].total)));
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+  function planHTML(it) {
+    if (it.mode === "walk") return `<div class="step"><span class="w">הכי מהר ברגל: ${it.walk} דקות הליכה</span></div>`;
+    return it.steps.map((s) => s.kind === "walk"
+      ? `<div class="step"><span class="w">הליכה ${Math.max(1, Math.round(s.min))} דק'${s.to === "היעד" ? " ליעד" : " לתחנה " + esc(s.to)}</span></div>`
+      : `<div class="step"><span class="chip">${s.lines.map((l) => esc(l.line)).join(" / ")}</span><span>` +
+        `${s.lines.map((l) => `קו ${esc(l.line)} כל ${l.every} דק'`).join(", ")} · ${s.lines[0].stops} תחנות · ${Math.round(s.ride)} דק' נסיעה` +
+        ` · מ${esc(s.board)} עד ${esc(s.alight)}${s.lines.some((l) => l.note) ? ` <span class="w">(${esc(s.lines.find((l) => l.note).note)})</span>` : ""}</span></div>`).join("");
+  }
+  const wrap = document.getElementById("journeys");
+  for (const g of ["best", "worst", "typical"]) {
+    const box = document.createElement("div"); box.className = "jgroup";
+    box.innerHTML = `<h3>${GROUPS[g][0]} <small>${GROUPS[g][1]}</small></h3><div class="cards"></div>`;
+    const cards = box.querySelector(".cards");
+    D.journeys.filter((j) => j.group === g).forEach((j) => {
+      const who = WHO[`${j.area}|${j.place}|${j.period}`] || "נוסע";
+      const d = j.options["אפשרות 2"].total - j.options["היום"].total;
+      const card = document.createElement("article"); card.className = "card";
+      const rows = NETS.map((n, i) => {
+        const it = j.options[n];
+        const seg = it.mode === "walk" ? [["walk", it.walk]] : [["walk", it.walk], ["wait", it.wait], ["ride", it.ride]];
+        const bar = seg.filter(([, v]) => v > 0).map(([c, v]) => `<span style="width:${(v / max * 100).toFixed(1)}%;background:var(--${c})" data-t="${{walk: "הליכה", wait: "המתנה", ride: "נסיעה"}[c]}: ${v} דק'"></span>`).join("");
+        return `<button type="button" class="row" data-i="${i}" aria-pressed="${n === "אפשרות 2"}"><span class="lab">${n}</span><span class="bar">${bar}</span><span class="tot">${it.total}′</span></button>`;
+      }).join("");
+      card.innerHTML = `<div class="who"><b>${esc(who)}</b><span>גר/ה ליד ${esc(j.home_stop)} (אזור ${j.area}) ← ${esc(j.place)}, ${esc(j.when)}</span></div>` +
+        `<span class="delta ${d < -2 ? "good" : d > 2 ? "bad" : "flat"}">באפשרות 2: <bdi>${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</bdi> דקות</span>` +
+        `<div class="rows">${rows}</div><div class="plan" aria-live="polite"></div>`;
+      const plan = card.querySelector(".plan");
+      const show = (i) => {
+        card.querySelectorAll(".row").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
+        const it = j.options[NETS[i]];
+        const sum = it.mode === "walk" ? "" : `<div class="w">${NETS[i]}: ${it.walk} דק' הליכה, ${it.wait} המתנה, ${it.ride} נסיעה${it.transfers ? `, ${it.transfers} החלפה` : ", בלי החלפה"}</div>`;
+        plan.innerHTML = sum + planHTML(it);
+      };
+      card.querySelectorAll(".row").forEach((b) => b.addEventListener("click", () => show(+b.dataset.i)));
+      show(2);
+      cards.appendChild(card);
+    });
+    wrap.appendChild(box);
+  }
+  const tip = document.getElementById("tip");
+  wrap.addEventListener("pointermove", (e) => {
+    const s = e.target.closest(".bar span");
+    if (!s) { tip.hidden = true; return }
+    tip.textContent = s.dataset.t; tip.hidden = false;
+    tip.style.left = Math.min(e.clientX + 12, innerWidth - 160) + "px"; tip.style.top = e.clientY + 14 + "px";
+  });
+  wrap.addEventListener("pointerleave", () => { tip.hidden = true });
+})();
+</script>

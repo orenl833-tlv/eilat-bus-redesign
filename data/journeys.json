@@ -1,0 +1,1515 @@
+[
+ {
+  "group": "best",
+  "area": 24,
+  "home_stop": "שד.ששת הימים/שד.ארגמן",
+  "place": "מלון הנסיכה ומעבר טאבה",
+  "period": "06-09",
+  "when": "בבוקר (7:30)",
+  "nocar": 17,
+  "delta": -75,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 129,
+    "walk": 8,
+    "wait": 101,
+    "ride": 20,
+    "transfers": 1,
+    "perceived": 199,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 4.1,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5א",
+        "note": "",
+        "every": 90,
+        "stops": 10,
+        "ride": 7.2
+       },
+       {
+        "line": "5",
+        "note": "",
+        "every": 30,
+        "stops": 10,
+        "ride": 7.2
+       }
+      ],
+      "wait": 11.2,
+      "ride": 7.2,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 180,
+        "stops": 14,
+        "ride": 12.4
+       }
+      ],
+      "wait": 90.0,
+      "ride": 12.4,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "דרך מצרים/מלון הנסיכה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 57,
+    "walk": 16,
+    "wait": 22,
+    "ride": 19,
+    "transfers": 1,
+    "perceived": 85,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 12.4,
+      "to": "דרך יותם/אילות"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "מסלול מקוצר",
+        "every": 30,
+        "stops": 8,
+        "ride": 6.5
+       },
+       {
+        "line": "5א",
+        "note": "מסלול מקוצר",
+        "every": 60,
+        "stops": 8,
+        "ride": 6.5
+       }
+      ],
+      "wait": 10.0,
+      "ride": 6.5,
+      "board": "דרך יותם/אילות",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 24,
+        "stops": 14,
+        "ride": 12.4
+       }
+      ],
+      "wait": 12.0,
+      "ride": 12.4,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "דרך מצרים/מלון הנסיכה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 54,
+    "walk": 8,
+    "wait": 27,
+    "ride": 20,
+    "transfers": 1,
+    "perceived": 79,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 4.1,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 20,
+        "stops": 10,
+        "ride": 7.2
+       },
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 40,
+        "stops": 10,
+        "ride": 7.2
+       }
+      ],
+      "wait": 6.7,
+      "ride": 7.2,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 40,
+        "stops": 14,
+        "ride": 12.4
+       }
+      ],
+      "wait": 20.0,
+      "ride": 12.4,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "דרך מצרים/מלון הנסיכה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 48,
+    "walk": 8,
+    "wait": 21,
+    "ride": 20,
+    "transfers": 1,
+    "perceived": 70,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 4.1,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 12,
+        "stops": 10,
+        "ride": 7.2
+       }
+      ],
+      "wait": 6.0,
+      "ride": 7.2,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 30,
+        "stops": 14,
+        "ride": 12.4
+       }
+      ],
+      "wait": 15.0,
+      "ride": 12.4,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "דרך מצרים/מלון הנסיכה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "best",
+  "area": 24,
+  "home_stop": "שד.ששת הימים/שד.ארגמן",
+  "place": "חוף האלמוגים",
+  "period": "19-24",
+  "when": "בערב (21:00)",
+  "nocar": 17,
+  "delta": -52,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 96,
+    "walk": 7,
+    "wait": 59,
+    "ride": 31,
+    "transfers": 1,
+    "perceived": 140,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 3.0,
+      "to": "ששת הימים/יהושפט"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "1",
+        "note": "",
+        "every": 38,
+        "stops": 27,
+        "ride": 21.0
+       },
+       {
+        "line": "1א",
+        "note": "",
+        "every": 150,
+        "stops": 27,
+        "ride": 21.2
+       },
+       {
+        "line": "5א",
+        "note": "",
+        "every": 150,
+        "stops": 28,
+        "ride": 21.7
+       },
+       {
+        "line": "5",
+        "note": "",
+        "every": 60,
+        "stops": 28,
+        "ride": 21.7
+       }
+      ],
+      "wait": 8.8,
+      "ride": 21.3,
+      "board": "ששת הימים/יהושפט",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 100,
+        "stops": 9,
+        "ride": 9.3
+       }
+      ],
+      "wait": 50.0,
+      "ride": 9.3,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "בית ספר שדה/שמורת חוף האלמוגים"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 56,
+    "walk": 12,
+    "wait": 28,
+    "ride": 15,
+    "transfers": 1,
+    "perceived": 85,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.9,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "2",
+        "note": "מדלג על תחנות שקטות",
+        "every": 19,
+        "stops": 9,
+        "ride": 5.9
+       }
+      ],
+      "wait": 9.4,
+      "ride": 5.9,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 38,
+        "stops": 9,
+        "ride": 9.3
+       }
+      ],
+      "wait": 18.8,
+      "ride": 9.3,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "בית ספר שדה/שמורת חוף האלמוגים"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 44,
+    "walk": 8,
+    "wait": 21,
+    "ride": 16,
+    "transfers": 1,
+    "perceived": 66,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 4.1,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 50,
+        "stops": 10,
+        "ride": 6.5
+       },
+       {
+        "line": "5",
+        "note": "",
+        "every": 25,
+        "stops": 10,
+        "ride": 6.5
+       }
+      ],
+      "wait": 8.3,
+      "ride": 6.5,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 25,
+        "stops": 9,
+        "ride": 9.3
+       }
+      ],
+      "wait": 12.5,
+      "ride": 9.3,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "בית ספר שדה/שמורת חוף האלמוגים"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 39,
+    "walk": 8,
+    "wait": 16,
+    "ride": 16,
+    "transfers": 1,
+    "perceived": 59,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 4.1,
+      "to": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 30,
+        "stops": 10,
+        "ride": 6.5
+       },
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 25,
+        "stops": 10,
+        "ride": 6.5
+       }
+      ],
+      "wait": 6.8,
+      "ride": 6.5,
+      "board": "ארגמן/דרך יותם",
+      "alight": "קניון מול הים"
+     },
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "קניון מול הים/דרך מצריים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "15",
+        "note": "",
+        "every": 19,
+        "stops": 9,
+        "ride": 9.3
+       }
+      ],
+      "wait": 9.4,
+      "ride": 9.3,
+      "board": "קניון מול הים/דרך מצריים",
+      "alight": "בית ספר שדה/שמורת חוף האלמוגים"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "best",
+  "area": 36,
+  "home_stop": "דרך התבלינים/דודאים",
+  "place": "המלונות בחוף הצפוני",
+  "period": "19-24",
+  "when": "בערב (21:00)",
+  "nocar": 17,
+  "delta": -43,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 78,
+    "walk": 10,
+    "wait": 21,
+    "ride": 47,
+    "transfers": 0,
+    "perceived": 97,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.3,
+      "to": "דודאים/דרך התבלינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 60,
+        "stops": 55,
+        "ride": 47.2
+       },
+       {
+        "line": "5א",
+        "note": "",
+        "every": 150,
+        "stops": 55,
+        "ride": 47.2
+       }
+      ],
+      "wait": 21.4,
+      "ride": 47.2,
+      "board": "דודאים/דרך התבלינים",
+      "alight": "מלון אסטרל וילג'/מתחם רד"
+     },
+     {
+      "kind": "walk",
+      "min": 1.5,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 38,
+    "walk": 15,
+    "wait": 12,
+    "ride": 11,
+    "transfers": 0,
+    "perceived": 55,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 13.1,
+      "to": "דרך מצרים/נמל שער דרומי"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "16",
+        "note": "מדלג על תחנות שקטות",
+        "every": 25,
+        "stops": 9,
+        "ride": 11.3
+       }
+      ],
+      "wait": 12.5,
+      "ride": 11.3,
+      "board": "דרך מצרים/נמל שער דרומי",
+      "alight": "מלון אסטרל וילג'/מתחם רד"
+     },
+     {
+      "kind": "walk",
+      "min": 1.5,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 35,
+    "walk": 15,
+    "wait": 9,
+    "ride": 11,
+    "transfers": 0,
+    "perceived": 50,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 13.1,
+      "to": "דרך מצרים/נמל שער דרומי"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "16",
+        "note": "",
+        "every": 19,
+        "stops": 11,
+        "ride": 11.3
+       }
+      ],
+      "wait": 9.4,
+      "ride": 11.3,
+      "board": "דרך מצרים/נמל שער דרומי",
+      "alight": "מלון אסטרל וילג'/מתחם רד"
+     },
+     {
+      "kind": "walk",
+      "min": 1.5,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 41,
+    "walk": 15,
+    "wait": 15,
+    "ride": 11,
+    "transfers": 0,
+    "perceived": 59,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 13.1,
+      "to": "דרך מצרים/נמל שער דרומי"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "16",
+        "note": "",
+        "every": 30,
+        "stops": 11,
+        "ride": 11.3
+       }
+      ],
+      "wait": 15.0,
+      "ride": 11.3,
+      "board": "דרך מצרים/נמל שער דרומי",
+      "alight": "מלון אסטרל וילג'/מתחם רד"
+     },
+     {
+      "kind": "walk",
+      "min": 1.5,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "worst",
+  "area": 33,
+  "home_stop": "החשמונאים/המדיינים",
+  "place": "חנה וסע בכניסה לעיר",
+  "period": "19-24",
+  "when": "בערב (21:00)",
+  "nocar": 17,
+  "delta": 23,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 30,
+    "walk": 10,
+    "wait": 9,
+    "ride": 12,
+    "transfers": 0,
+    "perceived": 42,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.6,
+      "to": "ששת הימים/האגס"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "",
+        "every": 38,
+        "stops": 18,
+        "ride": 11.4
+       },
+       {
+        "line": "3",
+        "note": "",
+        "every": 33,
+        "stops": 19,
+        "ride": 12.5
+       }
+      ],
+      "wait": 8.8,
+      "ride": 12.0,
+      "board": "ששת הימים/האגס",
+      "alight": "חנה וסע מבואות אילת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 31,
+    "walk": 10,
+    "wait": 8,
+    "ride": 13,
+    "transfers": 0,
+    "perceived": 42,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.6,
+      "to": "ששת הימים/האגס"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "מדלג על תחנות שקטות",
+        "every": 30,
+        "stops": 17,
+        "ride": 11.4
+       },
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 38,
+        "stops": 19,
+        "ride": 14.8
+       }
+      ],
+      "wait": 8.3,
+      "ride": 12.9,
+      "board": "ששת הימים/האגס",
+      "alight": "חנה וסע מבואות אילת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 53,
+    "walk": 2,
+    "wait": 8,
+    "ride": 43,
+    "transfers": 0,
+    "perceived": 59,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 1.9,
+      "to": "החשמונאים/המדיינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 25,
+        "stops": 50,
+        "ride": 41.4
+       },
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 50,
+        "stops": 45,
+        "ride": 46.4
+       }
+      ],
+      "wait": 8.3,
+      "ride": 43.1,
+      "board": "החשמונאים/המדיינים",
+      "alight": "חנה וסע מבואות אילת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 37,
+    "walk": 10,
+    "wait": 12,
+    "ride": 15,
+    "transfers": 0,
+    "perceived": 50,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.6,
+      "to": "ששת הימים/האגס"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 25,
+        "stops": 19,
+        "ride": 14.8
+       }
+      ],
+      "wait": 12.5,
+      "ride": 14.8,
+      "board": "ששת הימים/האגס",
+      "alight": "חנה וסע מבואות אילת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.1,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "worst",
+  "area": 24,
+  "home_stop": "דקר/חלילן",
+  "place": "מרכז ביג",
+  "period": "19-24",
+  "when": "בערב (21:00)",
+  "nocar": 17,
+  "delta": 20,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 27,
+    "walk": 10,
+    "wait": 9,
+    "ride": 9,
+    "transfers": 0,
+    "perceived": 38,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.5,
+      "to": "ששת הימים/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "",
+        "every": 38,
+        "stops": 14,
+        "ride": 8.2
+       },
+       {
+        "line": "3",
+        "note": "",
+        "every": 33,
+        "stops": 15,
+        "ride": 9.2
+       }
+      ],
+      "wait": 8.8,
+      "ride": 8.7,
+      "board": "ששת הימים/דרך יותם",
+      "alight": "מרכז ביג/הסתת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.3,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 28,
+    "walk": 10,
+    "wait": 8,
+    "ride": 10,
+    "transfers": 0,
+    "perceived": 39,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.5,
+      "to": "ששת הימים/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "מדלג על תחנות שקטות",
+        "every": 30,
+        "stops": 14,
+        "ride": 8.2
+       },
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 38,
+        "stops": 15,
+        "ride": 11.2
+       }
+      ],
+      "wait": 8.3,
+      "ride": 9.5,
+      "board": "ששת הימים/דרך יותם",
+      "alight": "מרכז ביג/הסתת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.3,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 47,
+    "walk": 2,
+    "wait": 12,
+    "ride": 32,
+    "transfers": 0,
+    "perceived": 56,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 1.8,
+      "to": "דקר/חלילן"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 25,
+        "stops": 40,
+        "ride": 32.2
+       }
+      ],
+      "wait": 12.5,
+      "ride": 32.2,
+      "board": "דקר/חלילן",
+      "alight": "מרכז ביג/הסתת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.3,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 33,
+    "walk": 10,
+    "wait": 12,
+    "ride": 11,
+    "transfers": 0,
+    "perceived": 47,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 9.5,
+      "to": "ששת הימים/דרך יותם"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 25,
+        "stops": 15,
+        "ride": 11.2
+       }
+      ],
+      "wait": 12.5,
+      "ride": 11.2,
+      "board": "ששת הימים/דרך יותם",
+      "alight": "מרכז ביג/הסתת"
+     },
+     {
+      "kind": "walk",
+      "min": 0.3,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "worst",
+  "area": 36,
+  "home_stop": "דרך התבלינים/דודאים",
+  "place": "קמפוס אילת",
+  "period": "09-12",
+  "when": "באמצע הבוקר (10:30)",
+  "nocar": 17,
+  "delta": 15,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 42,
+    "walk": 9,
+    "wait": 10,
+    "ride": 23,
+    "transfers": 0,
+    "perceived": 53,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.3,
+      "to": "דודאים/דרך התבלינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "",
+        "every": 20,
+        "stops": 24,
+        "ride": 22.9
+       }
+      ],
+      "wait": 10.0,
+      "ride": 22.9,
+      "board": "דודאים/דרך התבלינים",
+      "alight": "קמפוס אילת/המלחה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.8,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "bus",
+    "total": 51,
+    "walk": 9,
+    "wait": 20,
+    "ride": 22,
+    "transfers": 0,
+    "perceived": 69,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.3,
+      "to": "דודאים/דרך התבלינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": "מדלג על תחנות שקטות",
+        "every": 40,
+        "stops": 16,
+        "ride": 22.4
+       }
+      ],
+      "wait": 20.0,
+      "ride": 22.4,
+      "board": "דודאים/דרך התבלינים",
+      "alight": "קמפוס אילת/המלחה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.8,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 57,
+    "walk": 15,
+    "wait": 14,
+    "ride": 29,
+    "transfers": 1,
+    "perceived": 79,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.3,
+      "to": "דודאים/דרך התבלינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 30,
+        "stops": 8,
+        "ride": 15.3
+       },
+       {
+        "line": "5",
+        "note": "",
+        "every": 20,
+        "stops": 14,
+        "ride": 15.9
+       }
+      ],
+      "wait": 6.0,
+      "ride": 15.7,
+      "board": "דודאים/דרך התבלינים",
+      "alight": "עין נטפים/ששת הימים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 15,
+        "stops": 16,
+        "ride": 13.5
+       }
+      ],
+      "wait": 7.5,
+      "ride": 13.5,
+      "board": "עין נטפים/ששת הימים",
+      "alight": "חטיבת גולני/המליחה"
+     },
+     {
+      "kind": "walk",
+      "min": 6.3,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 54,
+    "walk": 15,
+    "wait": 10,
+    "ride": 29,
+    "transfers": 1,
+    "perceived": 74,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 8.3,
+      "to": "דודאים/דרך התבלינים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 30,
+        "stops": 8,
+        "ride": 15.3
+       },
+       {
+        "line": "5",
+        "note": "",
+        "every": 15,
+        "stops": 14,
+        "ride": 15.9
+       }
+      ],
+      "wait": 5.0,
+      "ride": 15.7,
+      "board": "דודאים/דרך התבלינים",
+      "alight": "עין נטפים/ששת הימים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 10,
+        "stops": 16,
+        "ride": 13.5
+       }
+      ],
+      "wait": 5.0,
+      "ride": 13.5,
+      "board": "עין נטפים/ששת הימים",
+      "alight": "חטיבת גולני/המליחה"
+     },
+     {
+      "kind": "walk",
+      "min": 6.3,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "typical",
+  "area": 21,
+  "home_stop": "ירושלים השלמה/פארן",
+  "place": "בית החולים יוספטל",
+  "period": "06-09",
+  "when": "בבוקר (7:30)",
+  "nocar": 53,
+  "delta": -3,
+  "options": {
+   "היום": {
+    "mode": "walk",
+    "total": 17,
+    "walk": 17,
+    "perceived": 27
+   },
+   "אפשרות 1": {
+    "mode": "walk",
+    "total": 17,
+    "walk": 17,
+    "perceived": 27
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 14,
+    "walk": 4,
+    "wait": 7,
+    "ride": 4,
+    "transfers": 0,
+    "perceived": 20,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 0.5,
+      "to": "ירושלים השלמה/פארן"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 20,
+        "stops": 4,
+        "ride": 4.1
+       },
+       {
+        "line": "5א",
+        "note": "מדלג על תחנות שקטות",
+        "every": 40,
+        "stops": 4,
+        "ride": 4.1
+       }
+      ],
+      "wait": 6.7,
+      "ride": 4.1,
+      "board": "ירושלים השלמה/פארן",
+      "alight": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "walk",
+      "min": 3.1,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 14,
+    "walk": 4,
+    "wait": 6,
+    "ride": 4,
+    "transfers": 0,
+    "perceived": 19,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 0.5,
+      "to": "ירושלים השלמה/פארן"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "5",
+        "note": "",
+        "every": 12,
+        "stops": 4,
+        "ride": 4.1
+       }
+      ],
+      "wait": 6.0,
+      "ride": 4.1,
+      "board": "ירושלים השלמה/פארן",
+      "alight": "ארגמן/דרך יותם"
+     },
+     {
+      "kind": "walk",
+      "min": 3.1,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ },
+ {
+  "group": "typical",
+  "area": 16,
+  "home_stop": "ספריה עירונית/חטיבת הנגב",
+  "place": "קמפוס אילת",
+  "period": "06-09",
+  "when": "בבוקר (7:30)",
+  "nocar": 56,
+  "delta": -3,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 18,
+    "walk": 3,
+    "wait": 9,
+    "ride": 5,
+    "transfers": 0,
+    "perceived": 25,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 2.8,
+      "to": "מרכז רזין/מרכז הוכמן"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "2",
+        "note": "",
+        "every": 18,
+        "stops": 6,
+        "ride": 5.1
+       }
+      ],
+      "wait": 9.0,
+      "ride": 5.1,
+      "board": "מרכז רזין/מרכז הוכמן",
+      "alight": "קמפוס אילת/המלחה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.6,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 1": {
+    "mode": "walk",
+    "total": 18,
+    "walk": 18,
+    "perceived": 28
+   },
+   "אפשרות 2": {
+    "mode": "bus",
+    "total": 15,
+    "walk": 4,
+    "wait": 8,
+    "ride": 3,
+    "transfers": 0,
+    "perceived": 22,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "אילות/ירושלים השלמה"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "7",
+        "note": "קו חדש: קמפוס – תחנה מרכזית – מלונות",
+        "every": 15,
+        "stops": 3,
+        "ride": 3.4
+       }
+      ],
+      "wait": 7.5,
+      "ride": 3.4,
+      "board": "אילות/ירושלים השלמה",
+      "alight": "קמפוס אילת/המלחה"
+     },
+     {
+      "kind": "walk",
+      "min": 0.8,
+      "to": "היעד"
+     }
+    ]
+   },
+   "אפשרות 3": {
+    "mode": "bus",
+    "total": 17,
+    "walk": 9,
+    "wait": 4,
+    "ride": 4,
+    "transfers": 0,
+    "perceived": 25,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 2.8,
+      "to": "מרכז רזין/מרכז הוכמן"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "3",
+        "note": "מסלול מקוצר",
+        "every": 10,
+        "stops": 4,
+        "ride": 3.6
+       },
+       {
+        "line": "2",
+        "note": "מסלול מקוצר",
+        "every": 60,
+        "stops": 4,
+        "ride": 3.6
+       }
+      ],
+      "wait": 4.3,
+      "ride": 3.6,
+      "board": "מרכז רזין/מרכז הוכמן",
+      "alight": "חטיבת גולני/המליחה"
+     },
+     {
+      "kind": "walk",
+      "min": 6.3,
+      "to": "היעד"
+     }
+    ]
+   }
+  }
+ }
+]
