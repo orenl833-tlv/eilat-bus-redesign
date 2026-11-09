@@ -33,18 +33,18 @@
  },
  "full_peak-3_warm": {
   "without": {
-   "vs_today_A": 0.8353,
-   "vs_today_B": 0.8422,
-   "district_902_vs_today": 0.994,
+   "vs_today_A": 0.8369,
+   "vs_today_B": 0.8408,
+   "district_902_vs_today": 0.995,
    "peak": 32,
    "hours": 404.1
   },
   "with spur": {
-   "vs_today_A": 0.7734,
-   "vs_today_B": 0.7848,
-   "district_902_vs_today": 0.444,
-   "peak": 36,
-   "hours": 438.7
+   "vs_today_A": 0.7719,
+   "vs_today_B": 0.7809,
+   "district_902_vs_today": 0.449,
+   "peak": 35,
+   "hours": 436.5
   }
  }
 }

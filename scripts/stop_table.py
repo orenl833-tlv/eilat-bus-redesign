@@ -38,7 +38,7 @@ def main():
     for tag in ["keep", "full_warm", "full_peak-3_warm"]:
         pr = prob if tag != "keep" else O.Problem("keep")
         sr = json.load(open(f"data/opt_{tag}_seasonal.json"))["winter"]
-        net = pr.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items()})
+        net = pr.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in pr.lines})
         now = served(net)
         passed = {}
         for p in net:

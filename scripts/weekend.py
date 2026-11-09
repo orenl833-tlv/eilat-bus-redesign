@@ -69,7 +69,7 @@ def main():
     out = {"scale": S, "fit": fit.reset_index().to_dict("records")}
     for tag in ["keep", "full_warm", "full_peak-3_warm"]:
         sr = json.load(open(f"data/opt_{tag}_seasonal.json"))["winter"]
-        active = [k for k, v in sr.items() if any(h is not None for h in v.values())]
+        active = [k for k, v in sr.items() if any(h is not None for h in v.values()) and k in prob.lines]
         out[tag] = {}
         for d, g in DAYS.items():
             D.DAY = d
@@ -91,7 +91,7 @@ def main():
                 pats = net(state)
                 bb, hh = N.fleet(pats)
                 c = cost(m, pats, cal, kw, S)
-                pen = 0.02 * max(0, max(bb.values()) - budget_peak) + 0.002 * max(0, hh - budget_hours)
+                pen = 0.2 * max(0, max(bb.values()) - budget_peak) + 0.02 * max(0, hh - budget_hours)   # effectively hard
                 return 0.5 * (c["A"] / c0["A"] + c["B"] / c0["B"]) + pen, c, bb, hh
 
             # start: each active line at 30 min where today has service, else off; then anneal

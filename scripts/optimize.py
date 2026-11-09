@@ -100,7 +100,7 @@ class Problem:
     def network(self, state):
         pats = list(self.fixed)
         for ln, hw in state.items():
-            if all(not math.isfinite(h) for h in hw.values()):
+            if ln not in self.lines or all(not math.isfinite(h) for h in hw.values()):
                 continue
             for p in self.lines[ln]:
                 q = copy.copy(p); q.headway = dict(hw); pats.append(q)
@@ -177,7 +177,7 @@ class Problem:
                 worst = max(worst, rel)
                 pen += 0.05 * max(0, rel - (1 + P.MAX_AREA_LOSS))
         pen += 0.01 * self.violations(state)
-        pen += 0.01 * self.protected_lost(pats)
+        pen += 0.1 * self.protected_lost(pats)
         if self.keep:   # conservative option: every line of today survives in some form
             fams = {}
             for ln, hw in state.items():

@@ -1,0 +1,239 @@
+<meta charset="utf-8">
+<title>Eilat Bus Network Redesign</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Hebrew:wght@400;500&display=swap">
+<style>
+/* Layout: a header with the thesis, one control bar, two maps side by side (today | option), then the numbers. */
+:root {
+  --bg: #f6f2ea;          /* desert sand */
+  --panel: #fffdf8;
+  --ink: #1d2328;
+  --ink-2: #5a6168;
+  --rule: #e2dbcd;
+  --sea-1: #b9d4e6; --sea-2: #5f9cc6; --sea-3: #1f5f8f; --sea-4: #0b3a5c;   /* buses an hour */
+  --coral: #d8573c;       /* accent: the option */
+  --better-1: #dcefe0; --better-2: #9fd1ab; --better-3: #4fa66a;           /* areas that gain */
+  --worse: #f1c9bd;
+  --land: #ebe5d8;
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "IBM Plex Sans Hebrew", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
+  --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
+  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
+  --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
+  --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 22px }
+header h1 { font: 700 clamp(28px, 4.4vw, 46px)/1.05 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance }
+header p { margin: 8px 0 0; max-width: 68ch; color: var(--ink-2) }
+header strong { color: var(--ink) }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; padding: 14px 16px; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px }
+.ctl { display: grid; gap: 6px }
+.ctl > span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2) }
+.seg { display: flex; flex-wrap: wrap; gap: 4px }
+.seg button { font: 500 13px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink) }
+.seg button:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px }
+.maps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+@media (max-width: 760px) { .maps { grid-template-columns: 1fr } }
+figure { margin: 0; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; min-width: 0 }
+figcaption { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; margin-bottom: 6px }
+figcaption b { font: 700 18px var(--display) }
+figcaption span { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums }
+svg { width: 100%; height: auto; display: block }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--ink-2); align-items: center }
+.legend i { display: inline-block; width: 26px; vertical-align: middle; margin-right: 6px; border-radius: 3px }
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.tile { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px }
+.tile span { display: block; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2) }
+.tile b { font: 700 28px/1.2 var(--display); font-variant-numeric: tabular-nums }
+.tile small { display: block; color: var(--ink-2) }
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: 13px }
+th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap }
+th:first-child, td:first-child { text-align: left }
+th { font-weight: 600; color: var(--ink-2); font-size: 12px }
+td .d { font-size: 11px; margin-left: 4px }
+.good { color: var(--better-3) } .bad { color: var(--coral) }
+#tip { position: fixed; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; font-size: 12px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / .12); max-width: 260px; z-index: 20 }
+.note { font-size: 13px; color: var(--ink-2); max-width: 75ch }
+h2 { font: 700 20px var(--display); margin: 6px 0 0 }
+@media (prefers-reduced-motion: no-preference) { path.street { transition: stroke-width .25s, stroke .25s } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Eilat's buses, reorganised on the same budget</h1>
+    <p>No more buses at the midday peak than today, the same bus-hours, existing streets and stops. Calibrated on Rav-Kav boardings, checked against real
+      bus movements. <strong id="headline">…</strong></p>
+  </header>
+
+  <div class="controls" role="group" aria-label="What to show">
+    <div class="ctl"><span>Option</span><div class="seg" id="opt"></div></div>
+    <div class="ctl"><span>Season</span><div class="seg" id="season"></div></div>
+    <div class="ctl"><span>Time of day</span><div class="seg" id="period"></div></div>
+  </div>
+
+  <div class="maps">
+    <figure><figcaption><b>Today</b><span id="capL"></span></figcaption><svg id="mapL" role="img" aria-label="Today's bus network"></svg></figure>
+    <figure><figcaption><b id="optName">Option</b><span id="capR"></span></figcaption><svg id="mapR" role="img" aria-label="Proposed bus network"></svg></figure>
+  </div>
+  <div class="legend" id="legend"></div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div>
+    <h2>Door to door, by neighbourhood</h2>
+    <p class="note">Perceived minutes at 09:00-12:00 in winter: walking and waiting count 1.6 × a minute on the bus, a transfer adds 5 minutes.
+      The change column is the year-round average over all trip purposes, both calibrations. Hover an area on the map for the same numbers.</p>
+  </div>
+  <div class="tablewrap"><table id="tbl"></table></div>
+  <p class="note">Data: Ministry of Transport GTFS and ridership per line, Open Bus Stride SIRI (Public Knowledge Workshop), CBS census 2022 and statistical
+    areas. Model and code: eilat-transit. Stop names are as in the timetable.</p>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const PNAME = {"06-09": "06-09", "09-12": "09-12", "12-15": "12-15", "15-19": "15-19", "19-24": "19-24"};
+const SNAME = {winter: "Winter", spring_autumn: "Spring & autumn", summer: "Summer holiday"};
+const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
+const st = {opt: "full_warm", season: "winter", period: "09-12"};
+const B = {lon0: 34.900, lon1: 34.985, lat0: 29.492, lat1: 29.582};
+const K = Math.cos(29.55 * Math.PI / 180);
+const W = 600, H = Math.round(W * (B.lat1 - B.lat0) / ((B.lon1 - B.lon0) * K));
+const sx = (lon) => (lon - B.lon0) / (B.lon1 - B.lon0) * W;
+const sy = (lat) => (B.lat1 - lat) / (B.lat1 - B.lat0) * H;
+let D = null;
+
+function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() }
+function seaColor(b) { return b >= 9 ? css("--sea-4") : b >= 6 ? css("--sea-3") : b >= 3 ? css("--sea-2") : css("--sea-1") }
+function areaFill(pct) {
+  if (pct == null) return css("--land");
+  if (pct > 0.5) return css("--worse");
+  return pct <= -20 ? css("--better-3") : pct <= -10 ? css("--better-2") : css("--better-1");
+}
+
+function seg(id, items, current) {
+  const el = document.getElementById(id); el.innerHTML = "";
+  for (const [k, label] of items) {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.id = `${id}-${k}`;
+    b.setAttribute("aria-pressed", String(k === current));
+    b.onclick = () => { st[id] = k; render() };
+    el.appendChild(b);
+  }
+}
+
+function drawMap(svg, tag, showChange) {
+  const ns = "http://www.w3.org/2000/svg";
+  svg.innerHTML = ""; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const g = document.createElementNS(ns, "g"); svg.appendChild(g);
+  const change = showChange ? D.summary[tag]?.area : null;
+  for (const a of D.areas) {
+    for (const ring of a.rings) {
+      const p = document.createElementNS(ns, "path");
+      p.setAttribute("d", "M" + ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L") + "Z");
+      const pct = change ? change[a.id] : null;
+      p.setAttribute("fill", showChange ? areaFill(pct) : css("--land"));
+      p.setAttribute("stroke", css("--panel")); p.setAttribute("stroke-width", "1.2");
+      p.dataset.area = a.id;
+      p.addEventListener("mousemove", (e) => tip(e, a, tag));
+      p.addEventListener("mouseleave", () => { document.getElementById("tip").hidden = true });
+      g.appendChild(p);
+    }
+    if (showChange && change && change[a.id] != null) {
+      const ring = a.rings[0]; const cx = ring.reduce((s, q) => s + q[0], 0) / ring.length, cy = ring.reduce((s, q) => s + q[1], 0) / ring.length;
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", sx(cx)); t.setAttribute("y", sy(cy)); t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", "11");
+      t.setAttribute("fill", css("--ink")); t.setAttribute("pointer-events", "none"); t.setAttribute("font-family", "IBM Plex Sans, sans-serif");
+      t.textContent = `${change[a.id] > 0 ? "+" : ""}${Math.round(change[a.id])}%`;
+      g.appendChild(t);
+    }
+  }
+  const segs = (D.net[tag]?.[st.season]?.[st.period] || []).slice().sort((x, y) => x[2] - y[2]);
+  let total = 0;
+  for (const [i, j, b] of segs) {
+    const [la1, lo1] = D.stops[i], [la2, lo2] = D.stops[j];
+    const p = document.createElementNS(ns, "path");
+    p.setAttribute("class", "street");
+    p.setAttribute("d", `M${sx(lo1).toFixed(1)},${sy(la1).toFixed(1)}L${sx(lo2).toFixed(1)},${sy(la2).toFixed(1)}`);
+    p.setAttribute("stroke", seaColor(b)); p.setAttribute("stroke-width", (1 + Math.min(b, 12) * 0.45).toFixed(2));
+    p.setAttribute("stroke-linecap", "round"); p.setAttribute("fill", "none"); p.setAttribute("pointer-events", "none");
+    g.appendChild(p); total += b;
+  }
+  return segs.length;
+}
+
+function tip(e, a, tag) {
+  const el = document.getElementById("tip");
+  const s = D.summary[tag === "today" ? st.opt : tag];
+  const tt = s?.tt?.[a.id];
+  let h = `<b>Area ${a.id}</b><br>${a.pop ? a.pop.toLocaleString() + " residents · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% of households without a car" : ""}`;
+  if (s?.area?.[a.id] != null) h += `<br>Perceived time per trip: <b>${s.area[a.id] > 0 ? "+" : ""}${s.area[a.id]}%</b>`;
+  if (tt) h += "<br>" + PLACES.filter((p) => tt[p]).map((p) => `${p.replace(" (Star Eilat)", "")}: ${tt[p][0]} → ${tt[p][1]} min`).join("<br>");
+  el.innerHTML = h; el.hidden = false;
+  const x = Math.min(e.clientX + 14, window.innerWidth - 270), y = Math.min(e.clientY + 14, window.innerHeight - 160);
+  el.style.left = x + "px"; el.style.top = y + "px";
+}
+
+function tiles() {
+  const s = D.summary[st.opt], t = D.summary.today;
+  const pct = (x) => `${Math.round((x - 1) * 100)}%`;
+  const items = [
+    ["Perceived door-to-door time", `${pct((s.year_A + s.year_B) / 2)}`, "year-round, vs today"],
+    ["Worst-off neighbourhood", s.worst_area <= 1 ? `${pct(s.worst_area)}` : `+${Math.round((s.worst_area - 1) * 100)}%`, s.worst_area <= 1 ? "every area gains at least this" : "one area loses this much (limit 10%)"],
+    ["Buses at once, peak", `${s.peak[st.season]}`, `today ${t.peak}`],
+    ["Bus-hours a weekday", `${Math.round(s.hours[st.season])}`, `today ${Math.round(t.hours)} (budget model)`],
+  ];
+  document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
+  const avg = (s.year_A + s.year_B) / 2;
+  document.getElementById("headline").textContent = `${D.options[st.opt].replace(/^\d · /, "")}: about ${Math.round((1 - avg) * 100)}% less perceived door-to-door time.`;
+}
+
+function table() {
+  const s = D.summary[st.opt];
+  const ids = D.areas.map((a) => a.id).filter((id) => s.tt[id]);
+  let h = "<thead><tr><th>Area</th><th>Residents</th><th>No car</th><th>Change</th>" + PLACES.map((p) => `<th>${p.replace(" (Star Eilat)", "").replace(", North Beach", "")}</th>`).join("") + "</tr></thead><tbody>";
+  for (const id of ids) {
+    const a = D.areas.find((x) => x.id === id), tt = s.tt[id], c = s.area[id];
+    h += `<tr><td>${id}</td><td>${a.pop ? a.pop.toLocaleString() : "–"}</td><td>${a.nocar != null ? Math.round(a.nocar) + "%" : "–"}</td>` +
+      `<td class="${c < 0 ? "good" : "bad"}">${c > 0 ? "+" : ""}${c}%</td>` +
+      PLACES.map((p) => { const v = tt[p]; if (!v) return "<td>–</td>"; const d = v[1] - v[0];
+        return `<td>${v[1].toFixed(0)}<span class="d ${d < -0.5 ? "good" : d > 0.5 ? "bad" : ""}">${d > 0 ? "+" : ""}${d.toFixed(0)}</span></td>` }).join("") + "</tr>";
+  }
+  document.getElementById("tbl").innerHTML = h + "</tbody>";
+}
+
+function legend() {
+  const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
+  document.getElementById("legend").innerHTML =
+    `<span>${sw(css("--sea-1"), 2)}1-2 buses an hour</span><span>${sw(css("--sea-2"), 3)}3-5</span><span>${sw(css("--sea-3"), 4)}6-8</span><span>${sw(css("--sea-4"), 6)}9+</span>` +
+    `<span>${sw(css("--better-1"), 10)}area gains < 10%</span><span>${sw(css("--better-2"), 10)}10-20%</span><span>${sw(css("--better-3"), 10)}> 20%</span><span>${sw(css("--worse"), 10)}area loses</span>`;
+}
+
+function render() {
+  seg("opt", Object.entries(D.options).filter(([k]) => k !== "today"), st.opt);
+  seg("season", D.seasons.map((s) => [s, SNAME[s]]), st.season);
+  seg("period", D.periods.map((p) => [p, PNAME[p]]), st.period);
+  document.getElementById("optName").textContent = D.options[st.opt];
+  drawMap(document.getElementById("mapL"), "today", false);
+  drawMap(document.getElementById("mapR"), st.opt, true);
+  const busesL = (D.net.today[st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
+  const busesR = (D.net[st.opt][st.season][st.period] || []).reduce((m, x) => Math.max(m, x[2]), 0);
+  document.getElementById("capL").textContent = `busiest street ${busesL.toFixed(0)} buses/h`;
+  document.getElementById("capR").textContent = `busiest street ${busesR.toFixed(0)} buses/h`;
+  tiles(); table(); legend();
+}
+
+fetch("data.json").then((r) => r.json()).then((d) => { D = d; render() })
+  .catch(() => { document.getElementById("headline").textContent = "The data file didn't load. Reload the page to try again." });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => D && render());
+</script>

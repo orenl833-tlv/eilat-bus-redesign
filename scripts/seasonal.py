@@ -25,7 +25,7 @@ def main():
     mode = "keep" if tag.startswith("keep") else ("moderate" if tag.startswith("moderate") else "full")
     random.seed(2)
     prob = O.Problem(mode, peak_delta)
-    best_all = load_state(f"data/opt_{tag}.json")
+    best_all = {k: v for k, v in load_state(f"data/opt_{tag}.json").items() if k in prob.lines}   # drop lines no longer generated
     active = [k for k, v in best_all.items() if any(math.isfinite(h) for h in v.values())]
     out = {}
     for season in P.SEASONS:

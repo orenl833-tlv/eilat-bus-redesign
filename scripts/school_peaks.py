@@ -41,7 +41,7 @@ def main():
             net = prob.base
         else:
             sr = json.load(open(f"data/opt_{tag}_seasonal.json"))["winter"]
-            net = prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items()})
+            net = prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in prob.lines})
         stops = prob.sg.stops.set_index("stop_id")
         for name, (lat, lon, n) in SCHOOLS.items():
             near = set(stops.index[walk_min(stops.stop_lat.values, stops.stop_lon.values, lat, lon)

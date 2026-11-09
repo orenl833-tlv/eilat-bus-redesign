@@ -137,7 +137,7 @@ def main():
                 prob_cache[tag] = O.Problem("keep" if tag == "keep" else "full", -3 if "peak-3" in tag else 0)
             prob = prob_cache[tag]
             sr = json.load(open(f"data/opt_{tag}_seasonal.json"))[season]
-            net = prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items()})
+            net = prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr.items() if k in prob.lines})
             # school lines keep today's real trips
             trips = pd.concat([trips_from_network([p for p in net if p.line not in SCHOOL]),
                                trips_today()[lambda x: x.line.isin(SCHOOL)] if season != "summer" else None], ignore_index=True)
