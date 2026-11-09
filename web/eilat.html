@@ -118,7 +118,18 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "full_warm", season: "winter", period: "09-12", selL: null, selR: null};
+const st = {opt: "full_warm", season: "winter", period: "09-12", selL: null, selR: null, note: ""};
+// "5א/0x" -> family "5א", direction "0"; a counterpart has the same family and direction, any variant (x, s)
+const parts = (n) => { const m = /^(.+?)\/(\d)([xs]?)$/.exec(n); return m ? { fam: m[1], dir: m[2] } : { fam: n, dir: "" } };
+function counterpart(name, tag) {
+  const ls = D.lines[tag]?.[st.season] || [];
+  if (ls.some((x) => x.name === name)) return name;
+  const p = parts(name);
+  const same = ls.filter((x) => { const q = parts(x.name); return q.fam === p.fam && q.dir === p.dir });
+  if (same.length) return same.sort((a, b) => a.name.length - b.name.length)[0].name;
+  const fam = ls.filter((x) => parts(x.name).fam === p.fam);
+  return fam.length ? fam[0].name : null;
+}
 const B = {lon0: 34.900, lon1: 34.985, lat0: 29.492, lat1: 29.582};
 const K = Math.cos(29.55 * Math.PI / 180);
 const W = 600, H = Math.round(W * (B.lat1 - B.lat0) / ((B.lon1 - B.lon0) * K));
@@ -206,14 +217,24 @@ function lineList(id, tag, selKey) {
   const ls = (D.lines[tag]?.[st.season] || []).slice().sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
   if (st[selKey] && !ls.some((x) => x.name === st[selKey])) st[selKey] = null;
   const label = (n) => n.replace(/\/\d/, "");
-  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. בחרו קו כדי לראות את המסלול שלו; נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>`;
+  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
+    (st.note && st.noteIn === selKey ? `<div class="hint" style="color:var(--coral)">${st.note}</div>` : "");
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
     const h = l.hw[st.period];
     b.innerHTML = `<span class="no">${num(label(l.name))}</span><span class="route">${l.start} ← ${l.end}</span>` +
       `<span class="hw">${h ? "כל " + h + " דק'" : "אין שירות"}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
-    b.onclick = () => { st[selKey] = st[selKey] === l.name ? null : l.name; render() };
+    b.onclick = () => {
+      const other = selKey === "selL" ? "selR" : "selL", otherTag = selKey === "selL" ? st.opt : "today";
+      if (st[selKey] === l.name) { st.selL = st.selR = null; st.note = ""; render(); return }
+      st[selKey] = l.name;
+      st[other] = counterpart(l.name, otherTag);
+      st.noteIn = other;
+      const fam = parts(l.name).fam;
+      st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt].replace(/^\d · /, "")}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
+      render();
+    };
     el.appendChild(b);
   }
 }
