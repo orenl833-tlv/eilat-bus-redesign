@@ -132,6 +132,19 @@ class Problem:
         within = pd.Series(d <= P.COVERAGE_STOP_M * P.DETOUR)
         return within.groupby(self.m.pts.area.values[self.m.homes]).mean()
 
+    def protected_lost(self, pats):
+        """Protected stops (luggage, hospital, campus) served by today's network all day that no line stops at."""
+        day = ("09-12", "12-15", "15-19")
+        def served(net):
+            out = set()
+            for p in net:
+                if all(math.isfinite(p.headway.get(q, math.inf)) for q in day):
+                    out |= {s for s in p.stops if s not in p.skip}
+            return out
+        if not hasattr(self, "_prot_today"):
+            self._prot_today = served(self.base) & self.sg.protected
+        return len(self._prot_today - served(pats))
+
     @staticmethod
     def violations(state):
         """Usable-network rules: a running line serves 09-19 at least hourly; adjacent periods differ by <= 2x."""
@@ -164,6 +177,7 @@ class Problem:
                 worst = max(worst, rel)
                 pen += 0.05 * max(0, rel - (1 + P.MAX_AREA_LOSS))
         pen += 0.01 * self.violations(state)
+        pen += 0.01 * self.protected_lost(pats)
         if self.keep:   # conservative option: every line of today survives in some form
             fams = {}
             for ln, hw in state.items():
@@ -175,7 +189,7 @@ class Problem:
         total = obj + pen
         if detail:
             return dict(total=total, obj=obj, pen=pen, buses=buses, hours=hours, worst_area=worst,
-                        violations=self.violations(state), by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
+                        violations=self.violations(state), protected_lost=self.protected_lost(pats), by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
         return total
 
 

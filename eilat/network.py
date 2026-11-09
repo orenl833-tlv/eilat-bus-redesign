@@ -44,10 +44,11 @@ def _period(sec):
     return next((k for k, (a, b) in P.PERIODS.items() if a <= h < b), None)
 
 
-def from_gtfs(scale_runtime=True):
+def from_gtfs(scale_runtime=True, gdir=None):
     """Today's urban network, one pattern per (line, direction), headways per period from the timetable."""
-    st = pd.read_csv(f"{G}/stop_times.csv").sort_values(["trip_id", "stop_sequence"])
-    tr = pd.read_csv(f"{G}/trips.csv").merge(pd.read_csv(f"{G}/routes.csv")[["route_id", "route_short_name"]], on="route_id")
+    g = gdir or G
+    st = pd.read_csv(f"{g}/stop_times.csv").sort_values(["trip_id", "stop_sequence"])
+    tr = pd.read_csv(f"{g}/trips.csv").merge(pd.read_csv(f"{g}/routes.csv")[["route_id", "route_short_name"]], on="route_id")
     tr["line"] = tr.route_short_name.astype(str)
     fac = pd.read_csv("data/runtime_factor.csv", dtype={"line": str}) if scale_runtime else None
     pats = []

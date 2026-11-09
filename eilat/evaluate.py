@@ -62,7 +62,8 @@ class Evaluator:
             rows.append(pd.DataFrame({"u": u[ok], "v": v[ok], "ivt": (cum[ib] - cum[ia])[ok], "f": 1 / h, "k": k,
                                       "ia": ia[ok], "ib": ib[ok]}))
         if not rows:
-            return pd.DataFrame(columns=["u", "v", "ivt", "f", "k", "ia", "ib"])
+            return pd.DataFrame({c: pd.Series(dtype=float if c in ("ivt", "f") else np.int64)
+                                 for c in ["u", "v", "ivt", "f", "k", "ia", "ib"]})
         L = pd.concat(rows)
         # a line serving i->j twice (loops) keeps its fastest ride
         L = L.sort_values("ivt").drop_duplicates(["u", "v", "k"])
@@ -89,6 +90,7 @@ class Evaluator:
         e.append(pd.DataFrame({"u": 2 * ns + pi, "v": si, "w": self.acc[pi, si] * w_walk, "t": 2}))
         e.append(pd.DataFrame({"u": ns + si, "v": 2 * ns + npt + pi, "w": self.acc[pi, si] * w_walk, "t": 3}))
         E = pd.concat(e).sort_values("w").drop_duplicates(["u", "v"])
+        E = E.astype({"u": np.int64, "v": np.int64, "w": float, "t": np.int64})   # empty periods (no rides) give object dtypes
         n = 2 * ns + 2 * npt
         G = csr_matrix((E.w.values, (E.u.values, E.v.values)), shape=(n, n))
         src = np.arange(npt) if sources is None else np.asarray(sources)

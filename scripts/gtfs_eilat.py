@@ -11,8 +11,8 @@ import os
 import pandas as pd
 
 SRC = "data/raw/gtfs_20261107"
-OUT = "data/gtfs_eilat"
-DAY = "20261110"
+OUT = os.environ.get("GTFS_OUT", "data/gtfs_eilat")
+DAY = os.environ.get("GTFS_DAY", "20261110")
 URBAN = {"1", "1א", "2", "3", "4", "5", "5א", "6", "6א", "10", "11", "15", "16", "80", "80א", "81", "82"}
 
 

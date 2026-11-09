@@ -103,6 +103,16 @@ def points():
     return a, pts
 
 
+# day type: weekday (default), friday, saturday. Multipliers on each purpose's tours (assumptions, then one
+# weekend scale is calibrated on weekly minus 5 x daily boardings per line)
+DAY = "weekday"
+DAY_FACTORS = {
+    "weekday": dict(work=1.0, school=1.0, services=1.0, leisure=1.0, tourist=1.0),
+    "friday": dict(work=0.45, school=0.5, services=1.2, leisure=1.3, tourist=1.2),
+    "saturday": dict(work=0.3, school=0.0, services=0.5, leisure=1.5, tourist=1.3),
+}
+
+
 def potential(pts, season, rates=None, car_prop=P.CAR_PROPENSITY):
     """Outbound tours per day (all modes) for each purpose: dict purpose -> (homes x attractors) array, plus the
     weight of car-less travellers. Tourist outings start at the hotel point."""
@@ -117,6 +127,8 @@ def potential(pts, season, rates=None, car_prop=P.CAR_PROPENSITY):
            "services": pop * rates["services"], "leisure": pop * rates["leisure"] * (1.5 if season == "summer" else 1.0)}
     size = {"work": att.jobs.values, "school": att.school.values, "services": att.services.values,
             "leisure": att.leisure.values}
+    f = DAY_FACTORS[DAY]
+    gen = {p: g * f[p] for p, g in gen.items()}
     out = {}
     for p, g in gen.items():
         w = size[p][None, :] * np.exp(-BETA[p] * d_km)
@@ -128,5 +140,5 @@ def potential(pts, season, rates=None, car_prop=P.CAR_PROPENSITY):
     hotel = att.index[att.name == HOTEL][0]
     dk = walk_min(att.lat[hotel], att.lon[hotel], att.lat.values, att.lon.values) * (P.WALK_KMH * 1000 / 60) / P.DETOUR / 1000
     tw = att.tourist.values * np.exp(-BETA["tourist"] * dk); tw[hotel] = 0
-    tour = guests * tw / tw.sum()
+    tour = guests * tw / tw.sum() * f["tourist"]
     return out, prop, tour, hotel

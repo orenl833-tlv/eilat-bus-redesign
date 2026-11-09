@@ -21,7 +21,7 @@ from .evaluate import walk_min
 from .network import Pattern
 
 # stops never skipped or cut: luggage (hotels, terminals, border crossings, airport), the hospital, malls
-PROTECTED_RE = "בית חולים|יוספטל|מלון|תחנה מרכזית|חנה וסע|מעבר גבול|קניון|נמל תעופה"
+PROTECTED_RE = "בית חולים|יוספטל|מלון|תחנה מרכזית|חנה וסע|מעבר גבול|קניון|נמל תעופה|קמפוס"
 MIN_SAVE = 3.0
 MAX_SPAN = 10      # a detour cut spans at most this many stops
 MIN_SAVE_SHARE = 0.3  # and saves at least this share of the stretch's time
