@@ -129,6 +129,21 @@ class Problem:
         within = pd.Series(d <= P.COVERAGE_STOP_M * P.DETOUR)
         return within.groupby(self.m.pts.area.values[self.m.homes]).mean()
 
+    @staticmethod
+    def violations(state):
+        """Usable-network rules: a running line serves 09-19 at least hourly; adjacent periods differ by <= 2x."""
+        n = 0
+        order = list(P.PERIODS)
+        for ln, hw in state.items():
+            if all(not math.isfinite(h) for h in hw.values()):
+                continue
+            n += sum(1 for q in ("09-12", "12-15", "15-19") if not hw[q] <= 60)
+            for a, b in zip(order[:-1], order[1:], strict=True):
+                ha, hb = hw[a], hw[b]
+                if math.isfinite(ha) and math.isfinite(hb) and max(ha, hb) / min(ha, hb) > 2.0001:
+                    n += 1
+        return n
+
     def score(self, state, detail=False):
         pats = self.network(state)
         buses, hours = N.fleet(pats)
@@ -145,12 +160,13 @@ class Problem:
                 rel = (area / area0).max()
                 worst = max(worst, rel)
                 pen += 0.05 * max(0, rel - (1 + P.MAX_AREA_LOSS))
+        pen += 0.01 * self.violations(state)
         cov, cov0 = self.coverage(pats), self.coverage(self.base)
         pen += 0.01 * float(np.maximum(0, np.minimum(0.5, cov0) - cov).sum())
         total = obj + pen
         if detail:
             return dict(total=total, obj=obj, pen=pen, buses=buses, hours=hours, worst_area=worst,
-                        by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
+                        violations=self.violations(state), by=({f"{s}/{v}": ev[(s, v)][0] / self.base_eval[(s, v)][0] for s in SEASONS for v in ("A", "B")}))
         return total
 
 
@@ -183,7 +199,14 @@ def main():
     tag = f"{mode}" + (f"_peak{peak_delta:+d}" if peak_delta else "")
     random.seed(1)
     prob = Problem(mode, peak_delta)
-    cur = prob.state0; cur_s = prob.score(cur); best, best_s = cur, cur_s
+    cur = prob.state0
+    if len(sys.argv) > 4:   # warm start from another run's best (lines missing from this pool are dropped)
+        raw = json.load(open(sys.argv[4]))
+        cur = dict(prob.state0)
+        for k, v in raw.items():
+            if k in cur:
+                cur[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
+        tag += "_warm"; cur_s = prob.score(cur); best, best_s = cur, cur_s
     print("start", prob.score(cur, detail=True))
     log = []; t0 = time.time(); T0 = 0.004
     for it in range(iters):
