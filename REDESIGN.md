@@ -58,8 +58,8 @@ Everything is in this folder:
 | | 1. Keep every line | 2. Restructure | 3. Restructure, 3 fewer buses |
 |---|---|---|---|
 | Lines | all of today's, re-routed and re-timed | 3, 5, 6 families + coast; 1, 2, 4 merged away | as 2 |
-| Perceived door-to-door time vs today (calibration A / B) | **0.863 / 0.876** | **0.796 / 0.812** | **0.785 / 0.802** |
-| Worst-off area | areas 33-34 up to 2% worse in their worst season; the rest better (up to 21%) | every area better by ≥ 2% | every area better by ≥ 2.6% |
+| Perceived door-to-door time vs today (calibration A / B) | **0.862 / 0.874** | **0.793 / 0.809** | **0.785 / 0.801** |
+| Worst-off area | areas 33-34 up to 2% worse in their worst season; the rest better (up to 21%) | every area better by ≥ 3% | every area better by ≥ 3% |
 | Buses at once (peak) | 32-35 | 32 (today 35) | 31-32 |
 | Bus-hours a weekday (model) | 395 | 395 (today 395) | 405 |
 | Bus trips vs today | +2% | +3% | +4% |
@@ -110,6 +110,39 @@ Everything is in this folder:
   is the obvious next design step once its streets exist.
 - **Star Eilat.** Every option already runs through the old central station, where the Star Eilat terminal
   will open.
+
+## Stops that are never skipped
+
+People with luggage, and patients, shouldn't have to walk.
+- **27 stops are protected:** every stop named for a hotel, the hospital (Yoseftal), the central station / Star
+  Eilat, the city-entrance park-and-ride, the malls, the border crossings and the airport.
+- **The rule:** they are never passed without stopping and never cut out by a straightened route.
+- **Why it was needed:** before the rule, option 1 left three hotel stops without any stopping line (Palace,
+  Orchidea, Caesar), and option 2 one (Palace). The hospital's two stops were always served.
+- **Cost of the rule:** nothing measurable (the numbers above already include it).
+
+## Will the buses be overfull?
+
+`scripts/capacity.py`. For each line, period and season, under both calibrations:
+- **Method:**
+  - riders on the busiest segment ÷ period hours × 1.5 for the busiest hour within the period;
+  - ÷ buses per hour;
+  - compared with a standard 12 m bus: ~85 on board full, ~65 comfortable.
+
+| | Most riders on one bus, busiest hour | Line-periods above 65 (comfortable) | above 85 (full) | above 85 if the peak hour is 2 × the period average |
+|---|---|---|---|---|
+| Today | 78 (line 16, summer evenings, one bus every 100 min) | 4 | 0 | 4 |
+| Option 1 | 71 (line 6 family, summer evenings) | 4 | 0 | 4 |
+| Option 2 | 65 | 0 | 0 | 3 |
+| Option 3 | 63 | 0 | 0 | 0 |
+
+- **Every option is less crowded than today.** The busiest buses are summer evenings, on the coast and on the
+  line 6 family, and the options add evening service exactly there.
+- **What this doesn't see: short spikes at a single stop.** A school letting out, or a concert ending,
+  can put 100+ people at one stop within 15 minutes. Spreading demand over a period hides that.
+  - The school lines 80-82 stay as they are for this reason.
+  - Bell times are the thing to check with the schools. If Rabin's ~1,200 students leave at once and 10%
+    ride, that's ~120 people needing 2 buses inside 15 minutes.
 
 ## What I would check before anyone acts on this
 

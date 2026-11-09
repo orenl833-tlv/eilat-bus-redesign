@@ -2,19 +2,19 @@
  "tag": "full_peak-3_warm",
  "perceived_cost_vs_today": {
   "winter/A": 0.7826,
-  "winter/B": 0.7992,
-  "spring_autumn/A": 0.7958,
-  "spring_autumn/B": 0.8114,
-  "summer/A": 0.7647,
+  "winter/B": 0.7993,
+  "spring_autumn/A": 0.795,
+  "spring_autumn/B": 0.8104,
+  "summer/A": 0.7648,
   "summer/B": 0.7823
  },
- "year_A": 0.7851,
- "year_B": 0.8015,
+ "year_A": 0.7848,
+ "year_B": 0.8011,
  "bus_trips_vs_today": {
   "winter/A": 1.039,
   "winter/B": 1.038,
-  "spring_autumn/A": 1.035,
-  "spring_autumn/B": 1.034,
+  "spring_autumn/A": 1.033,
+  "spring_autumn/B": 1.032,
   "summer/A": 1.038,
   "summer/B": 1.036
  },
@@ -31,15 +31,15 @@
    "hours": 404.6
   },
   "spring_autumn": {
-   "peak": 31,
+   "peak": 32,
    "by_period": {
-    "06-09": 26,
-    "09-12": 28,
-    "12-15": 31,
-    "15-19": 28,
+    "06-09": 24,
+    "09-12": 26,
+    "12-15": 32,
+    "15-19": 31,
     "19-24": 26
    },
-   "hours": 404.8
+   "hours": 405.3
   },
   "summer": {
    "peak": 32,
@@ -64,52 +64,52 @@
   },
   "hours": 395.5
  },
- "worst_area": 0.974,
+ "worst_area": 0.971,
  "sensitivity": {
   "stop cost 20 s": {
-   "A": 0.7853,
-   "B": 0.8017,
-   "worst_area": 0.974
+   "A": 0.785,
+   "B": 0.8012,
+   "worst_area": 0.972
   },
   "stop cost 40 s": {
-   "A": 0.7849,
-   "B": 0.8013,
-   "worst_area": 0.974
-  },
-  "transfer penalty 10 min": {
-   "A": 0.793,
-   "B": 0.8082,
-   "worst_area": 0.983
-  },
-  "walk/wait weight 1.5": {
-   "A": 0.7904,
-   "B": 0.8065,
-   "worst_area": 0.982
-  },
-  "walk/wait weight 1.75": {
-   "A": 0.7776,
-   "B": 0.7946,
-   "worst_area": 0.963
-  },
-  "heat weight 2.0": {
-   "A": 0.7829,
-   "B": 0.799,
+   "A": 0.7846,
+   "B": 0.8009,
    "worst_area": 0.971
   },
+  "transfer penalty 10 min": {
+   "A": 0.7925,
+   "B": 0.8075,
+   "worst_area": 0.978
+  },
+  "walk/wait weight 1.5": {
+   "A": 0.7903,
+   "B": 0.8062,
+   "worst_area": 0.98
+  },
+  "walk/wait weight 1.75": {
+   "A": 0.7771,
+   "B": 0.7939,
+   "worst_area": 0.96
+  },
+  "heat weight 2.0": {
+   "A": 0.7825,
+   "B": 0.7985,
+   "worst_area": 0.968
+  },
   "heat weight 3.0": {
-   "A": 0.7875,
-   "B": 0.8042,
-   "worst_area": 0.977
+   "A": 0.7873,
+   "B": 0.8038,
+   "worst_area": 0.974
   },
   "logit scale 0.15": {
-   "A": 0.7346,
-   "B": 0.749,
-   "worst_area": 0.967
+   "A": 0.7344,
+   "B": 0.7487,
+   "worst_area": 0.963
   },
   "car owners ride more (0.2)": {
-   "A": 0.7851,
-   "B": 0.8015,
-   "worst_area": 0.974
+   "A": 0.7848,
+   "B": 0.8011,
+   "worst_area": 0.971
   }
  }
 }
