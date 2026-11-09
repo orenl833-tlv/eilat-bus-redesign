@@ -138,11 +138,26 @@ People with luggage, and patients, shouldn't have to walk.
 
 - **Every option is less crowded than today.** The busiest buses are summer evenings, on the coast and on the
   line 6 family, and the options add evening service exactly there.
-- **What this doesn't see: short spikes at a single stop.** A school letting out, or a concert ending,
-  can put 100+ people at one stop within 15 minutes. Spreading demand over a period hides that.
-  - The school lines 80-82 stay as they are for this reason.
-  - Bell times are the thing to check with the schools. If Rabin's ~1,200 students leave at once and 10%
-    ride, that's ~120 people needing 2 buses inside 15 minutes.
+- **School dismissal spikes** (`scripts/school_peaks.py`).
+  - **No published national bell schedule exists**, so it was estimated from the Education Ministry's
+    weekly hours (36 h in grades 7-9; 30-34 h plus matriculation prep in 10-12), an 08:00 start and
+    45-minute periods.
+  - **End times** are ~13:15 / 14:10 / 15:00 / 15:45 (after periods 6-9).
+  - **Shares let out:**
+    - grades 7-9: 35% / 45% / 20% / 0%;
+    - grades 10-12: 15% / 35% / 35% / 15%.
+  - **The largest single bell is 14:10:** ~400-480 students per comprehensive school (Rabin, Begin,
+    Goldwater).
+  - **Bus share of students:** 4% (calibrated) or 10% (high case), so 20-50 riders per school within a few
+    minutes.
+  - **Places on buses calling within 300 m in the next 15 minutes:** in every option, enough for ~86-100%
+    of everyone let out, counting all lines, both directions, empty buses.
+  - **Correcting for direction (½) and passengers already on board (~45 of 85 at that hour):** about a
+    quarter of that is really free. Even then, buses overflow only if more than ~20% of the students let
+    out at one bell take the bus, 2-5 × the estimates.
+  - **School lines 80-82 stay** on top of that.
+  - **Verdict:** a 300-person crush at a school gate is not a risk in any option, because the staggered
+    bells spread students over four waves.
 
 ## What I would check before anyone acts on this
 
