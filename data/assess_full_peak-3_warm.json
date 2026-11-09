@@ -1,56 +1,56 @@
 {
  "tag": "full_peak-3_warm",
  "perceived_cost_vs_today": {
-  "winter/A": 0.7827,
-  "winter/B": 0.7945,
-  "spring_autumn/A": 0.7958,
-  "spring_autumn/B": 0.809,
-  "summer/A": 0.7839,
-  "summer/B": 0.7938
+  "winter/A": 0.8201,
+  "winter/B": 0.8336,
+  "spring_autumn/A": 0.8151,
+  "spring_autumn/B": 0.8307,
+  "summer/A": 0.8033,
+  "summer/B": 0.8191
  },
- "year_A": 0.7884,
- "year_B": 0.8005,
+ "year_A": 0.8152,
+ "year_B": 0.83,
  "bus_trips_vs_today": {
-  "winter/A": 1.037,
-  "winter/B": 1.037,
-  "spring_autumn/A": 1.033,
-  "spring_autumn/B": 1.032,
-  "summer/A": 1.036,
-  "summer/B": 1.035
+  "winter/A": 1.033,
+  "winter/B": 1.032,
+  "spring_autumn/A": 1.031,
+  "spring_autumn/B": 1.03,
+  "summer/A": 1.04,
+  "summer/B": 1.038
  },
  "fleet": {
   "winter": {
    "peak": 32,
    "by_period": {
-    "06-09": 27,
+    "06-09": 25,
     "09-12": 28,
     "12-15": 32,
-    "15-19": 30,
-    "19-24": 22
+    "15-19": 27,
+    "19-24": 25
    },
-   "hours": 405.3
+   "hours": 404.3
   },
   "spring_autumn": {
-   "peak": 32,
+   "peak": 31,
    "by_period": {
-    "06-09": 25,
+    "06-09": 22,
     "09-12": 27,
     "12-15": 31,
-    "15-19": 32,
-    "19-24": 23
+    "15-19": 31,
+    "19-24": 28
    },
-   "hours": 404.8
+   "hours": 404.1
   },
   "summer": {
-   "peak": 30,
+   "peak": 31,
    "by_period": {
-    "06-09": 29,
-    "09-12": 30,
-    "12-15": 30,
+    "06-09": 31,
+    "09-12": 28,
+    "12-15": 31,
     "15-19": 27,
-    "19-24": 24
+    "19-24": 23
    },
-   "hours": 403.7
+   "hours": 404.5
   }
  },
  "fleet_today": {
@@ -64,52 +64,52 @@
   },
   "hours": 395.5
  },
- "worst_area": 0.964,
+ "worst_area": 0.982,
  "sensitivity": {
   "stop cost 20 s": {
-   "A": 0.7886,
-   "B": 0.8006,
-   "worst_area": 0.964
+   "A": 0.8155,
+   "B": 0.8302,
+   "worst_area": 0.983
   },
   "stop cost 40 s": {
-   "A": 0.7882,
-   "B": 0.8003,
-   "worst_area": 0.963
+   "A": 0.815,
+   "B": 0.8298,
+   "worst_area": 0.981
   },
   "transfer penalty 10 min": {
-   "A": 0.7968,
-   "B": 0.8074,
-   "worst_area": 0.971
+   "A": 0.8255,
+   "B": 0.8387,
+   "worst_area": 0.989
   },
   "walk/wait weight 1.5": {
-   "A": 0.7928,
-   "B": 0.8047,
-   "worst_area": 0.971
+   "A": 0.8189,
+   "B": 0.8334,
+   "worst_area": 0.987
   },
   "walk/wait weight 1.75": {
-   "A": 0.782,
-   "B": 0.7945,
-   "worst_area": 0.954
+   "A": 0.8099,
+   "B": 0.8251,
+   "worst_area": 0.975
   },
   "heat weight 2.0": {
-   "A": 0.7861,
-   "B": 0.7978,
-   "worst_area": 0.962
+   "A": 0.8128,
+   "B": 0.8272,
+   "worst_area": 0.979
   },
   "heat weight 3.0": {
-   "A": 0.7908,
-   "B": 0.8032,
-   "worst_area": 0.965
+   "A": 0.8175,
+   "B": 0.8326,
+   "worst_area": 0.986
   },
   "logit scale 0.15": {
-   "A": 0.7387,
-   "B": 0.7478,
-   "worst_area": 0.955
+   "A": 0.7715,
+   "B": 0.7848,
+   "worst_area": 0.977
   },
   "car owners ride more (0.2)": {
-   "A": 0.7884,
-   "B": 0.8005,
-   "worst_area": 0.964
+   "A": 0.8152,
+   "B": 0.83,
+   "worst_area": 0.982
   }
  }
 }

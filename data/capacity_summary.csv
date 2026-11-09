@@ -1,5 +1,5 @@
 option,max_per_bus_peak,max_per_bus_peak2,over_comfort,over_full,over_full_at_2x
-full_peak-3_warm,79.4,105.9,4,0,4
-full_warm,64.9,86.5,0,0,3
-keep,70.7,94.3,4,0,4
+full_peak-3_warm,71.2,94.9,2,0,2
+full_warm,69.0,91.9,4,0,4
+keep,77.5,103.3,4,0,4
 today,78.1,104.1,4,0,4

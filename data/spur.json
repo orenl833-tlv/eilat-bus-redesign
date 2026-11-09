@@ -1,50 +1,50 @@
 {
  "keep": {
   "without": {
-   "vs_today_A": 0.9015,
-   "vs_today_B": 0.9077,
-   "district_902_vs_today": 0.993,
+   "vs_today_A": 0.9082,
+   "vs_today_B": 0.9149,
+   "district_902_vs_today": 0.994,
    "peak": 35,
-   "hours": 397.1
+   "hours": 394.2
   },
   "with spur": {
-   "vs_today_A": 0.845,
-   "vs_today_B": 0.8553,
-   "district_902_vs_today": 0.457,
+   "vs_today_A": 0.8524,
+   "vs_today_B": 0.8634,
+   "district_902_vs_today": 0.47,
    "peak": 36,
-   "hours": 423.4
+   "hours": 419.1
   }
  },
  "full_warm": {
   "without": {
-   "vs_today_A": 0.8413,
-   "vs_today_B": 0.8476,
-   "district_902_vs_today": 0.995,
-   "peak": 33,
-   "hours": 394.1
+   "vs_today_A": 0.8691,
+   "vs_today_B": 0.8777,
+   "district_902_vs_today": 0.996,
+   "peak": 34,
+   "hours": 394.5
   },
   "with spur": {
-   "vs_today_A": 0.779,
-   "vs_today_B": 0.7901,
-   "district_902_vs_today": 0.453,
-   "peak": 36,
-   "hours": 426.7
+   "vs_today_A": 0.8101,
+   "vs_today_B": 0.8232,
+   "district_902_vs_today": 0.471,
+   "peak": 35,
+   "hours": 421.9
   }
  },
  "full_peak-3_warm": {
   "without": {
-   "vs_today_A": 0.8369,
-   "vs_today_B": 0.8408,
-   "district_902_vs_today": 0.995,
+   "vs_today_A": 0.8545,
+   "vs_today_B": 0.8611,
+   "district_902_vs_today": 0.996,
    "peak": 32,
-   "hours": 404.1
+   "hours": 403.6
   },
   "with spur": {
-   "vs_today_A": 0.7719,
-   "vs_today_B": 0.7809,
-   "district_902_vs_today": 0.449,
-   "peak": 35,
-   "hours": 436.5
+   "vs_today_A": 0.7918,
+   "vs_today_B": 0.8038,
+   "district_902_vs_today": 0.47,
+   "peak": 34,
+   "hours": 430.5
   }
  }
 }
