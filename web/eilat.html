@@ -51,6 +51,7 @@ figcaption { display: flex; justify-content: space-between; gap: 8px; align-item
 figcaption b { font: 700 18px var(--display) }
 figcaption span { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums }
 svg { width: 100%; height: auto; display: block }
+.maphint { margin: 0 0 6px; font-size: 12px; color: var(--ink-2); min-height: 2.6em }
 .lines { position: relative; scroll-behavior: smooth; margin-top: 10px; border-top: 1px solid var(--rule); padding-top: 8px; display: grid; gap: 2px; max-height: 260px; overflow-y: auto }
 .lines .hint { font-size: 12px; color: var(--ink-2); margin-bottom: 4px }
 .lines button { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; text-align: start;
@@ -97,8 +98,8 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   </div>
 
   <div class="maps">
-    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">המפה של היום היא נקודת הייחוס, ולכן האזורים בה בצבע אחיד.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: כמה זמן הנסיעה המורגש של התושבים שלו משתפר לעומת היום (ממוצע שנתי). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
@@ -106,8 +107,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div>
     <h2>מדלת לדלת, לפי שכונה</h2>
-    <p class="note">דקות מורגשות בין 09:00 ל-12:00 בחורף: דקת הליכה או המתנה נחשבת כמו 1.6 דקות באוטובוס, ומעבר מוסיף 5 דקות.
-      עמודת השינוי היא הממוצע השנתי על פני כל מטרות הנסיעה ושני הכיולים. אפשר לעמוד עם העכבר על אזור במפה כדי לראות את אותם מספרים.</p>
+    <p class="note" id="tblnote"></p>
   </div>
   <div class="tablewrap"><table id="tbl"></table></div>
   <p class="note">נתונים: משרד התחבורה (GTFS ונסועה לפי קו), Open Bus Stride של הסדנא לידע ציבורי (SIRI), הלמ"ס (מפקד 2022 ואזורים סטטיסטיים).
@@ -310,10 +310,10 @@ function lineList(id, tag, selKey) {
 function tip(e, a, tag) {
   const el = document.getElementById("tip");
   const s = D.summary[tag === "today" ? st.opt : tag];
-  const tt = s?.tt?.[a.id];
+  const tt = ttFor(a.id);
   let h = `<b>אזור ${a.id}</b><br>${a.pop ? a.pop.toLocaleString("he-IL") + " תושבים · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% ממשקי הבית בלי רכב" : ""}`;
   if (s?.area?.[a.id] != null) h += `<br>זמן מורגש לנסיעה: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
-  if (tt) h += "<br>" + PLACES.filter((p) => tt[p]).map((p) => `${PLACE_HE[p]}: היום ${tt[p][0]}, בהצעה ${tt[p][1]} דק'`).join("<br>");
+  if (tt) h += `<br><small>${whenText()}</small><br>` + PLACES.filter((p) => tt[p]).map((p) => `${PLACE_HE[p]}: היום ${Math.round(tt[p][0])}, בהצעה ${Math.round(tt[p][1])} דק'`).join("<br>");
   el.innerHTML = h; el.hidden = false;
   const x = Math.min(e.clientX + 14, window.innerWidth - 280), y = Math.min(e.clientY + 14, window.innerHeight - 170);
   el.style.left = x + "px"; el.style.top = y + "px";
@@ -333,12 +333,21 @@ function tiles() {
   document.getElementById("headline").textContent = `${OPT_HE[st.opt].replace(/^\d · /, "")}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מורגש מדלת לדלת.`;
 }
 
+// perceived minutes to each key place, for the chosen season and period (or the whole day): [today, option]
+function ttFor(id) {
+  const a = D.tt?.today?.[st.season]?.[st.period]?.[id], b = D.tt?.[st.opt]?.[st.season]?.[st.period]?.[id];
+  if (!a || !b) return null;
+  return Object.fromEntries(D.tt_keys.map((k, i) => [k, [a[i], b[i]]]));
+}
+const whenText = () => `${st.period === "all" ? "ממוצע על פני כל היום (06:00–24:00)" : "בין " + st.period.replace("-", ":00 ל-") + ":00"}, ${SNAME[st.season]}`;
+
 function table() {
   const s = D.summary[st.opt];
-  const ids = D.areas.map((a) => a.id).filter((id) => s.tt[id]);
+  const ids = D.areas.map((a) => a.id).filter((id) => ttFor(id));
+  document.getElementById("tblnote").textContent = `דקות מורגשות מדלת לדלת, ${whenText()}: דקת הליכה או המתנה נחשבת כמו 1.6 דקות באוטובוס, ומעבר מוסיף 5 דקות. המספר הגדול הוא הזמן בהצעה, והקטן הוא ההפרש מהיום. עמודת השינוי היא הממוצע השנתי על פני כל מטרות הנסיעה ושני הכיולים.`;
   let h = "<thead><tr><th>אזור</th><th>תושבים</th><th>בלי רכב</th><th>שינוי</th>" + PLACES.map((p) => `<th>${PLACE_HE[p]}</th>`).join("") + "</tr></thead><tbody>";
   for (const id of ids) {
-    const a = D.areas.find((x) => x.id === id), tt = s.tt[id], c = s.area[id];
+    const a = D.areas.find((x) => x.id === id), tt = ttFor(id), c = s.area[id];
     h += `<tr><td>${id}</td><td>${a.pop ? a.pop.toLocaleString("he-IL") : "–"}</td><td>${a.nocar != null ? Math.round(a.nocar) + "%" : "–"}</td>` +
       `<td class="${c < 0 ? "good" : "bad"}">${num(signed(c, 1) + "%")}</td>` +
       PLACES.map((p) => { const v = tt[p]; if (!v) return "<td>–</td>"; const d = v[1] - v[0];

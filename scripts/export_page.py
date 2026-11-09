@@ -97,6 +97,32 @@ def main():
                 area={str(int(i)): round(float((r["worst"] + r["best"]) / 2 - 1) * 100, 1) for i, r in A.iterrows()},
                 tt={str(int(i)): {k: [round(float(T.loc[i, ("today", k)]), 1), round(float(T.loc[i, ("proposal", k)]), 1)]
                                   for k in T.columns.get_level_values(1).unique()} for i in T.index})
+    # perceived door-to-door minutes from each residential area to the key places, for every network, season and
+    # period, plus the whole day (periods weighted by their hours); min of bus and walking, median over the area's points
+    from eilat import demand as Dm
+    from eilat import model as Mm
+    import numpy as np
+    keys = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"]
+    m = prob_full.m
+    cols = [m.att[list(Dm.ATTRACTORS.name).index(k)] for k in keys]
+    areas_of = m.pts.area.values[m.homes]
+    hours = {q: b - a for q, (a, b) in P.PERIODS.items()}
+    out["tt"] = {}
+    for tag in OPTS:
+        prob = prob_keep if tag == "keep" else prob_full
+        ns = nets(prob, tag)
+        out["tt"][tag] = {}
+        for se in P.SEASONS:
+            per = {}
+            for q in P.PERIODS:
+                ww = P.W_WALK_HEAT if Mm.hot_midday(se, q) else P.W_WALK
+                r = m.ev.run(ns[se], q, w_walk=ww, sources=m.homes)
+                g = np.minimum(r["gc_bus"], r["walk"])[:, cols]
+                per[q] = pd.DataFrame(g, columns=keys).groupby(areas_of).median()
+            day = sum(per[q] * hours[q] for q in P.PERIODS) / sum(hours.values())
+            per["all"] = day
+            out["tt"][tag][se] = {q: {str(int(a)): [round(float(v), 1) for v in row] for a, row in df.iterrows()} for q, df in per.items()}
+    out["tt_keys"] = keys
     out["summary"]["today"] = dict(peak=json.load(open("data/assess_full_warm.json"))["fleet_today"]["peak"],
                                    hours=json.load(open("data/assess_full_warm.json"))["fleet_today"]["hours"])
     # base map: the city's whole area (land), the gulf (frame south of North Beach minus the city; the city's boundary
