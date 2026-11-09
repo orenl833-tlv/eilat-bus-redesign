@@ -1,0 +1,204 @@
+{
+ "elderly": {
+  "dropped": {
+   "stops": 31,
+   "boardings_today": 781,
+   "in_areas_65plus_15pct": 1,
+   "boardings_in_those": 62,
+   "nearest_served_m_median": 110,
+   "nearest_served_m_max": 268,
+   "over_300m": 0
+  },
+  "passed": {
+   "stops": 24,
+   "boardings_today": 94,
+   "in_areas_65plus_15pct": 0,
+   "boardings_in_those": 0,
+   "nearest_served_m_median": 73,
+   "nearest_served_m_max": 177,
+   "over_300m": 0
+  },
+  "farthest_in_older_areas": [
+   {
+    "stop": "חטיבת הנגב/דרך הגיא",
+    "area": 32,
+    "age65": 17.8,
+    "kind": "dropped",
+    "nearest": "חטיבת הנגב/ברקן",
+    "m": 95,
+    "boardings_today": 62
+   }
+  ]
+ },
+ "throughput": {
+  "today 12-15": [
+   {
+    "stop": "חנה וסע מבואות אילת",
+    "buses_per_hour": 18.0
+   },
+   {
+    "stop": "החשמונאים/הלויים",
+    "buses_per_hour": 17.3
+   },
+   {
+    "stop": "החשמונאים/המדיינים",
+    "buses_per_hour": 17.3
+   },
+   {
+    "stop": "החשמונאים/כנענים",
+    "buses_per_hour": 16.3
+   }
+  ],
+  "today 15-19": [
+   {
+    "stop": "חנה וסע מבואות אילת",
+    "buses_per_hour": 18.0
+   },
+   {
+    "stop": "החשמונאים/הלויים",
+    "buses_per_hour": 15.2
+   },
+   {
+    "stop": "החשמונאים/המדיינים",
+    "buses_per_hour": 15.2
+   },
+   {
+    "stop": "החשמונאים/העמונים",
+    "buses_per_hour": 15.0
+   }
+  ],
+  "full_warm 12-15": [
+   {
+    "stop": "חנה וסע מבואות אילת",
+    "buses_per_hour": 20.0
+   },
+   {
+    "stop": "מלון מג'יק פאלאס/קראון פלאזה",
+    "buses_per_hour": 18.5
+   },
+   {
+    "stop": "מלון אסטרל וילג'/מתחם רד",
+    "buses_per_hour": 15.5
+   },
+   {
+    "stop": "קניון אייס מול/קאמפן",
+    "buses_per_hour": 15.5
+   }
+  ],
+  "full_warm 15-19": [
+   {
+    "stop": "מלון מג'יק פאלאס/קראון פלאזה",
+    "buses_per_hour": 16.5
+   },
+   {
+    "stop": "מלון אסטרל וילג'/מתחם רד",
+    "buses_per_hour": 15.0
+   },
+   {
+    "stop": "קניון אייס מול/קאמפן",
+    "buses_per_hour": 15.0
+   },
+   {
+    "stop": "מלון הרודס/מלון דן",
+    "buses_per_hour": 15.0
+   }
+  ]
+ },
+ "holiday": {
+  "today": [
+   {
+    "per_bus_busiest_hour": 67.3,
+    "line": "16/1",
+    "period": "19-24"
+   },
+   {
+    "per_bus_busiest_hour": 53.8,
+    "line": "6א/1",
+    "period": "19-24"
+   },
+   {
+    "per_bus_busiest_hour": 53.8,
+    "line": "6/1",
+    "period": "19-24"
+   }
+  ],
+  "full_warm": [
+   {
+    "per_bus_busiest_hour": 63.0,
+    "line": "5/0",
+    "period": "06-09"
+   },
+   {
+    "per_bus_busiest_hour": 60.7,
+    "line": "6/1",
+    "period": "19-24"
+   },
+   {
+    "per_bus_busiest_hour": 60.7,
+    "line": "6א/1",
+    "period": "19-24"
+   }
+  ]
+ },
+ "transfers": {
+  "today": {
+   "share_with_transfer": 0.175,
+   "share_rare_connection": 0.009
+  },
+  "keep": {
+   "share_with_transfer": 0.195,
+   "share_rare_connection": 0.0
+  },
+  "full_warm": {
+   "share_with_transfer": 0.24,
+   "share_rare_connection": 0.001
+  }
+ },
+ "recovery": {
+  "today@0.0": {
+   "buses": 35,
+   "headcount_overtime": 94,
+   "bus_hours_year": 149247
+  },
+  "keep@0.0": {
+   "buses": 33,
+   "headcount_overtime": 98,
+   "bus_hours_year": 149243
+  },
+  "full_warm@0.0": {
+   "buses": 34,
+   "headcount_overtime": 96,
+   "bus_hours_year": 151790
+  },
+  "today@0.1": {
+   "buses": 35,
+   "headcount_overtime": 99,
+   "bus_hours_year": 150145
+  },
+  "keep@0.1": {
+   "buses": 34,
+   "headcount_overtime": 98,
+   "bus_hours_year": 150082
+  },
+  "full_warm@0.1": {
+   "buses": 34,
+   "headcount_overtime": 99,
+   "bus_hours_year": 155061
+  },
+  "today@0.15": {
+   "buses": 37,
+   "headcount_overtime": 101,
+   "bus_hours_year": 153838
+  },
+  "keep@0.15": {
+   "buses": 34,
+   "headcount_overtime": 109,
+   "bus_hours_year": 153133
+  },
+  "full_warm@0.15": {
+   "buses": 34,
+   "headcount_overtime": 102,
+   "bus_hours_year": 157196
+  }
+ }
+}

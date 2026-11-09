@@ -22,6 +22,7 @@ python3 scripts/active_lines.py > $L/p_active.log 2>&1 &
 python3 scripts/shifts.py > $L/p_shifts.log 2>&1 &
 python3 scripts/evening.py > $L/p_evening.log 2>&1 &
 python3 scripts/shift_trips.py > $L/p_shift_trips.log 2>&1 &
+python3 scripts/realism.py > $L/p_realism.log 2>&1 &
 wait
 python3 scripts/future.py keep full_warm full_peak-3_warm > $L/p_future.log 2>&1
 python3 scripts/export_gtfs.py > $L/p_gtfs.log 2>&1

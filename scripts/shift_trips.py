@@ -9,7 +9,7 @@ Here each option, with the evening ending at 23:00, gets the same level of SHIFT
 patterns (of different lines) that, after their first hotel stop, stop at the most stops inside residential
 areas (a worker's way home; today these are loops 1 and 2) each get one departure timed to reach their
 first hotel stop at SHIFT_END + EXIT_LAG_MIN (clocking out, changing, walking to the stop) and, as today, a
-second one 30 minutes later: 4 trips. Buses, bus-hours and driver duties are
+second one 30 minutes later: 4 trips. Yoseftal hospital gets one such trip (today: line 3 at 23:16): 5 in all. Buses, bus-hours and driver duties are
 recomputed (scripts/blocking.py, scripts/shifts.py).
 
 Usage: PYTHONPATH=.:scripts python3 scripts/shift_trips.py   Output: data/shift_trips.csv
@@ -46,9 +46,23 @@ def home_stops():
 HOME = None
 
 
+def hospital_stops():
+    s = pd.read_csv("data/stops_all.csv")
+    return set(s.stop_id[s.stop_name.str.contains("יוספטל")])
+
+
 def shift_trips(net, hotels):
+    """Hotel shift trips (N_LINES lines x PASSES), plus one trip past Yoseftal hospital, as today's line 3 at
+    23:16 (the hospital's evening shift also ends at 23:00)."""
+    out = _site_trips(net, hotels, N_LINES, PASSES)
+    hosp = _site_trips(net, hospital_stops(), 1, (0,))
+    return pd.concat([out, hosp], ignore_index=True)
+
+
+def _site_trips(net, site, n_lines, passes):
     global HOME
     HOME = HOME or home_stops()
+    hotels = site
     rows, cand = [], []
     for p in net:
         if p.line in BL.SCHOOL:
@@ -61,13 +75,13 @@ def shift_trips(net, hotels):
     for _, p, idx in sorted(cand, key=lambda c: -c[0]):
         if p.line.rstrip("xs") not in lines:
             chosen.append((p, idx)); lines.add(p.line.rstrip("xs"))
-        if len(chosen) == N_LINES:
+        if len(chosen) == n_lines:
             break
     for p, idx in chosen:
         cum = [0.0]
         for x in p.times("19-24"):
             cum.append(cum[-1] + x)
-        for extra in PASSES:
+        for extra in passes:
             start = SHIFT_END_H * 60 + EXIT_LAG_MIN + extra - cum[idx[0]]
             rows.append(dict(line=p.line, start=start, end=start + cum[-1], o=p.stops[0], d=p.stops[-1]))
     return pd.DataFrame(rows)

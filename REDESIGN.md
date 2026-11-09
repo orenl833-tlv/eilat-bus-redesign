@@ -270,38 +270,77 @@ How the earlier end enters the model:
 - **Option 3's saving in buses never materialises in real blocks.** Its bus-hours stay 3% above today even
   at 23:00.
 
-### Keeping the hotels' 23:00 shift change (`scripts/shift_trips.py`)
+### Keeping the 23:00 shift changes: hotels and Yoseftal (`scripts/shift_trips.py`)
 
-**Ending every line at 23:00 would strand hotel workers.** Today's timetable is a strong hint:
-- loops 1 and 2 pass the North Beach hotels at 23:21-23:28 and 23:51-23:58, just after a 23:00 shift end;
-- these are most of the "3 trips after 23:00" that the plain cut removes.
+**Ending every line at 23:00 would strand hotel and hospital staff.** Today's timetable is a strong hint:
+- loops 1 and 2 pass the North Beach hotels at 23:21-23:28 and 23:51-23:58;
+- line 3 passes Yoseftal hospital at 23:16;
+- all of these fall just after a 23:00 shift end.
 
 Shift times are an assumption:
-- 07-15-23 is the common hotel pattern;
+- 07-15-23 is the common pattern;
 - Eilat job postings also show 06-14-22, and some hotels run staff shuttles;
-- the hotels' real shift times and staff numbers should be asked for before the timetable is fixed.
+- the hotels' and the hospital's real shift times and staff numbers should be asked for before the
+  timetable is fixed.
 
-**The fix: four shift trips.** Each option keeps 4 trips after 23:00, as today. They run on the two lines
-that, after the hotels, reach the most residential stops, and reach the first hotel stop 15 min after the
-shift ends, then again 30 min later. The 15 min are an assumption for clocking out, changing and walking to
-the stop.
+**The fix: five shift trips.** Each option keeps 5 trips after 23:00, as today:
+- 4 at the hotels: two lines × two passes, on the lines that reach the most residential stops after the
+  hotels;
+- 1 at the hospital.
 
-| Evening ends at 23:00 | Lines | Extra drivers, standard / overtime | Operating cost a year |
+Each trip reaches its first stop 15 min after the shift ends: clocking out, changing and walking to the stop
+(an assumption).
+
+| Evening ends at 23:00 | Shift trips on | Extra drivers, standard / overtime | Operating cost a year |
 |---|---|---|---|
 | Option 1, no shift trips | – | +4 / +5 | −NIS 0.7 M |
-| Option 1 + 4 shift trips | 1, 6א | +4 / +4 | NIS 0.0 M |
+| Option 1 + 4 hotel trips | 1, 6א | +4 / +4 | NIS 0.0 M |
+| Option 1 + 4 hotel + 1 hospital trip | 1, 6א, 3 | +6 / +5 | NIS 0.0 M |
 | Option 2, no shift trips | – | +4 / +1 | +NIS 0.5 M |
-| **Option 2 + 4 shift trips** | **6, 6א** | **+6 / +2** | **+NIS 0.9 M** |
-| Option 3 + 4 shift trips | 2, 6 | +7 / 0 | +NIS 2.1 M |
+| Option 2 + 4 hotel trips | 6, 6א | +6 / +2 | +NIS 0.9 M |
+| **Option 2 + 4 hotel + 1 hospital trip** | **6, 6א, 3** | **+9 / +4** | **+NIS 1.4 M** |
+| Option 3 + 4 hotel + 1 hospital trip | 2, 6, 3 | +9 / 0 | +NIS 2.1 M |
 
-- **The cost of the 4 trips is about NIS 0.4-0.7 M a year.** In option 2 they need one more driver.
-- **Perceived time is about as in the 23:00 rows above.** The 4 trips are not in the evaluation's evening
-  average, so if anything they make it slightly better.
+- **Five late trips cost NIS 0.7-0.9 M a year in option 2, but read this as a range.** The block and duty
+  heuristics are lumpy:
+  - one isolated late trip can open a new bus day or a 4-hour minimum duty;
+  - in option 1 the same trip costs nothing;
+  - a real scheduling tool would hang these trips onto buses already out.
+- **Perceived time is about as in the 23:00 rows above.** The shift trips are not in the evaluation's
+  evening average.
 - **Early shifts:** a 07:00 start is reachable in every option, since the first buses leave at 06:00. A
   06:00 start is not reachable today either; today's 05:15-05:55 trips go to the city entrance, not the
-  hotels. Hotels with 06:00 shifts would rely on their own shuttles.
-- **Time to reach the stop:** the school dismissal check now counts buses from 7 min after the bell, for
-  leaving class and the building. Buses still have room for at least 8 times the students who take them.
+  hotels.
+- **Time to reach the stop:** the school dismissal check now counts buses from 7 min after the bell.
+  Buses still have room for at least 8 times the students who take them.
+
+## Realism checks on the recommended package (`scripts/realism.py`)
+
+The package is option 2, evening to 23:00, with the shift trips. Each check compares it with today's
+network under the same rule.
+
+| Check | Today | Option 2 | Reading |
+|---|---|---|---|
+| **Recovery time at terminals**: layover max(5 min, 15% of the run), since SIRI shows 41% of trips >5 min late | 37 buses, 101 drivers | 34 buses, 102 drivers, +2.2% bus-hours (+NIS 1.2 M) | Today's timetable needs 37 buses with this slack, which matches the 36-38 measured out at midday (FLEET.md); option 2 keeps 34. With 10%: 35 vs 34 buses, equal drivers, +3.3% bus-hours. |
+| **Transfers**: bus trips needing one (residents × key places × periods, winter) | 17.5% | 24% | The merges add transfers. Connections between two lines that both run ≥ every 30 min: 0.9% today, 0.1% option 2. |
+| **Dropped stops** (no longer served) | – | 31 stops, 781 boardings a day today | Nearest served stop: median 110 m, max 268 m. Only one is in an area with ≥15% residents aged 65+ (חטיבת הנגב/דרך הגיא, area 32, 95 m to the next stop). |
+| **Passed stops** (quiet stops a line skips) | – | 24 stops, 94 boardings a day | Next served stop: median 73 m, max 177 m. |
+| **Buses an hour at the busiest stop** (midday) | 18 (city entrance) | 20 (city entrance) | Well under the 30-40 a kerbside stop with one berth handles. |
+| **Holiday peak** (Passover, Sukkot: hotels full, 2.6 guests a room, schools out), busiest hour | 67 on line 16 | 63 on line 5 | Both near the comfortable 65, under the 85 of a full bus. |
+
+- **What realistic recovery time means:**
+  - it raises the bill for any network, today's included;
+  - against today under the same rule, option 2 costs NIS 1.2-1.8 M a year more and needs 0-1 more drivers.
+- **Transfers are the main price of option 2.** About one bus trip in four needs a change, up from one in
+  six.
+  - The 5-minute transfer penalty is the literature value; the design also wins with 10.
+  - Whether a transfer costs a second fare in Eilat, and whether residents ride free, could not be
+    confirmed here. Check with the Ministry before the change.
+
+**All in, the realistic cost of the recommended package:**
+- NIS 1-2 M a year more than today, and 2-4 more drivers;
+- for 14% shorter perceived trips;
+- it stays within today's 35 buses.
 
 ## GTFS export (`scripts/export_gtfs.py`)
 
