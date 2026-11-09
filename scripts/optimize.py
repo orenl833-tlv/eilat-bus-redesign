@@ -37,6 +37,8 @@ SEASONS = list(P.SEASONS)
 
 class Problem:
     def __init__(self, mode, peak_delta=0):
+        self.keep = mode == "keep"
+        mode = "moderate" if mode == "keep" else mode
         self.cal = json.load(open("data/calibration.json"))
         self.m = M.Model()
         self.base = N.from_gtfs()
@@ -74,6 +76,7 @@ class Problem:
                 anch[int(r.stat11)] = int(st.stop_id.iloc[int(d.argmin())])
             for pair in C.new_lines(self.sg, anch):
                 self.lines[pair[0].line] = pair; self.family[pair[0].line] = pair[0].line
+        self.base_lines = {p.line for p in self.base if p.line not in SCHOOL}
         # today's state: base lines at their own headways (snapped to levels), variants and new lines off
         self.state0 = {}
         for ln, pats in self.lines.items():
@@ -161,6 +164,12 @@ class Problem:
                 worst = max(worst, rel)
                 pen += 0.05 * max(0, rel - (1 + P.MAX_AREA_LOSS))
         pen += 0.01 * self.violations(state)
+        if self.keep:   # conservative option: every line of today survives in some form
+            fams = {}
+            for ln, hw in state.items():
+                fams.setdefault(self.family[ln], False)
+                fams[self.family[ln]] |= any(math.isfinite(h) for h in hw.values())
+            pen += 0.02 * sum(1 for f, on in fams.items() if not on and f in self.base_lines)
         cov, cov0 = self.coverage(pats), self.coverage(self.base)
         pen += 0.01 * float(np.maximum(0, np.minimum(0.5, cov0) - cov).sum())
         total = obj + pen

@@ -22,7 +22,7 @@ def load_state(path):
 def main():
     tag = sys.argv[1]; iters = int(sys.argv[2]) if len(sys.argv) > 2 else 400
     peak_delta = int(sys.argv[3]) if len(sys.argv) > 3 else 0
-    mode = "moderate" if tag.startswith("moderate") else "full"
+    mode = "keep" if tag.startswith("keep") else ("moderate" if tag.startswith("moderate") else "full")
     random.seed(2)
     prob = O.Problem(mode, peak_delta)
     best_all = load_state(f"data/opt_{tag}.json")

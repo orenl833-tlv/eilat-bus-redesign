@@ -64,7 +64,7 @@ def eval_net(prob, nets, **over):
 
 def main():
     tag = sys.argv[1]
-    mode = "moderate" if tag.startswith("moderate") else "full"
+    mode = "keep" if tag.startswith("keep") else ("moderate" if tag.startswith("moderate") else "full")
     peak_delta = -3 if "peak-3" in tag else 0
     prob = O.Problem(mode, peak_delta)
     state, seas, _ = load(tag)
