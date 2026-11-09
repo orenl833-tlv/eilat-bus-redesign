@@ -50,8 +50,11 @@ Three options follow, from the most cautious to the most far-reaching. The inter
 - **A flatter midday peak.** The fleet is set by 12:00-15:00.
 - **Near-duplicate lines merged** (options 2 and 3): lines 1 and 2, and 3 and 4, each become one line at a
   higher frequency.
-- **New direct lines were not chosen.** In a city this size a frequent line through the centre beats a rare
-  direct one.
+- **One new line, in options 2 and 3:** A14H, a short shuttle (13-27 min) from the campus through area 14
+  and Star Eilat to the hotels (Magic Palace / Crown Plaza).
+  - The search added it to keep the campus and hotel stops served once lines 1 and 4 were merged away.
+  - No other new direct line was chosen. In a city this size a frequent line through the centre beats a
+    rare direct one.
 
 ## The three options
 
@@ -189,6 +192,26 @@ Three options follow, from the most cautious to the most far-reaching. The inter
 | Option 3 | 0.85-0.86 | **0.79-0.80** | 1.00 → **0.47** | 32 → 34 | 404 → 431 |
 
 The spur fits within the budget growth the extra demand justifies.
+
+## How robust is the design? (three more searches from scratch, random seeds 11-13)
+
+| | Today's lines kept | Long loops passing quiet stops | Lines merged | New lines | Result |
+|---|---|---|---|---|---|
+| Seed 11 | all 8 families | 1, 2, 4, 5א, 6, 6א | none | none | 0.917 |
+| Seed 12 | all 8 families | 1, 2, 4, 5, 5א, 6, 6א, 15, 16 | none | none | 0.915 |
+| Seed 13 | all 8 families | 1, 2, 6 | none | none | 0.892 |
+| Option 2 (search chain) | 6 families | 2, 5א | 1, 4 | A14H | **0.83** |
+
+- **Robust (found in every run):**
+  - long loops 1, 2 and 6 pass their quiet stops;
+  - the frequencies are rebalanced;
+  - no new direct lines except where coverage forces one.
+  - That alone is worth **8-11%**, which is what option 1 delivers.
+- **Found only by the longer search chain:** merging lines (1, 4) and the A14H shuttle. They add another
+  **5-7%**, but a cold search doesn't reach them in 3,000 steps.
+  - The search depends on where it starts. The merges are a real improvement in the model, but a less
+    certain one.
+  - This is another reason to start with option 1.
 
 ## What to check before acting
 
