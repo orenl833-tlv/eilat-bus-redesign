@@ -1,0 +1,115 @@
+{
+ "tag": "moderate",
+ "perceived_cost_vs_today": {
+  "winter/A": 0.795,
+  "winter/B": 0.8199,
+  "spring_autumn/A": 0.7872,
+  "spring_autumn/B": 0.8103,
+  "summer/A": 0.7875,
+  "summer/B": 0.8099
+ },
+ "year_A": 0.7905,
+ "year_B": 0.8142,
+ "bus_trips_vs_today": {
+  "winter/A": 1.033,
+  "winter/B": 1.027,
+  "spring_autumn/A": 1.035,
+  "spring_autumn/B": 1.03,
+  "summer/A": 1.039,
+  "summer/B": 1.035
+ },
+ "fleet": {
+  "winter": {
+   "peak": 34,
+   "by_period": {
+    "06-09": 20,
+    "09-12": 23,
+    "12-15": 34,
+    "15-19": 32,
+    "19-24": 26
+   },
+   "hours": 395.2
+  },
+  "spring_autumn": {
+   "peak": 34,
+   "by_period": {
+    "06-09": 21,
+    "09-12": 28,
+    "12-15": 34,
+    "15-19": 32,
+    "19-24": 24
+   },
+   "hours": 394.0
+  },
+  "summer": {
+   "peak": 32,
+   "by_period": {
+    "06-09": 25,
+    "09-12": 28,
+    "12-15": 32,
+    "15-19": 29,
+    "19-24": 24
+   },
+   "hours": 395.2
+  }
+ },
+ "fleet_today": {
+  "peak": 35,
+  "by_period": {
+   "06-09": 28,
+   "09-12": 30,
+   "12-15": 35,
+   "15-19": 32,
+   "19-24": 21
+  },
+  "hours": 395.5
+ },
+ "worst_area": 0.949,
+ "sensitivity": {
+  "stop cost 20 s": {
+   "A": 0.7908,
+   "B": 0.8145,
+   "worst_area": 0.949
+  },
+  "stop cost 40 s": {
+   "A": 0.7902,
+   "B": 0.8139,
+   "worst_area": 0.948
+  },
+  "transfer penalty 10 min": {
+   "A": 0.7977,
+   "B": 0.821,
+   "worst_area": 0.959
+  },
+  "walk/wait weight 1.5": {
+   "A": 0.7957,
+   "B": 0.8193,
+   "worst_area": 0.958
+  },
+  "walk/wait weight 1.75": {
+   "A": 0.7829,
+   "B": 0.807,
+   "worst_area": 0.935
+  },
+  "heat weight 2.0": {
+   "A": 0.7887,
+   "B": 0.8123,
+   "worst_area": 0.948
+  },
+  "heat weight 3.0": {
+   "A": 0.7925,
+   "B": 0.8164,
+   "worst_area": 0.95
+  },
+  "logit scale 0.15": {
+   "A": 0.7447,
+   "B": 0.7712,
+   "worst_area": 0.936
+  },
+  "car owners ride more (0.2)": {
+   "A": 0.7905,
+   "B": 0.8142,
+   "worst_area": 0.949
+  }
+ }
+}
