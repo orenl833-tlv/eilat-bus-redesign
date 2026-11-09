@@ -1,8 +1,8 @@
 # Eilat bus network redesign
 
 Can a city's buses serve people better with the same fleet and the same driving hours? For Eilat, a closed
-city of 55,000 with ~42 urban buses, the answer from public data is **yes: about 20% less perceived
-door-to-door time, with no residential area worse off and no extra buses.**
+city of 55,000 with ~42 urban buses, the answer from public data is **yes: 12-18% less perceived
+door-to-door time, no neighbourhood more than 3% worse, and no extra buses.**
 
 ![Today vs restructured network](figs/proposal_full_warm.png)
 
