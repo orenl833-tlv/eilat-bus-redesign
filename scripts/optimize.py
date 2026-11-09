@@ -206,7 +206,8 @@ def main():
         for k, v in raw.items():
             if k in cur:
                 cur[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
-        tag += "_warm"; cur_s = prob.score(cur); best, best_s = cur, cur_s
+        tag += "_warm"
+    cur_s = prob.score(cur); best, best_s = cur, cur_s
     print("start", prob.score(cur, detail=True))
     log = []; t0 = time.time(); T0 = 0.004
     for it in range(iters):
