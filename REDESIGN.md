@@ -201,6 +201,25 @@ People with luggage, and patients, shouldn't have to walk.
 - **Driver shifts.** A shift is at most 8.5 h per bus block, so the numbers are only indicative.
   Fewer, longer bus days mean more split shifts.
 
+## Reliability (`analysis/reliability.py`, SIRI, 7 school-term weekdays)
+
+- **Gaps between buses are irregular.**
+  - The coefficient of variation of gaps at mid-route stops is 0.43 (median over line-periods).
+  - A passenger arriving at random therefore waits **19% longer** than the timetable implies:
+    wait = h/2 × (1 + CV²).
+- **Lateness at the mid-route stop:**
+  - median +3.5 min;
+  - 41% of trips more than 5 min late, 16% more than 10;
+  - 19% more than 2 min early.
+- **The big loops (1, 2, 6) are 8-9 minutes late half-way round,** because their timetables use optimistic run
+  times. Lines 5/5א run 3-4 min early.
+- **The options are built on measured run times**, so their timetables should be more honest.
+- **With waits × 1.19, the options do slightly better against today, not worse:**
+  - option 1: 0.854;
+  - option 2: 0.782;
+  - option 3: 0.773.
+  Frequent service hurts less when buses bunch. The ranking is unchanged.
+
 ## What I would check before anyone acts on this
 
 - **Lines 1 and 2 carry ~3,300 boardings a day today.** The model says their riders are better served by
