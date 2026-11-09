@@ -1,0 +1,9 @@
+option,cost_year,hours_year,splits_year,duties_max,splits_max,headcount,extra_drivers,extra_cost_year_mnis,extra_hours_pct,extra_cost_low_mnis,extra_cost_high_mnis,scenario
+full_peak-3_warm,14698425.0,177087.5,0.0,76,0,95.0,1.0,1.14,8.9,0.89,1.44,overtime
+full_warm,14368275.0,172657.5,625.0,83,4,104.0,10.0,0.81,6.2,0.66,1.0,overtime
+keep,14205750.0,170602.5,750.0,84,5,105.0,11.0,0.65,4.9,0.53,0.8,overtime
+today,13559100.0,162640.0,1000.0,75,4,94.0,0.0,0.0,0.0,0.0,0.0,overtime
+full_peak-3_warm,14337775.0,172747.5,0.0,98,0,122.0,17.0,0.84,6.7,0.64,1.09,standard
+full_warm,14085500.0,169257.5,625.0,98,4,122.0,17.0,0.59,4.6,0.47,0.74,standard
+keep,13994625.0,167975.0,875.0,95,5,119.0,14.0,0.5,3.8,0.41,0.61,standard
+today,13494500.0,161855.0,1000.0,84,4,105.0,0.0,0.0,0.0,0.0,0.0,standard

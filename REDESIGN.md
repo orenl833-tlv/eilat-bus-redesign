@@ -147,8 +147,8 @@ Three options follow, from the most cautious to the most far-reaching. The inter
 
 - **Most buses already run more than an e-bus's ~250 km a day,** so charging in the 10:00-12:00 lull is
   needed today and in every option. The depot is next to the centre.
-- **Driver shifts** (≤ 8.5 h per bus block) are indicative only. Fewer, longer bus days mean more split
-  shifts.
+- **Driver shifts:** the last column is a first count (bus hours / 8.5). The proper check, with the law's
+  break rules and the cost, is in "Driver duties and their cost" below.
 
 ## Lines running by hour (`scripts/active_lines.py`)
 
@@ -169,25 +169,59 @@ Three options follow, from the most cautious to the most far-reaching. The inter
 - **Fewer lines at once** in options 2 and 3 (8-12 lines in daytime against today's 10-13) is the merging. The lines that
   remain run more often.
 
-## Driver duties, rough (`scripts/shifts.py`)
+## Driver duties and their cost (`scripts/shifts.py`)
 
-The bus days from the blocks are cut into driver duties between trips. The rules are assumptions, not the
-legal text:
-- a duty lasts at most 8.5 h incl. 15 min sign-on;
-- it always ends where the bus goes back to the depot;
-- after 4.5 h driving without a 30-min layover, a reliever takes one trip;
-- pieces under 3 h pair into split shifts.
+**Split shifts are not the problem; headcount is.** Every option can be staffed within Traffic Regulation
+168, and no option needs more split shifts than today. But the evening service to midnight makes bus days
+longer than two shifts can cover, so each option needs **10-17 more drivers** (1 for option 3 with overtime).
+Their cost is moderate: **NIS 0.4-1.4 M a year**, i.e. 4-9% more paid driver hours.
 
-| | Drivers a weekday | Paid driver hours | Short pieces (split shifts) | Break reliefs |
+What the law says (Regulation 168(a), gov.il):
+- at least 7 h rest before a working day;
+- at most 12 h driving in 24 h, 68 h in 7 days;
+- a break of at least 30 min in every 4 h of continuous driving;
+- a 25 h rest in every 8 days.
+
+The check, step by step:
+1. **Cutting bus days into duties.** Each bus day is cut at the depot and otherwise into the fewest
+   near-equal duties.
+2. **Two cases.** "standard": duties of at most 8.5 h; "overtime": a duty may run to 10.5 h, with the last
+   2 h paid × 1.25.
+3. **Breaks.** If a driver would drive more than 4 h without a 30-min layover, a spare driver takes one trip
+   (paid 1 h; one spare does about 6 such reliefs a day).
+4. **Short pieces.** A piece under 4 h is paired into a split shift (gap ≥ 1 h unpaid, spread ≤ 13 h), or
+   given as up to 2 h overtime after a straight shift, or else paid at least 4 h.
+5. **Cost.** Assumptions:
+   - NIS 83 an hour: the authority's proposed floor of 55.18 + a 6 NIS/h retention grant (Oct 2026),
+     × 1.35 employer cost; tested 70-100;
+   - NIS 60 per split shift; tested 0-120;
+   - headcount = the busiest season's daily duties × 1.25, for rest days, holiday and sickness.
+
+| Weekday, vs today | Split shifts a day (today 4) | Extra drivers, standard / overtime | Paid driver hours | Extra cost a year, NIS M (range) |
 |---|---|---|---|---|
-| Today (winter) | 76 | 495 | 22 | 37 |
-| Option 1 | 75-84 | 493-523 | 20-37 | 26-36 |
-| Option 2 | 72-86 | 509-535 | 27-32 | 18-40 |
-| Option 3 | 77-79 | 510-537 | 23-25 | 32-39 |
+| Option 1 | 0-5 | +14 / +11 | +3.8% / +4.9% | 0.50 (0.41-0.61) / 0.65 (0.53-0.80) |
+| Option 2 | 0-4 | +17 / +10 | +4.6% / +6.2% | 0.59 (0.47-0.74) / 0.81 (0.66-1.00) |
+| Option 3 | 0 | +17 / +1 | +6.7% / +8.9% | 0.84 (0.64-1.09) / 1.14 (0.89-1.44) |
 
-- **Every option can be staffed under these rules.** Driver hours are 0-8% above today.
-- **Option 2's winter timetable needs the most drivers (+13%)** and has more split shifts: its midday peak
-  is short and sharp. A rostering tool should smooth it before any claim of equal cost.
+Today's network in the same model needs 84 duties a day, 105 drivers ("standard") or 94 ("overtime").
+
+- **Where the extra drivers come from.**
+  - Today most buses finish around 22:00, so a bus day of ~17 h is two shifts.
+  - In the options many buses run to midnight; a day of ~19 h becomes three shorter shifts.
+  - Overtime brings it back to two shifts, at the cost of more paid hours.
+- **The cost is not extra to the bus-hour gap.**
+  - Driver pay is part of the NIS 360 per bus-hour, so the up to NIS 1.5 M a year for extra bus-hours
+    (above) already contains most of it.
+  - What it adds is the labour side: 10-17 more people to hire.
+- **Can Eilat hire them?** Israel is short of more than 5,000 bus drivers. Eilat is remote. Hiring 10-17
+  more is the real risk, more than the money.
+- **Ways to reduce it:**
+  - end the late-evening service at about 23:00 in the quiet seasons;
+  - let the second shift of a long bus day run with overtime;
+  - roster with a real crew-scheduling tool, whose result is usually better than this check.
+- **Not included:** one-off recruiting and training costs; Friday and Saturday crews.
+- **Not validated:** the model's 105 drivers for today could not be checked against the operator's real
+  roster, so the differences matter more than the levels.
 
 ## GTFS export (`scripts/export_gtfs.py`)
 
@@ -292,6 +326,7 @@ The spur fits within the budget growth the extra demand justifies.
   merging should wait for stop-level Rav-Kav data.
 - **Dropped and passed stops:** check them one by one, especially for elderly riders.
 - **Paid bus-hours (+1-9%):** close the gap by aligning timetables before claiming equal cost.
+- **Drivers:** 10-17 more must be hired (or the late evening trimmed) during a national driver shortage.
 - **Not modelled:** a full driver roster (only the rough check above), depot capacity, charging infrastructure.
 - **The summer holiday** is the least certain season: there is no summer Rav-Kav quarter.
 - **What the model does:** it compares networks. The +1-3% bus trips is its elasticity, not a forecast.
