@@ -342,6 +342,34 @@ network under the same rule.
 - for 14% shorter perceived trips;
 - it stays within today's 35 buses.
 
+## Example trips on the real timetable (`analysis/timetable_trip.py`)
+
+The model represents each period by its average headway, and a rider's wait as half of it. For single trips
+that can mislead, so three examples were re-planned on the actual timetables, the way a trip-planner app
+does it:
+- today's GTFS;
+- option 2's exported GTFS (winter, measured run times).
+
+| Trip | Today (timetable) | Option 2 (timetable) | Model's average, today → option 2 |
+|---|---|---|---|
+| Home by שד.ששת הימים → Princess hotel, for a 07:00 shift | first possible arrival **08:59** (line 15 starts 08:35) | first arrival **07:14** | 129 → 54 min |
+| Same home → Coral Beach, 20:00-22:00 | 27-72 min until 20:45; **no bus after that** | 32-52 min, until after 22:00 | 96 → 44 min (at 21:00) |
+| Area 36 → North Beach hotels, 20:00-22:00 | 33-55 min | 35-46 min | 78 → 35 min |
+| Area 33 → city-entrance park & ride, 20:00-22:00 | 19-34 min (mean 24) | 36-52 min (mean 45) | 30 → 53 min |
+
+- **The direction holds; the size doesn't always.**
+  - The model's averages overstate the evening hotel trip: today's real timetable already does it in
+    33-55 min.
+  - They understate the Coral Beach evening: today there is no bus at all after about 20:45.
+- **A 07:00 shift on the south coast is still missed in option 2,** by 14 min. One earlier line-15 trip
+  (from the central station at about 06:15) would fix it.
+- **Today's timetable has timed transfers the model doesn't credit.** At Mall HaYam:
+  - line 1 arrives just as line 15 leaves at :19 every hour;
+  - line 2 arrives 6 min before line 15 leaves at :49.
+  - Option 2 removes line 1. Its new timetable should recreate such connections (with lines 2 and 5) when
+    timetables are aligned in the preparation phase.
+  - The exported GTFS does not design them.
+
 ## GTFS export (`scripts/export_gtfs.py`)
 
 Each option is in `exports/gtfs_<option>.zip`:
