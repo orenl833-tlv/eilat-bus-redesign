@@ -271,7 +271,50 @@ function drawMap(svg, tag, showChange) {
     t.setAttribute("font-family", "IBM Plex Sans Hebrew, sans-serif"); t.setAttribute("fill", css("--poi"));
     t.setAttribute("stroke", css("--panel")); t.setAttribute("stroke-width", "3"); t.setAttribute("paint-order", "stroke");
     t.setAttribute("stroke-linejoin", "round"); t.setAttribute("pointer-events", "none"); t.textContent = name; g.appendChild(t);
+    const hit = document.createElementNS(ns, "circle"); hit.setAttribute("cx", x); hit.setAttribute("cy", y); hit.setAttribute("r", 11);
+    hit.setAttribute("fill", "transparent"); hit.style.cursor = "help"; hit.setAttribute("tabindex", "0"); hit.setAttribute("aria-label", name);
+    const show = (e) => poiTip(e, name, tag);
+    hit.addEventListener("pointermove", show); hit.addEventListener("focus", (e) => { const b = hit.getBoundingClientRect(); poiTip({clientX: b.right, clientY: b.bottom}, name, tag) });
+    hit.addEventListener("pointerleave", () => { document.getElementById("tip").hidden = true });
+    hit.addEventListener("blur", () => { document.getElementById("tip").hidden = true });
+    g.appendChild(hit);
   }
+}
+
+// what each landmark is in the model, and how many people the model has arriving and leaving it by bus
+const POI_PLACE = {"בית החולים יוספטל": "Yoseftal hospital", "חוף האלמוגים": "Coral Beach", "המלונות והחוף הצפוני": "Hotels, North Beach",
+  "קניון אייס מול": "Ice Mall", "קניון מול הים": "Mall HaYam", "מרכז ביג": "Big centre", "קמפוס אילת": "Eilat campus",
+  "תיכון רבין": "Rabin high school", "תיכון בגין": "Begin high school", "תיכון גולדווטר": "Goldwater high school",
+  "עירייה": "City hall / centre", "התחנה המרכזית (Star Eilat)": "Old central station (Star Eilat)", "חנה וסע, כניסה לעיר": "City entrance terminal",
+  "חניון אגד": "Industrial zone / depot", "נמל אילת": "Port", "מעבר טאבה": "Taba / Princess"};
+const POI_NOTE = {"חוף הדקל": "חוף רחצה. לא מוקד נפרד במודל: הביקוש אליו נספר עם המלונות והחוף הצפוני.",
+  "מעבר רבין": "מעבר הגבול לירדן. לא נכלל במודל, כי אין אליו קו עירוני."};
+function poiTip(e, name, tag) {
+  const el = document.getElementById("tip"); el.textContent = "";
+  const add = (txt, bold) => { const d = document.createElement("div"); if (bold) { const b = document.createElement("b"); b.textContent = txt; d.appendChild(b) } else d.textContent = txt; el.appendChild(d); return d };
+  add(name, true);
+  const F = D.poi_flow, place = POI_PLACE[name], i = F ? F.places.indexOf(place) : -1;
+  if (i < 0) { add(POI_NOTE[name] || "לא מוקד נפרד במודל."); }
+  else {
+    const [jobs, school, leisure, tourist] = F.size[i];
+    const what = [];
+    if (school) what.push(`כ-${school.toLocaleString("he-IL")} תלמידים`);
+    if (jobs) what.push(`כ-${jobs.toLocaleString("he-IL")} מקומות עבודה`);
+    if (leisure >= 1.5) what.push("מוקד פנאי מרכזי"); else if (leisure >= 0.5) what.push("מוקד פנאי");
+    if (tourist >= 2) what.push("יעד מרכזי לתיירים"); else if (tourist >= 1) what.push("יעד לתיירים");
+    if (place === "Hotels, North Beach") what.push("כאן ישנים התיירים, ומכאן הם יוצאים");
+    add("במודל: " + what.join(", ") + ".");
+    const when = st.period === "all" ? "בכל היום" : `בין ${st.period.replace("-", ":00 ל-")}:00`;
+    const sub = add(`באוטובוס, ${when}, ${SNAME[st.season]}:`); sub.style.marginTop = "6px";
+    const row = (label, t) => { const f = F.flow[t]?.[st.season]?.[st.period]?.[i]; if (f) add(`${label}: מגיעים כ-${f[0].toLocaleString("he-IL")}, יוצאים כ-${f[1].toLocaleString("he-IL")}`) };
+    row("היום", "today"); row(OPT_HE[st.opt].replace(/^\d · /, ""), st.opt);
+    const other = st.season === "summer" ? "winter" : "summer";
+    const fo = F.flow.today?.[other]?.[st.period]?.[i];
+    if (fo) add(`לשם השוואה, ${SNAME[other]} (היום): מגיעים כ-${fo[0].toLocaleString("he-IL")}`);
+    const n = add("נוסעי אוטובוס בלבד, לפי המודל המכויל. מי שמגיע ברכב, במונית או ברגל ממלון סמוך לא נספר."); n.style.opacity = ".75"; n.style.marginTop = "6px";
+  }
+  el.hidden = false;
+  el.style.left = Math.min(e.clientX + 14, window.innerWidth - 290) + "px"; el.style.top = Math.min(e.clientY + 14, window.innerHeight - 200) + "px";
 }
 
 function selectLine(selKey, name) {

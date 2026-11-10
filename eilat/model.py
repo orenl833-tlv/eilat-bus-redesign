@@ -40,7 +40,9 @@ class Model:
                "cost_p": {p: 0.0 for p in D.PURPOSES},
                "home_cost": {p: np.zeros(len(self.homes)) for p in D.PURPOSES},
                "home_trips": {p: np.zeros(len(self.homes)) for p in D.PURPOSES},
-               "load": {q: [np.zeros(max(len(pt.stops) - 1, 1)) for pt in pats] for q in P.PERIODS}}
+               "load": {q: [np.zeros(max(len(pt.stops) - 1, 1)) for pt in pats] for q in P.PERIODS},
+               # per attractor and period: arrivals (walk or bus), arrivals by bus, departures, departures by bus
+               "att_flow": {q: np.zeros((len(self.att), 4)) for q in P.PERIODS}}
         nocar = self.pts.nocar.values[self.homes]
         eq = (P.NOCAR_EQUITY_WEIGHT * nocar + car_prop * (1 - nocar)) / (nocar + car_prop * (1 - nocar))
         hotel_pt = self.att[hotel]
@@ -62,11 +64,22 @@ class Model:
                              out["walk"][:, self.att], "out", list(range(len(self.homes))), self.att),
                             (D.PROFILE[p]["back"][k] * pot_p.T * prop[None, :], back["gc_bus"][:, self.homes],
                              back["walk"][:, self.homes], "back", list(range(len(self.att))), self.homes)]
-                for trips, gcb, wk, which, rows_, cols_ in sets:
+                for n_set, (trips, gcb, wk, which, rows_, cols_) in enumerate(sets):
                     if trips.sum() <= 0:
                         continue
                     sh = bus_share(gcb, wk, lam, const)
                     bus = trips * sh
+                    af = res["att_flow"][period]
+                    if p == "tourist" and n_set == 0:      # hotel -> attractors
+                        af[:, 0] += trips.sum(axis=0); af[:, 1] += bus.sum(axis=0)
+                        af[hotel, 2] += trips.sum(); af[hotel, 3] += bus.sum()
+                    elif p == "tourist":                   # attractors -> hotel
+                        af[:, 2] += trips.sum(axis=1); af[:, 3] += bus.sum(axis=1)
+                        af[hotel, 0] += trips.sum(); af[hotel, 1] += bus.sum()
+                    elif which == "out":                   # homes -> attractors
+                        af[:, 0] += trips.sum(axis=0); af[:, 1] += bus.sum(axis=0)
+                    else:                                  # attractors -> homes
+                        af[:, 2] += trips.sum(axis=1); af[:, 3] += bus.sum(axis=1)
                     res["trips"][p] += bus.sum()
                     res["potential"] += trips.sum()
                     # objective: expected perceived minutes (logsum) over all potential travellers of the bus market

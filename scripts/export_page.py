@@ -75,6 +75,25 @@ def active():
                      for t, d in A.sort_values("hour").groupby("option")}}
 
 
+def poi_flows():
+    """People arriving at / leaving each key place by bus, per network, season and period (and the whole day),
+    from the model (calibration A); plus each place's assumed size (jobs, students, leisure and tourist weights)."""
+    from eilat import demand as Dm
+    probs = {"full": O.Problem("full"), "keep": O.Problem("keep")}
+    names = list(Dm.ATTRACTORS.name)
+    out = {"places": names, "size": Dm.ATTRACTORS[["jobs", "school", "leisure", "tourist"]].values.tolist(), "flow": {}}
+    for tag in OPTS:
+        prob = probs["keep" if tag == "keep" else "full"]
+        ns = nets(prob, tag)
+        out["flow"][tag] = {}
+        for se in P.SEASONS:
+            r = prob.m.run(ns[se], se, K=prob.cal["K"], track=False, **prob.kw)
+            per = {q: r["att_flow"][q][:, [1, 3]].round().astype(int).tolist() for q in P.PERIODS}
+            per["all"] = sum(r["att_flow"][q][:, [1, 3]] for q in P.PERIODS).round().astype(int).tolist()
+            out["flow"][tag][se] = per
+    return out
+
+
 def main():
     os.makedirs("web", exist_ok=True)
     prob_full = O.Problem("full"); prob_keep = O.Problem("keep")
@@ -133,6 +152,7 @@ def main():
             out["tt"][tag][se] = {q: {str(int(a)): [round(float(v), 1) for v in row] for a, row in df.iterrows()} for q, df in per.items()}
     out["tt_keys"] = keys
     out["active"] = active()
+    out["poi_flow"] = poi_flows()
     out["summary"]["today"] = dict(peak=json.load(open("data/assess_full_warm.json"))["fleet_today"]["peak"],
                                    hours=json.load(open("data/assess_full_warm.json"))["fleet_today"]["hours"])
     # base map: the city's whole area (land), the gulf (frame south of North Beach minus the city; the city's boundary
