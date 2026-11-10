@@ -370,12 +370,19 @@ const D = {"W":600,"H":730,"routes":["M305,295 L286,317 L280,303 L269,296 L261,3
   const NETS = ["היום", "אפשרות 1", "אפשרות 2", "אפשרות 3"];
   const max = Math.max(...D.journeys.flatMap((j) => NETS.map((n) => j.options[n].total)));
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
-  function planHTML(it) {
+  // a rare line: say how many trips run in the time window instead of an average "every N minutes"
+  const PER = {"06-09": [6, 9], "09-12": [9, 12], "12-15": [12, 15], "15-19": [15, 19], "19-24": [19, 23]};
+  const freqText = (l, q) => {
+    if (l.every < 60) return `קו ${esc(l.line)} כל ${l.every} דק'`;
+    const [a, b] = PER[q], n = Math.max(1, Math.round((b - a) * 60 / l.every));
+    return `קו ${esc(l.line)}: ${n === 1 ? "נסיעה אחת בלבד" : n + " נסיעות בלבד"} בין ${String(a).padStart(2, "0")}:00 ל-${b}:00`;
+  };
+  function planHTML(it, q) {
     if (it.mode === "walk") return `<div class="step"><span class="w">הכי מהר ברגל: ${it.walk} דקות הליכה</span></div>`;
     return it.steps.map((s) => s.kind === "walk"
       ? `<div class="step"><span class="w">הליכה ${Math.max(1, Math.round(s.min))} דק'${s.to === "היעד" ? " ליעד" : " לתחנה " + esc(s.to)}</span></div>`
       : `<div class="step"><span class="chip">${s.lines.map((l) => esc(l.line)).join(" / ")}</span><span>` +
-        `${s.lines.map((l) => `קו ${esc(l.line)} כל ${l.every} דק'`).join(", ")} · ${s.lines[0].stops} תחנות · ${Math.round(s.ride)} דק' נסיעה` +
+        `${s.lines.map((l) => freqText(l, q)).join(", ")} · ${s.lines[0].stops} תחנות · ${Math.round(s.ride)} דק' נסיעה` +
         ` · מ${esc(s.board)} עד ${esc(s.alight)}${s.lines.some((l) => l.note) ? ` <span class="w">(${esc(s.lines.find((l) => l.note).note)})</span>` : ""}</span></div>`).join("");
   }
   const wrap = document.getElementById("journeys");
@@ -401,7 +408,7 @@ const D = {"W":600,"H":730,"routes":["M305,295 L286,317 L280,303 L269,296 L261,3
         card.querySelectorAll(".row").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.i === i)));
         const it = j.options[NETS[i]];
         const sum = it.mode === "walk" ? "" : `<div class="w">${NETS[i]}: ${it.walk} דק' הליכה, ${it.wait} המתנה, ${it.ride} נסיעה${it.transfers ? `, ${it.transfers} החלפה` : ", בלי החלפה"}</div>`;
-        plan.innerHTML = sum + planHTML(it);
+        plan.innerHTML = sum + planHTML(it, j.period);
       };
       card.querySelectorAll(".row").forEach((b) => b.addEventListener("click", () => show(+b.dataset.i)));
       show(2);
