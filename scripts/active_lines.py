@@ -5,7 +5,8 @@ number: a variant (stops passed, route shortened) is the same line, so 5 and its
 are two lines. School lines 80-82 are included (not in the summer holiday). Also: departures and buses out
 per hour (a bus is out from its block's first departure to its last arrival).
 
-Today's network is the real GTFS weekday of 10 Nov 2026 in every season (one timetable all year); an option's
+Today's network is the real GTFS weekday of 10 Nov 2026 in every season (one timetable all year). The options run
+to 23:00 plus the 5 shift-change trips (scripts/shift_trips.py); an option's
 hours follow its period frequencies, so its curve steps at 06, 09, 12, 15 and 19.
 
 Usage: PYTHONPATH=.:scripts python3 scripts/active_lines.py   Output: data/active_lines.csv, figs/active_lines.png
@@ -17,6 +18,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
 import blocking as BL  # noqa: E402
+import shift_trips as SHT  # noqa: E402
 from eilat import params as P  # noqa: E402
 from export_page import public_name  # noqa: E402
 
@@ -40,7 +42,11 @@ def main():
     rows = []
     for tag in OPTIONS:
         for se in P.SEASONS:
-            trips = BL.option_trips(tag, se if tag != "today" or se != "summer" else "summer", st)
+            if tag == "today":
+                trips = BL.option_trips(tag, se, st)
+            else:   # the recommended package: evening to 23:00 plus the shift-change trips
+                x = SHT.shift_trips(BL.option_net(tag, se), SHT.hotel_stops())
+                trips = pd.concat([BL.option_trips(tag, se, st, 23), x[x.o.isin(st.index) & x.d.isin(st.index)]], ignore_index=True)
             if tag == "today" and se == "summer":
                 trips = trips[~trips.line.isin(BL.SCHOOL)]   # no school trips in the holiday
             _, _, blocks = BL.block(trips, st)

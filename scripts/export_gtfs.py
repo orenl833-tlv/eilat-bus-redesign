@@ -4,7 +4,8 @@ One feed per option (exports/gtfs_<option>.zip), weekdays (Sun-Thu) only, three 
 calendar_dates.txt over one year from 1 Nov 2026 (no holidays marked):
   winter Nov-Mar, spring/autumn Apr-Jun + Sep-Oct, summer holiday Jul-Aug.
 - Trips: every `headway` minutes in each period, the second direction offset by half a headway (as in
-  scripts/blocking.py). Times between stops are the model's: measured (SIRI) run times, so they are slower
+  scripts/blocking.py); the evening ends at 23:00, plus the 5 shift-change trips for the hotels and Yoseftal
+  (scripts/shift_trips.py). Times between stops are the model's: measured (SIRI) run times, so they are slower
   than today's printed timetable. Stops a line passes without stopping are left out of its stop_times.
 - School lines 80-82: today's real trips and times, not in the summer holiday.
 - block_id: the vehicle blocks of scripts/blocking.py (which bus runs which trip).
@@ -21,9 +22,11 @@ import zipfile
 import pandas as pd
 
 import blocking as BL
+import shift_trips as SHT
 from eilat import params as P
 from export_page import public_name
 
+EVENING_END = 23   # the recommended package: last departures before 23:00, plus the shift-change trips
 OPTIONS = {"keep": "1 · keep every line", "full_warm": "2 · restructure", "full_peak-3_warm": "3 · restructure, fewer buses"}
 SEASON_MONTHS = {"winter": [11, 12, 1, 2, 3], "spring_autumn": [4, 5, 6, 9, 10], "summer": [7, 8]}
 START = dt.date(2026, 11, 1)
@@ -46,7 +49,9 @@ def season_dates():
 def option_trips(tag, se, names):
     """Trips and stop times of an option's non-school lines in a season."""
     trips, times = [], []
-    for p in BL.option_net(tag, se):
+    net = BL.option_net(tag, se)
+    shift = SHT.shift_trips(net, SHT.hotel_stops())
+    for p in net:
         if p.line in BL.SCHOOL:
             continue
         disp, _ = public_name(p.line)
@@ -58,7 +63,13 @@ def option_trips(tag, se, names):
                 continue
             seg = p.times(q)
             t = a * 60 + off * h
+            b = min(b, EVENING_END)
+            starts = []
             while t < b * 60:
+                starts.append(t); t += h
+            if q == "19-24":
+                starts += [r.start for r in shift.itertuples() if r.pattern == p.name]
+            for t in starts:
                 tid = f"{tag}_{se}_{p.name}_{len(trips)}"
                 trips.append(dict(route_id=disp, service_id=f"weekday_{se}", trip_id=tid, trip_headsign=names.get(p.stops[-1], ""),
                                   direction_id=dr, line=p.line, start=t, end=t + sum(seg), o=p.stops[0], d=p.stops[-1]))
@@ -70,7 +81,6 @@ def option_trips(tag, se, names):
                         continue
                     k += 1
                     times.append(dict(trip_id=tid, arrival_time=hms(cum), departure_time=hms(cum), stop_id=s, stop_sequence=k))
-                t += h
     return pd.DataFrame(trips), pd.DataFrame(times)
 
 

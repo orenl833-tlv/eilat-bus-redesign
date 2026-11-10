@@ -18,9 +18,17 @@ from eilat import params as P
 OPTS = {"today": "Today", "keep": "1 · Keep every line", "full_warm": "2 · Restructure", "full_peak-3_warm": "3 · Restructure, 3 fewer buses"}
 
 
-def nets(prob, tag):
+EVENING_END = 23   # the recommended package: evening service ends at 23:00 (scripts/evening.py)
+
+
+def nets(prob, tag, evening_end=None):
+    """Season -> network. With evening_end, an option's evening is shortened as the evaluation sees it
+    (scripts/evening.py: the 19-24 average headway stretched)."""
     if tag == "today":
         return {s: prob.base for s in P.SEASONS}
+    if evening_end:
+        import evening as EV
+        return {s: EV.thinned(n, evening_end) for s, n in nets(prob, tag).items()}
     sr = json.load(open(f"data/opt_{tag}_seasonal.json"))
     return {s: prob.network({k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in sr[s].items()})
             for s in P.SEASONS}
@@ -84,7 +92,7 @@ def poi_flows():
     out = {"places": names, "size": Dm.ATTRACTORS[["jobs", "school", "leisure", "tourist"]].values.tolist(), "flow": {}}
     for tag in OPTS:
         prob = probs["keep" if tag == "keep" else "full"]
-        ns = nets(prob, tag)
+        ns = nets(prob, tag, EVENING_END)
         out["flow"][tag] = {}
         for se in P.SEASONS:
             r = prob.m.run(ns[se], se, K=prob.cal["K"], track=False, **prob.kw)
@@ -111,20 +119,23 @@ def main():
                                  nocar=None if pd.isna(r.Vehicle0_pcnt) else float(r.Vehicle0_pcnt)))
     for tag in OPTS:
         prob = prob_keep if tag == "keep" else prob_full
-        ns = nets(prob, tag)
+        ns = nets(prob, tag, EVENING_END)
         out["net"][tag] = {s: {q: segments(ns[s], q, sid) for q in P.PERIODS} for s in P.SEASONS}
         names = dict(zip(stops.stop_id, stops.stop_name, strict=True))
-        out.setdefault("lines", {})[tag] = {s: lines(ns[s], sid, names) for s in P.SEASONS}
+        # line lists keep the real headways (the 19-24 column then means 19-23)
+        out.setdefault("lines", {})[tag] = {s: lines(nets(prob, tag)[s], sid, names) for s in P.SEASONS}
         if tag != "today":
-            A = pd.read_csv(f"data/assess_{tag}_areas.csv", index_col=0)
-            T = pd.read_csv(f"data/assess_{tag}_traveltime.csv", header=[0, 1], index_col=0)
-            S = json.load(open(f"data/assess_{tag}.json"))
+            import assess as AS
+            from eilat import network as N
+            res = AS.eval_net(prob, ns)
+            w = {s: P.SEASONS[s]["months"] / 12 for s in P.SEASONS}
+            year = {v: sum(w[s] * res[(s, v)]["cost"] for s in P.SEASONS) for v in ("A", "B")}
+            A = pd.DataFrame({f"{s}/{v}": res[(s, v)]["area"] for (s, v) in res})
+            fl = {s: N.fleet(ns[s]) for s in P.SEASONS}
             out["summary"][tag] = dict(
-                year_A=S["year_A"], year_B=S["year_B"], worst_area=S["worst_area"],
-                peak={s: v["peak"] for s, v in S["fleet"].items()}, hours={s: v["hours"] for s, v in S["fleet"].items()},
-                area={str(int(i)): round(float((r["worst"] + r["best"]) / 2 - 1) * 100, 1) for i, r in A.iterrows()},
-                tt={str(int(i)): {k: [round(float(T.loc[i, ("today", k)]), 1), round(float(T.loc[i, ("proposal", k)]), 1)]
-                                  for k in T.columns.get_level_values(1).unique()} for i in T.index})
+                year_A=round(year["A"], 4), year_B=round(year["B"], 4), worst_area=round(float(A.max(axis=1).max()), 3),
+                peak={s: max(b.values()) for s, (b, h) in fl.items()}, hours={s: round(h, 1) for s, (b, h) in fl.items()},
+                area={str(int(i)): round(float((r.max() + r.min()) / 2 - 1) * 100, 1) for i, r in A.iterrows()})
     # perceived door-to-door minutes from each residential area to the key places, for every network, season and
     # period, plus the whole day (periods weighted by their hours); min of bus and walking, median over the area's points
     from eilat import demand as Dm
@@ -138,7 +149,7 @@ def main():
     out["tt"] = {}
     for tag in OPTS:
         prob = prob_keep if tag == "keep" else prob_full
-        ns = nets(prob, tag)
+        ns = nets(prob, tag, EVENING_END)
         out["tt"][tag] = {}
         for se in P.SEASONS:
             per = {}

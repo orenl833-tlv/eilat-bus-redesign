@@ -83,7 +83,7 @@ def _site_trips(net, site, n_lines, passes):
             cum.append(cum[-1] + x)
         for extra in passes:
             start = SHIFT_END_H * 60 + EXIT_LAG_MIN + extra - cum[idx[0]]
-            rows.append(dict(line=p.line, start=start, end=start + cum[-1], o=p.stops[0], d=p.stops[-1]))
+            rows.append(dict(line=p.line, start=start, end=start + cum[-1], o=p.stops[0], d=p.stops[-1], pattern=p.name))
     return pd.DataFrame(rows)
 
 

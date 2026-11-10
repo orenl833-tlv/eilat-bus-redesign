@@ -346,6 +346,7 @@ network under the same rule.
 
 Each option is in `exports/gtfs_<option>.zip`:
 - weekdays Sun-Thu, with three seasonal timetables over Nov 2026 - Oct 2027 (`calendar_dates.txt`);
+- the recommended evening: last departures before 23:00, plus the 5 shift-change trips;
 - measured run times;
 - quiet stops left out of the lines that pass them;
 - school lines with today's real trips;
@@ -478,12 +479,15 @@ Each fix was followed by recalibration and new runs. Earlier results are kept in
 
 ## The lines of each option (winter timetable; minutes between buses by period)
 
+As recommended, the evening ends at 23:00: the last departures leave before 23:00 (the 19-23 column).
+After 23:00 only the 5 shift-change trips run (hotels and Yoseftal, `scripts/shift_trips.py`).
+
 A line keeps its number when it is a changed version of today's line; the change is shown next to it. Line 7 is new. School lines 80-82 are unchanged and not shown.
 
 
 ### Option 1: keep every line
 
-| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-24 | Boardings A / B |
+| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-23 | Boardings A / B |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | – | ת. מרכזית אילת/רציפים → ת. מרכזית אילת | 71 (0) | 75 | - | 40 | 40 | 40 | 60 | 137 / 126 |
 | 15 | – | ת. מרכזית אילת/רציפים → דרך מצרים/מתחם קולוניה  | 33 (0) | 37 | 24 | 30 | 20 | 15 | 30 | 642 / 690 |
@@ -500,7 +504,7 @@ A line keeps its number when it is a changed version of today's line; the change
 
 ### Option 2: restructure
 
-| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-24 | Boardings A / B |
+| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-23 | Boardings A / B |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 15 | – | ת. מרכזית אילת/רציפים → דרך מצרים/מתחם קולוניה  | 33 (0) | 37 | 40 | 30 | 24 | 20 | 20 | 627 / 647 |
 | 16 | – | דרך מצרים/מלון הנסיכה → ת. מרכזית אילת | 31 (0) | 39 | 24 | 40 | 30 | 24 | 15 | 506 / 567 |
@@ -516,7 +520,7 @@ A line keeps its number when it is a changed version of today's line; the change
 
 ### Option 3: restructure, fewer buses
 
-| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-24 | Boardings A / B |
+| Line | Change | From → to | Stops (passed) | Run, midday (min) | 06-09 | 09-12 | 12-15 | 15-19 | 19-23 | Boardings A / B |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 15 | – | ת. מרכזית אילת/רציפים → דרך מצרים/מתחם קולוניה  | 33 (0) | 37 | 30 | 40 | 24 | 15 | 15 | 638 / 658 |
 | 16 | – | דרך מצרים/מלון הנסיכה → ת. מרכזית אילת | 31 (0) | 39 | 30 | 40 | 30 | 15 | 24 | 600 / 648 |

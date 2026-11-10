@@ -40,6 +40,9 @@ header p { margin: 8px 0 0; max-width: 68ch; color: var(--ink-2) }
 header strong { color: var(--ink) }
 .controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; padding: 14px 16px; background: var(--panel); border: 1px solid var(--rule); border-radius: 10px }
 .ctl { display: grid; gap: 6px }
+.ctlnote { margin: 0; font-size: 13px; color: var(--ink-2); max-width: 64ch }
+.ftbl td.mid { color: var(--ink-2) }
+.ftbl .var small { display: block; font-size: 11px; color: var(--ink-2) }
 .ctl > span { font-size: 12px; font-weight: 600; color: var(--ink-2) }
 .seg { display: flex; flex-wrap: wrap; gap: 4px }
 .seg button { font: 500 13px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer }
@@ -99,8 +102,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div class="controls" role="group" aria-label="מה להציג">
     <div class="ctl"><span>אפשרות</span><div class="seg" id="opt"></div></div>
-    <div class="ctl"><span>עונה</span><div class="seg" id="season"></div></div>
-    <div class="ctl"><span>שעות היום</span><div class="seg" id="period"></div></div>
+    <p class="ctlnote">המסלולים של כל קו זהים בכל העונות ובכל שעות היום. משתנה רק התדירות, והיא מפורטת בטבלה "תדירות לפי עונה ושעה" למטה. המפות מציגות ממוצע שנתי של כל היום. בהצעות שירות הערב נגמר ב-23:00, ועוד 5 נסיעות מאוחרות לחילופי המשמרת במלונות ובבית החולים.</p>
   </div>
 
   <div class="maps">
@@ -112,10 +114,17 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   <div class="tiles" id="tiles"></div>
 
   <div>
+    <h2>תדירות לפי עונה ושעה</h2>
+    <p class="note">כל כמה דקות יוצא אוטובוס, לכל מסלול קו. כשהתדירות זהה בכל העונות מופיע מספר אחד. כשהיא שונה מופיעים שלושה מספרים, לפי הסדר: חורף / אביב וסתיו / החופש הגדול. "–" פירושו שהקו לא פועל באותן שעות. לוח הזמנים של היום זהה בכל השנה. בהצעות, הנסיעה האחרונה בערב יוצאת לפני 23:00, ואחריה יש רק 5 נסיעות לחילופי המשמרת במלונות ובבית החולים.</p>
+  </div>
+  <div class="seg" id="ftab" role="group" aria-label="איזו רשת"></div>
+  <div class="tablewrap"><table id="ftbl" class="ftbl"></table></div>
+
+  <div>
     <h2>כמה קווים פועלים בכל שעה</h2>
     <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול, <span id="actseason"></span>. גרסה של קו (מדלגת על תחנות שקטות או במסלול מקוצר) נספרת יחד עם הקו המקורי. קווי בתי הספר 80–82 כלולים, חוץ מבחופש הגדול. לוח הזמנים של היום זהה בכל העונות. בהצעות, התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
   </div>
-  <div class="chart"><div class="legend" id="actlegend"></div><svg id="act" dir="ltr" role="img" aria-label="מספר הקווים הפעילים בכל שעה, היום ובכל אחת מההצעות"></svg>
+  <div class="chart"><div class="seg" id="actseas" role="group" aria-label="עונה" style="margin-bottom:8px"></div><div class="legend" id="actlegend"></div><svg id="act" dir="ltr" role="img" aria-label="מספר הקווים הפעילים בכל שעה, היום ובכל אחת מההצעות"></svg>
     <details><summary>הצג כטבלה</summary><div class="tablewrap"><table id="acttbl"></table></div></details></div>
 
   <div>
@@ -135,7 +144,39 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "full_warm", season: "winter", period: "all", selL: null, selR: null, note: ""};
+const st = {opt: "full_warm", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+SNAME.year = "ממוצע שנתי";
+const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
+// the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
+function addYear() {
+  for (const tag of Object.keys(D.net)) {
+    const y = {};
+    for (const p of D.periods) {
+      const m = new Map();
+      for (const [se, w] of Object.entries(SW)) for (const [i, j, b] of D.net[tag][se]?.[p] || []) { const k = i + "," + j; m.set(k, (m.get(k) || 0) + b * w) }
+      y[p] = [...m].map(([k, v]) => { const [i, j] = k.split(",").map(Number); return [i, j, v] });
+    }
+    D.net[tag].year = y;
+    D.lines[tag].year = D.lines[tag].winter.map((l) => {
+      const hw = {};
+      for (const p of D.periods) {
+        let bph = 0;
+        for (const [se, w] of Object.entries(SW)) { const x = D.lines[tag][se]?.find((q) => q.name === l.name); if (x?.hw[p]) bph += w * 60 / x.hw[p] }
+        hw[p] = bph ? Math.round(60 / bph) : null;
+      }
+      return {...l, hw};
+    });
+    if (D.tt?.[tag]) {
+      const a = {};
+      for (const id of Object.keys(D.tt[tag].winter.all)) a[id] = D.tt[tag].winter.all[id].map((_, k) => Object.entries(SW).reduce((s, [se, w]) => s + w * D.tt[tag][se].all[id][k], 0));
+      D.tt[tag].year = {all: a};
+    }
+  }
+  for (const s of Object.values(D.summary)) {
+    if (s.peak && typeof s.peak === "object") s.peak.year = Math.max(...Object.keys(SW).map((se) => s.peak[se]));
+    if (s.hours && typeof s.hours === "object") s.hours.year = Object.entries(SW).reduce((t, [se, w]) => t + w * s.hours[se], 0);
+  }
+}
 // "all" = the whole service day 06:00-24:00: buses an hour averaged over the day, trips a day per line
 const PH = {"06-09": 3, "09-12": 3, "12-15": 3, "15-19": 4, "19-24": 5}, DAY_H = 18;
 function segsFor(tag) {
@@ -175,12 +216,12 @@ function areaFill(pct) {
   return pct <= -20 ? css("--better-3") : pct <= -10 ? css("--better-2") : css("--better-1");
 }
 
-function seg(id, items, current) {
+function seg(id, items, current, key = id) {
   const el = document.getElementById(id); el.innerHTML = "";
   for (const [k, label] of items) {
     const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.id = `${id}-${k}`;
     b.setAttribute("aria-pressed", String(k === current));
-    b.onclick = () => { st[id] = k; render() };
+    b.onclick = () => { st[key] = k; render() };
     el.appendChild(b);
   }
 }
@@ -304,13 +345,11 @@ function poiTip(e, name, tag) {
     if (tourist >= 2) what.push("יעד מרכזי לתיירים"); else if (tourist >= 1) what.push("יעד לתיירים");
     if (place === "Hotels, North Beach") what.push("כאן ישנים התיירים, ומכאן הם יוצאים");
     add("במודל: " + what.join(", ") + ".");
-    const when = st.period === "all" ? "בכל היום" : `בין ${st.period.replace("-", ":00 ל-")}:00`;
-    const sub = add(`באוטובוס, ${when}, ${SNAME[st.season]}:`); sub.style.marginTop = "6px";
-    const row = (label, t) => { const f = F.flow[t]?.[st.season]?.[st.period]?.[i]; if (f) add(`${label}: מגיעים כ-${f[0].toLocaleString("he-IL")}, יוצאים כ-${f[1].toLocaleString("he-IL")}`) };
+    const sub = add("מגיעים באוטובוס ביום חול, לפי עונה:"); sub.style.marginTop = "6px";
+    const row = (label, t) => { const f = F.flow[t]; if (f) add(`${label}: ` + ["winter", "spring_autumn", "summer"].map((se) => `${SNAME[se]} ${f[se].all[i][0].toLocaleString("he-IL")}`).join(" · ")) };
     row("היום", "today"); row(OPT_HE[st.opt].replace(/^\d · /, ""), st.opt);
-    const other = st.season === "summer" ? "winter" : "summer";
-    const fo = F.flow.today?.[other]?.[st.period]?.[i];
-    if (fo) add(`לשם השוואה, ${SNAME[other]} (היום): מגיעים כ-${fo[0].toLocaleString("he-IL")}`);
+    const pk = Object.entries(F.flow.today.summer).filter(([q]) => q !== "all").sort((a, b) => b[1][i][0] - a[1][i][0])[0];
+    if (pk) add(`השעות העמוסות ביותר (היום, בחופש הגדול): ${pk[0]}, כ-${pk[1][i][0].toLocaleString("he-IL")} מגיעים`);
     const n = add("נוסעי אוטובוס בלבד, לפי המודל המכויל. מי שמגיע ברכב, במונית או ברגל ממלון סמוך לא נספר."); n.style.opacity = ".75"; n.style.marginTop = "6px";
   }
   el.hidden = false;
@@ -381,8 +420,8 @@ function tiles() {
   const items = [
     ["זמן מורגש מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום"],
     ["האזור שמשתפר הכי פחות", pct(s.worst_area), s.worst_area <= 1 ? "כל האזורים משתפרים לפחות בזה" : "אזור אחד נפגע בשיעור הזה (המגבלה: 10%)"],
-    ["אוטובוסים בבת אחת, בשיא", num(s.peak[st.season]), `היום ${t.peak}`],
-    ["שעות אוטובוס ביום חול", num(Math.round(s.hours[st.season])), `היום ${Math.round(t.hours)} (לפי מודל התקציב)`],
+    ["אוטובוסים בבת אחת, בשיא", num(s.peak.year), `בעונה העמוסה ביותר. היום ${t.peak}`],
+    ["שעות אוטובוס ביום חול", num(Math.round(s.hours.year)), `ממוצע שנתי. היום ${Math.round(t.hours)} (לפי מודל התקציב)`],
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
   const avg = (s.year_A + s.year_B) / 2;
@@ -395,7 +434,7 @@ function ttFor(id) {
   if (!a || !b) return null;
   return Object.fromEntries(D.tt_keys.map((k, i) => [k, [a[i], b[i]]]));
 }
-const whenText = () => `${st.period === "all" ? "ממוצע על פני כל היום (06:00–24:00)" : "בין " + st.period.replace("-", ":00 ל-") + ":00"}, ${SNAME[st.season]}`;
+const whenText = () => "ממוצע שנתי על פני כל היום";
 
 function table() {
   const s = D.summary[st.opt];
@@ -412,6 +451,26 @@ function table() {
   document.getElementById("tbl").innerHTML = h + "</tbody>";
 }
 
+function freqTable() {
+  const tag = st.ftab === "today" ? "today" : st.opt;
+  const ses = ["winter", "spring_autumn", "summer"];
+  const ls = D.lines[tag].winter.slice().sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
+  const names = new Set(ls.map((l) => l.name));
+  for (const se of ses) for (const l of D.lines[tag][se] || []) if (!names.has(l.name)) { ls.push(l); names.add(l.name) }
+  const head = (p) => tag !== "today" && p === "19-24" ? "19–23" : p.replace("-", "–");
+  let h = "<thead><tr><th>קו</th><th>מסלול</th>" + D.periods.map((p) => `<th>${num(head(p))}</th>`).join("") + "</tr></thead><tbody>";
+  for (const l of ls) {
+    h += `<tr><td><b>${num(l.display || l.name.replace(/\/\d.*/, ""))}</b></td><td class="var">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</td>`;
+    for (const p of D.periods) {
+      const v = ses.map((se) => D.lines[tag][se]?.find((x) => x.name === l.name)?.hw[p] ?? null);
+      const f = (x) => (x == null ? "–" : x);
+      h += v.every((x) => x === v[0]) ? `<td>${num(f(v[0]))}</td>` : `<td class="mid">${num(v.map(f).join(" / "))}</td>`;
+    }
+    h += "</tr>";
+  }
+  document.getElementById("ftbl").innerHTML = h + "</tbody>";
+}
+
 function legend() {
   const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
   document.getElementById("legend").innerHTML =
@@ -424,18 +483,18 @@ const SERIES = ["today", "keep", "full_warm", "full_peak-3_warm"];
 const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
 function activeChart() {
   const A = D.active; if (!A) return;
-  document.getElementById("actseason").textContent = SNAME[st.season];
+  document.getElementById("actseason").textContent = SNAME[st.actSeason];
   const hrs = A.hours, svg = document.getElementById("act");
   const w = 760, h = 260, m = {l: 36, r: 16, t: 12, b: 30};
   const x0 = hrs[0], x1 = hrs[hrs.length - 1] + 1;
-  const ymax = Math.max(...SERIES.flatMap((k) => A.data[k][st.season].lines)) + 1;
+  const ymax = Math.max(...SERIES.flatMap((k) => A.data[k][st.actSeason].lines)) + 1;
   // RTL page, but time runs left to right as on every clock and timetable
   const X = (hr) => m.l + (hr - x0) / (x1 - x0) * (w - m.l - m.r), Y = (v) => h - m.b - v / ymax * (h - m.t - m.b);
   let g = "";
   for (let v = 0; v <= ymax; v += 2) g += `<line class="grid" x1="${m.l}" x2="${w - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`;
   for (let hr = 6; hr <= 24; hr += 3) g += `<text x="${X(hr)}" y="${h - 10}" text-anchor="middle">${String(hr).padStart(2, "0")}:00</text>`;
   for (const k of SERIES) {
-    const v = A.data[k][st.season].lines;
+    const v = A.data[k][st.actSeason].lines;
     let d = `M${X(hrs[0])},${Y(v[0])}`;
     hrs.forEach((hr, i) => { d += `H${X(hr)}V${Y(v[i])}`; });
     d += `H${X(x1)}`;
@@ -453,7 +512,7 @@ function activeChart() {
     el.textContent = "";
     const b = document.createElement("b"); b.textContent = `${String(hrs[i]).padStart(2, "0")}:00–${String(hrs[i] + 1).padStart(2, "0")}:00`; el.appendChild(b);
     for (const k of SERIES) {
-      const r = A.data[k][st.season], div = document.createElement("div");
+      const r = A.data[k][st.actSeason], div = document.createElement("div");
       div.textContent = `${SER_HE(k)}: ${r.lines[i]} קווים, ${r.departures[i]} יציאות, ${r.buses_out[i]} אוטובוסים בדרכים`;
       el.appendChild(div);
     }
@@ -464,14 +523,14 @@ function activeChart() {
   const sw = (k) => `<i style="height:${k === "today" || k === st.opt ? 3 : 2}px;background:var(--s-${k})${k === "today" ? ";background:repeating-linear-gradient(90deg,var(--s-today) 0 6px,transparent 6px 10px)" : ""}"></i>`;
   document.getElementById("actlegend").innerHTML = SERIES.map((k) => `<span>${sw(k)}${SER_HE(k)}</span>`).join("");
   let t = "<thead><tr><th>שעה</th>" + SERIES.map((k) => `<th>${SER_HE(k)}</th>`).join("") + "</tr></thead><tbody>";
-  hrs.forEach((hr, i) => { t += `<tr><td>${num(String(hr).padStart(2, "0") + ":00")}</td>` + SERIES.map((k) => `<td>${A.data[k][st.season].lines[i]}</td>`).join("") + "</tr>"; });
+  hrs.forEach((hr, i) => { t += `<tr><td>${num(String(hr).padStart(2, "0") + ":00")}</td>` + SERIES.map((k) => `<td>${A.data[k][st.actSeason].lines[i]}</td>`).join("") + "</tr>"; });
   document.getElementById("acttbl").innerHTML = t + "</tbody>";
 }
 
 function render() {
   seg("opt", Object.keys(D.options).filter((k) => k !== "today").map((k) => [k, OPT_HE[k]]), st.opt);
-  seg("season", D.seasons.map((s) => [s, SNAME[s]]), st.season);
-  seg("period", [["all", "כל היום"], ...D.periods.map((p) => [p, p])], st.period);
+  seg("ftab", [["opt", OPT_HE[st.opt]], ["today", "היום"]], st.ftab);
+  seg("actseas", D.seasons.map((s) => [s, SNAME[s]]), st.actSeason, "actSeason");
   document.getElementById("optName").textContent = OPT_HE[st.opt];
   const busesL = segsFor("today").reduce((m, x) => Math.max(m, x[2]), 0);
   const busesR = segsFor(st.opt).reduce((m, x) => Math.max(m, x[2]), 0);
@@ -481,10 +540,10 @@ function render() {
   lineList("linesL", "today", "selL"); lineList("linesR", st.opt, "selR");
   drawMap(document.getElementById("mapL"), "today", false);
   drawMap(document.getElementById("mapR"), st.opt, true);
-  tiles(); activeChart(); table(); legend();
+  tiles(); freqTable(); activeChart(); table(); legend();
 }
 
-fetch("data.json").then((r) => r.json()).then((d) => { D = d; render() })
+fetch("data.json").then((r) => r.json()).then((d) => { D = d; addYear(); render() })
   .catch(() => { document.getElementById("headline").textContent = "קובץ הנתונים לא נטען. רעננו את הדף כדי לנסות שוב." });
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => D && render());
 </script>
