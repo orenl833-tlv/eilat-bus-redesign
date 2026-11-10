@@ -23,7 +23,7 @@ def main():
         seen.add(tuple(ln["stops"]))
         routes.append("M" + " L".join(f"{X(S[i][1]):.0f},{Y(S[i][0]):.0f}" for i in ln["stops"]))
     sea = ["M" + " L".join(f"{X(x):.0f},{Y(y):.0f}" for x, y in r) + "Z" for r in d["sea"]]
-    data = dict(W=W, H=H, routes=routes, sea=sea, journeys=json.load(open("data/journeys.json")),
+    data = dict(W=W, H=H, routes=routes, sea=sea, journeys=json.load(open("data/journeys_tt.json")),
                 evening=list(csv.DictReader(open("data/evening.csv"))))
     src = open("web/brief_src.html").read()
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")

@@ -342,7 +342,7 @@ network under the same rule.
 - for 14% shorter perceived trips;
 - it stays within today's 35 buses.
 
-## Example trips on the real timetable (`analysis/timetable_trip.py`)
+## Example trips on the real timetable (`eilat/timetable.py`, `scripts/journeys_tt.py`, `analysis/timetable_trip.py`)
 
 The model represents each period by its average headway, and a rider's wait as half of it. For single trips
 that can mislead, so three examples were re-planned on the actual timetables, the way a trip-planner app
@@ -363,6 +363,9 @@ does it:
   - They understate the Coral Beach evening: today there is no bus at all after about 20:45.
 - **A 07:00 shift on the south coast is still missed in option 2,** by 14 min. One earlier line-15 trip
   (from the central station at about 06:15) would fix it.
+- **The decision brief's trip cards now come from these timetables** (`scripts/journeys_tt.py`):
+  - the examples are picked over all areas × key places × times of day;
+  - each trip is the mean of four departures from home, 15 min apart.
 - **Today's timetable has timed transfers the model doesn't credit.** At Mall HaYam:
   - line 1 arrives just as line 15 leaves at :19 every hour;
   - line 2 arrives 6 min before line 15 leaves at :49.
