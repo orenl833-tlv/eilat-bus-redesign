@@ -115,7 +115,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div>
     <h2>תדירות לפי עונה ושעה</h2>
-    <p class="note">כל כמה דקות יוצא אוטובוס, לכל מסלול קו. כשהתדירות זהה בכל העונות מופיע מספר אחד. כשהיא שונה מופיעים שלושה מספרים, לפי הסדר: חורף / אביב וסתיו / החופש הגדול. "–" פירושו שהקו לא פועל באותן שעות. לוח הזמנים של היום זהה בכל השנה. בהצעות, הנסיעה האחרונה בערב יוצאת לפני 23:00, ואחריה יש רק 5 נסיעות לחילופי המשמרת במלונות ובבית החולים.</p>
+    <p class="note">כל כמה דקות יוצא אוטובוס, לכל מסלול קו. כשהתדירות זהה בכל העונות מופיע מספר אחד. כשהיא שונה מופיעים שלושה מספרים, לפי הסדר: חורף / אביב וסתיו / החופש הגדול. "–" פירושו שהקו לא פועל באותן שעות. לוח הזמנים של היום זהה בכל השנה. קווי בתי הספר 80–82 לא מופיעים: הם נשארים כמו היום, ולא פועלים בחופש הגדול. בהצעות, הנסיעה האחרונה בערב יוצאת לפני 23:00, ואחריה יש רק 5 נסיעות לחילופי המשמרת במלונות ובבית החולים.</p>
   </div>
   <div class="seg" id="ftab" role="group" aria-label="איזו רשת"></div>
   <div class="tablewrap"><table id="ftbl" class="ftbl"></table></div>
@@ -459,12 +459,13 @@ function freqTable() {
   for (const se of ses) for (const l of D.lines[tag][se] || []) if (!names.has(l.name)) { ls.push(l); names.add(l.name) }
   const head = (p) => tag !== "today" && p === "19-24" ? "19–23" : p.replace("-", "–");
   let h = "<thead><tr><th>קו</th><th>מסלול</th>" + D.periods.map((p) => `<th>${num(head(p))}</th>`).join("") + "</tr></thead><tbody>";
-  for (const l of ls) {
+  for (const l of ls.filter((x) => !/^8[0-2]/.test(x.display || x.name))) {
     h += `<tr><td><b>${num(l.display || l.name.replace(/\/\d.*/, ""))}</b></td><td class="var">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</td>`;
     for (const p of D.periods) {
       const v = ses.map((se) => D.lines[tag][se]?.find((x) => x.name === l.name)?.hw[p] ?? null);
       const f = (x) => (x == null ? "–" : x);
-      h += v.every((x) => x === v[0]) ? `<td>${num(f(v[0]))}</td>` : `<td class="mid">${num(v.map(f).join(" / "))}</td>`;
+      // several values read right to left, as the header says: winter / spring-autumn / summer
+      h += v.every((x) => x === v[0]) ? `<td>${num(f(v[0]))}</td>` : `<td class="mid">${v.map(f).join(" / ")}</td>`;
     }
     h += "</tr>";
   }
