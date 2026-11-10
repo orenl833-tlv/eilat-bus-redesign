@@ -114,6 +114,18 @@ td.pick { background: var(--stone-soft); box-shadow: inset 0 0 0 2px var(--stone
 .kind.f { background: var(--bg); color: var(--ink-2); border: 1px solid var(--rule) }
 .fit td, .fit th { text-align: center }
 .fit th:first-child, .fit td:first-child { text-align: start }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px }
+@media (max-width: 860px) { .opts { grid-template-columns: 1fr } }
+.opt { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 18px; display: grid; gap: 10px; align-content: start }
+.opt.rec { border-color: var(--stone); box-shadow: inset 0 0 0 1px var(--stone) }
+.opt .hd { display: flex; gap: 12px; align-items: center }
+.opt .no { font: 400 30px/1 var(--display); width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: var(--bg); flex: none }
+.opt.rec .no { background: var(--stone); color: var(--surface) }
+.opt h3 { font: 400 21px/1.2 var(--display) }
+.opt .gist { margin: 0; color: var(--ink-2); font-size: 16px }
+.opt ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 4px; font-size: 15px }
+.opt .feel { font-size: 15px; background: var(--bg); border-radius: 10px; padding: 8px 12px }
+.optkey { font-size: 15px; color: var(--ink-2) }
 details summary { cursor: pointer; color: var(--stone); font-weight: 700 }
 footer { color: var(--ink-2); font-size: 14px }
 footer .inner { padding-block: 0 48px }
@@ -141,6 +153,46 @@ a { color: var(--stone) }
 
 <main><div class="inner">
 
+<section aria-labelledby="h-options">
+  <h2 id="h-options">שלוש האפשרויות שנבדקו</h2>
+  <p class="sub">שלוש רשתות חלופיות לאותו תקציב. בכל הדף, "אפשרות 1", "אפשרות 2" ו"אפשרות 3" מתייחסות אליהן. בכולן נשארים קווי בתי הספר 80–82 כמו היום.</p>
+  <div class="opts">
+    <article class="opt">
+      <div class="hd"><span class="no">1</span><h3>כל הקווים נשמרים</h3></div>
+      <p class="gist">אותם קווים, אותם מספרים ואותם מסלולים בערך. משנים רק את התדירויות ואת העצירות.</p>
+      <ul>
+        <li>כל 10 הקווים העירוניים נשארים: 1, 2, 3, 4, 5, 5א, 6, 6א, 15, 16.</li>
+        <li>קווים 2, 4, 6, 6א ו-16 מדלגים על תחנות שקטות שיש לידן תחנה אחרת של אותו קו.</li>
+        <li>קווים 3, 5 ו-5א נוסעים במסלול מקוצר, בלי עיקוף.</li>
+        <li>תדירויות חדשות לפי עונה ושעה: יותר אוטובוסים איפה שיש נוסעים.</li>
+      </ul>
+      <p class="feel"><b>לנוסע:</b> הקו שלו לא משתנה, הוא רק מגיע בתדירות אחרת ומהר יותר.</p>
+    </article>
+    <article class="opt rec">
+      <div class="hd"><span class="no">2</span><h3>ארגון מחדש</h3></div>
+      <p class="gist">פחות קווים, בתדירות גבוהה יותר, וקו חדש אחד. ההמלצה.</p>
+      <ul>
+        <li>קו 1 מתבטל. הוא ולולאת קו 2 עברו כמעט באותם רחובות, וקו 2 נשאר ויוצא כל 24–30 דקות ברוב היום.</li>
+        <li>קו 4 מתבטל, וקו 3 שעובר כמעט באותו מסלול יוצא כל 10–20 דקות במשך היום.</li>
+        <li><b>קו 7 חדש:</b> קמפוס אילת – התחנה המרכזית הישנה (Star Eilat) – המלונות, כל 15–20 דקות.</li>
+        <li>קווים 2 ו-5א מדלגים על תחנות שקטות. קו 5 יוצא כל 20–24 דקות ברוב היום.</li>
+      </ul>
+      <p class="feel"><b>לנוסע:</b> אוטובוס מגיע לרוב מהר יותר, אבל כרבע מהנסיעות דורשות החלפה (היום כשישית).</p>
+    </article>
+    <article class="opt">
+      <div class="hd"><span class="no">3</span><h3>ארגון מחדש, פחות אוטובוסים</h3></div>
+      <p class="gist">כמו אפשרות 2, אבל עם יעד של 3 אוטובוסים פחות בשיא.</p>
+      <ul>
+        <li>קווים 1 ו-4 מתבטלים, כמו באפשרות 2.</li>
+        <li>גם קו 6א מתבטל, וקו 6 מדלג על תחנות שקטות.</li>
+        <li>קו 3 יוצא כל 10–15 דקות ביום, וקו 5 כל 12–24 דקות.</li>
+        <li>קו 7 החדש בתדירות נמוכה יותר.</li>
+      </ul>
+      <p class="feel"><b>לנוסע:</b> קצת יותר מהיר מאפשרות 2. אבל החיסכון באוטובוסים לא מתממש כשמשבצים לוח זמנים אמיתי, והיא עולה יותר.</p>
+    </article>
+  </div>
+</section>
+
 <section aria-labelledby="h-choice">
   <h2 id="h-choice">ההחלטה: איזו רשת, ועד איזו שעה בערב</h2>
   <p class="sub">כל תא הוא גרסה שנבדקה במודל: השינוי בזמן הנסיעה, בעלות התפעול השנתית ובמספר הנהגים, לעומת היום.
@@ -155,6 +207,7 @@ a { color: var(--stone) }
   <p class="sub">מסלולים אמיתיים מהמודל, ביום חול בחורף: מהבית ליעד, בכל רשת. בחרנו את המקרים שמרוויחים הכי הרבה, את אלה שמפסידים
     הכי הרבה, ושני מקרים רגילים. לחצו על שורה כדי לראות את המסלול.</p>
   <div class="legend"><span><i style="background:var(--walk)"></i>הליכה</span><span><i style="background:var(--wait)"></i>המתנה לאוטובוס</span><span><i style="background:var(--ride)"></i>נסיעה</span><span>דקות בפועל, מהדלת לדלת</span></div>
+  <p class="optkey">אפשרות 1: כל הקווים נשמרים · אפשרות 2: ארגון מחדש (ההמלצה) · אפשרות 3: ארגון מחדש, פחות אוטובוסים. בכולן שירות הערב עד 23:00.</p>
   <div id="journeys" class="jgroup-wrap" style="display:grid;gap:36px"></div>
 </section>
 
@@ -341,7 +394,7 @@ const D = {"W":600,"H":730,"routes":["M305,295 L286,317 L280,303 L269,296 L261,3
         return `<button type="button" class="row" data-i="${i}" aria-pressed="${n === "אפשרות 2"}"><span class="lab">${n}</span><span class="bar">${bar}</span><span class="tot">${it.total}′</span></button>`;
       }).join("");
       card.innerHTML = `<div class="who"><b>${esc(who)}</b><span>גר/ה ליד ${esc(j.home_stop)} (אזור ${j.area}) ← ${esc(j.place)}, ${esc(j.when)}</span></div>` +
-        `<span class="delta ${d < -2 ? "good" : d > 2 ? "bad" : "flat"}">באפשרות 2: <bdi>${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</bdi> דקות</span>` +
+        `<span class="delta ${d < -2 ? "good" : d > 2 ? "bad" : "flat"}">באפשרות 2 (ארגון מחדש): <bdi>${d > 0 ? "+" : d < 0 ? "−" : ""}${Math.abs(d)}</bdi> דקות</span>` +
         `<div class="rows">${rows}</div><div class="plan" aria-live="polite"></div>`;
       const plan = card.querySelector(".plan");
       const show = (i) => {
