@@ -4,7 +4,7 @@ departure, the transfer and the walk. Origin: next to שד.ששת הימים/ש�
 Usage (from eilat-transit/):
   python3 analysis/timetable_trip.py                              today's timetable
   python3 analysis/timetable_trip.py real                         today's, run times x 1.24 as measured (SIRI)
-  python3 analysis/timetable_trip.py exports/gtfs_full_warm.zip   an option's timetable (winter)
+  python3 analysis/timetable_trip.py exports/gtfs_eilat_proposal.zip   the proposal's timetable (winter)
 """
 import os
 import sys

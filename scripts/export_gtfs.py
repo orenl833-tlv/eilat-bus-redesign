@@ -1,6 +1,6 @@
 """Write each option as a GTFS feed, so planners can open it in their own tools (Remix, OTP, gtfs-kit ...).
 
-One feed per option (exports/gtfs_<option>.zip), weekdays (Sun-Thu) only, three timetables by season via
+One feed for the recommended plan (option 3, exports/gtfs_eilat_proposal.zip), weekdays (Sun-Thu) only, three timetables by season via
 calendar_dates.txt over one year from 1 Nov 2026 (no holidays marked):
   winter Nov-Mar, spring/autumn Apr-Jun + Sep-Oct, summer holiday Jul-Aug.
 - Trips: every `headway` minutes in each period, the second direction offset by half a headway (as in
@@ -12,7 +12,7 @@ calendar_dates.txt over one year from 1 Nov 2026 (no holidays marked):
 - Line numbers are the public ones (a variant keeps its number; line 7 is new). Friday and Saturday are not
   included: keep today's (see REDESIGN.md).
 
-Usage: PYTHONPATH=.:scripts python3 scripts/export_gtfs.py   Output: exports/gtfs_<option>.zip
+Usage: PYTHONPATH=.:scripts python3 scripts/export_gtfs.py   Output: exports/gtfs_eilat_proposal.zip
 """
 import datetime as dt
 import io
@@ -27,7 +27,8 @@ from eilat import params as P
 from export_page import public_name
 
 EVENING_END = 23   # the recommended package: last departures before 23:00, plus the shift-change trips
-OPTIONS = {"keep": "1 · keep every line", "full_warm": "2 · restructure", "full_peak-3_warm": "3 · restructure, fewer buses"}
+PLAN = "full_peak-3_warm"   # the recommended plan (option 3)
+OUT = "exports/gtfs_eilat_proposal.zip"
 SEASON_MONTHS = {"winter": [11, 12, 1, 2, 3], "spring_autumn": [4, 5, 6, 9, 10], "summer": [7, 8]}
 START = dt.date(2026, 11, 1)
 
@@ -123,7 +124,7 @@ def build(tag, stops):
         routes.append(dict(route_id=rid, agency_id="proposal", route_short_name=rid, route_long_name=" · ".join(notes), route_type=3))
     files = {
         "agency.txt": pd.DataFrame([dict(agency_id="proposal",
-                                         agency_name=f"Eilat network proposal, option {OPTIONS[tag]} (research model, not an operator timetable)",
+                                         agency_name="Eilat bus network proposal (research model, not an operator timetable)",
                                          agency_url="https://github.com/orenl833-tlv/test-claude", agency_timezone="Asia/Jerusalem", agency_lang="he")]),
         "stops.txt": used, "routes.txt": pd.DataFrame(routes),
         "trips.txt": T[["route_id", "service_id", "trip_id", "trip_headsign", "direction_id", "block_id"]],
@@ -132,7 +133,7 @@ def build(tag, stops):
                                             feed_lang="he", feed_start_date="20261101", feed_end_date="20271031", feed_version=tag)]),
     }
     check(files)
-    path = f"exports/gtfs_{tag}.zip"
+    path = OUT
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as z:
         for n, df in files.items():
             buf = io.StringIO(); df.to_csv(buf, index=False); z.writestr(n, buf.getvalue())
@@ -157,8 +158,7 @@ def check(f):
 
 def main():
     stops = pd.read_csv("data/stops_all.csv")
-    for tag in OPTIONS:
-        print(*build(tag, stops), flush=True)
+    print(*build(PLAN, stops), flush=True)
 
 
 if __name__ == "__main__":

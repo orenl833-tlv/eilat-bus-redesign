@@ -24,7 +24,7 @@ Source: `web/eilat.html`, data built by `scripts/export_page.py`.
 | Calibration | Rav-Kav boardings per line (2025 Q4): 14% error per line; out of sample 15% | `scripts/calibrate.py` |
 | Evaluation | Frequency-based assignment with common lines; perceived time with walk, wait, transfer and heat weights | `eilat/evaluate.py` |
 | Design | Candidate lines (detours cut, quiet stops passed, new direct lines) + simulated annealing under fleet, bus-hour, equity, coverage and usability constraints; seasonal timetables | `eilat/candidates.py`, `scripts/optimize.py`, `scripts/seasonal.py` |
-| Timetables | Lines running per hour, rough driver duties, and each option as a GTFS feed with vehicle blocks | `scripts/active_lines.py`, `shifts.py`, `export_gtfs.py`, `exports/` |
+| Timetables | Lines running per hour, rough driver duties, and the recommended plan as a GTFS feed with vehicle blocks (`exports/gtfs_eilat_proposal.zip`) | `scripts/active_lines.py`, `shifts.py`, `export_gtfs.py`, `exports/` |
 | Riders | Example trips planned on the real timetables (today and each option), as a trip-planner app does | `eilat/timetable.py`, `scripts/journeys_tt.py`, `analysis/timetable_trip.py`, `scripts/build_brief.py` |
 | Checks | Sensitivity of every assumed number, capacity per bus, school dismissal waves, vehicle blocks and e-bus range, reliability, weekends, a future scenario with a new district | `scripts/assess.py`, `capacity.py`, `school_peaks.py`, `blocking.py`, `analysis/reliability.py`, `weekend.py`, `future.py`, `spur.py` |
 

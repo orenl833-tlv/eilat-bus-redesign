@@ -383,7 +383,7 @@ does it:
 
 ## GTFS export (`scripts/export_gtfs.py`)
 
-Each option is in `exports/gtfs_<option>.zip`:
+The recommended plan (option 3) is in `exports/gtfs_eilat_proposal.zip` (the other two options can be exported by setting `PLAN` in the script):
 - weekdays Sun-Thu, with three seasonal timetables over Nov 2026 - Oct 2027 (`calendar_dates.txt`);
 - the recommended evening: last departures before 23:00, plus the 5 shift-change trips;
 - measured run times;

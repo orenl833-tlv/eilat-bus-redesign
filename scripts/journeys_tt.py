@@ -63,7 +63,7 @@ def main():
     names = stops.stop_name.to_dict()
     nets = {"today": Network.today("data/gtfs_eilat/", stops)}
     for t in [PLAN]:
-        nets[t] = Network.from_zip(f"exports/gtfs_{t}.zip", "weekday_winter", stops)
+        nets[t] = Network.from_zip("exports/gtfs_eilat_proposal.zip", "weekday_winter", stops)
     m = O.Problem("full").m
     pts = m.pts
     att = list(Dm.ATTRACTORS.name)
