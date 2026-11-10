@@ -381,6 +381,30 @@ does it:
     timetables are aligned in the preparation phase.
   - The exported GTFS does not design them.
 
+## Are connections timed? (`analysis/transfer_sync.py`)
+
+Method:
+- every area × key place × departure from home every 30 min (07:00-20:30), planned on the real timetables;
+- the wait at each transfer = the next bus's departure − (arrival + walk);
+- weighted by residents.
+
+| Transfer waits | Today | Plan |
+|---|---|---|
+| Median | 1.4 min | 1.2 min |
+| ≤ 5 min | 82% | 86% |
+| > 15 min | 9.5% | 2.4% |
+| Busiest connections (median wait) | 3→4: 0.8 · 2→15: 6.4 · **5→15: 16.9** · **3→15: 19.6** · 1→15: 1.4 | 5→15: 1.8 · 3→15: 4.0 · 5א→15: 1.2 · 3→5: 0.9 |
+
+- **Today some connections are timed and some are not.**
+  - Lines 1 and 2 meet line 15 at Mall HaYam.
+  - Riders coming from lines 3 and 5 wait 17-20 min for line 15: the long trips to the south coast.
+- **In the plan, long waits fall from 9.5% to 2.4% of transfers.** This comes mostly from higher frequencies:
+  the exported timetable was not built to time connections.
+- **The waits are on the planned best route,** which picks good connections when it can, so both columns are
+  optimistic in the same way.
+- **The timetable step should still pulse the feeders into line 15** at Mall HaYam and the central station,
+  and protect those connections against lateness.
+
 ## GTFS export (`scripts/export_gtfs.py`)
 
 The recommended plan (option 3) is in `exports/gtfs_eilat_proposal.zip` (the other two options can be exported by setting `PLAN` in the script):
