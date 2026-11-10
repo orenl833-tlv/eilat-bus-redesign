@@ -1,17 +1,35 @@
 # Eilat bus network redesign
 
-Can a city's buses serve people better with the same fleet and the same driving hours? For Eilat, a closed
-city of 55,000 with ~42 urban buses, the answer from public data is **yes: 12-18% less perceived
-door-to-door time, no neighbourhood more than 3% worse, and no extra buses.**
+Can a city's buses serve people better with the same fleet and the same drivers? For Eilat, a closed city of
+55,000 with ~42 urban buses, the answer from public data is **yes.**
 
-![Today vs restructured network](figs/proposal_full_warm.png)
+**The recommended plan:**
+- **~16% less perceived door-to-door time,** and every neighbourhood better off.
+- **No extra buses:** 34, against today's 35.
+- **No extra drivers,** with overtime as today. With realistic terminal recovery time it needs fewer than today.
+- **Costs ~NIS 2.1 M a year** in extra bus-hours.
+- **What riders pay:** about one bus trip in four needs a transfer, up from one in six.
 
-**Read first:** the [decision brief](https://claude.ai/artifact/EhZ6aFgBzyymEFFGG5fVSP) (Hebrew, `web/brief.html`), [SUMMARY_HE.md](SUMMARY_HE.md), or [REDESIGN.md](REDESIGN.md), the three options, who gains and who loses, the checks and the
-caveats.
+**What changes:**
+- Lines 1, 4 and 6א merge into 2, 3 and 6, which run more often.
+- Lines 2 and 3 drop their detours (line 3: 31 → 24 min end to end).
+- The long lines pass their quiet stops.
+- A new line 7 runs campus – Star Eilat – hotels.
+- Evening service runs to 23:00, plus five shift-change trips for the hotels and Yoseftal.
 
-**Explore it:** [interactive comparison page](https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV) (Hebrew),
-today's lines next to each option, by season and time of day, with travel times from every neighbourhood.
-Source: `web/eilat.html`, data built by `scripts/export_page.py`.
+![Today vs the recommended plan](figs/proposal_full_peak-3_warm.png)
+
+**Read first:**
+- the [decision brief](https://claude.ai/artifact/EhZ6aFgBzyymEFFGG5fVSP) (Hebrew, `web/brief.html`);
+- [SUMMARY_HE.md](SUMMARY_HE.md);
+- [REDESIGN.md](REDESIGN.md), which also covers the two alternatives checked, the method, the checks and the
+  caveats.
+
+**Explore it:**
+- the [interactive map](https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV) (Hebrew): today's lines next to the
+  plan's, frequencies by season and time of day, and travel times from every neighbourhood. Source:
+  `web/eilat.html`, data built by `scripts/export_page.py`;
+- the plan's timetable as GTFS: `exports/gtfs_eilat_proposal.zip`.
 
 ## What's in it
 
@@ -25,7 +43,7 @@ Source: `web/eilat.html`, data built by `scripts/export_page.py`.
 | Evaluation | Frequency-based assignment with common lines; perceived time with walk, wait, transfer and heat weights | `eilat/evaluate.py` |
 | Design | Candidate lines (detours cut, quiet stops passed, new direct lines) + simulated annealing under fleet, bus-hour, equity, coverage and usability constraints; seasonal timetables | `eilat/candidates.py`, `scripts/optimize.py`, `scripts/seasonal.py` |
 | Timetables | Lines running per hour, rough driver duties, and the recommended plan as a GTFS feed with vehicle blocks (`exports/gtfs_eilat_proposal.zip`) | `scripts/active_lines.py`, `shifts.py`, `export_gtfs.py`, `exports/` |
-| Riders | Example trips planned on the real timetables (today and each option), as a trip-planner app does | `eilat/timetable.py`, `scripts/journeys_tt.py`, `analysis/timetable_trip.py`, `scripts/build_brief.py` |
+| Riders | Example trips planned on the real timetables (today and the plan), as a trip-planner app does | `eilat/timetable.py`, `scripts/journeys_tt.py`, `analysis/timetable_trip.py`, `scripts/build_brief.py` |
 | Checks | Sensitivity of every assumed number, capacity per bus, school dismissal waves, vehicle blocks and e-bus range, reliability, weekends, a future scenario with a new district | `scripts/assess.py`, `capacity.py`, `school_peaks.py`, `blocking.py`, `analysis/reliability.py`, `weekend.py`, `future.py`, `spur.py` |
 
 ## Data (all public)
@@ -50,8 +68,12 @@ PYTHONPATH=.:scripts python3 scripts/seasonal.py keep 400 && PYTHONPATH=.:script
 ## Honest limits
 
 - **The model compares networks.** It doesn't forecast ridership exactly.
-- **Purposes:** the purpose mix isn't identifiable from 8 lines, so every option must win under two
-  calibrations.
+- **Purposes:** the purpose mix isn't identifiable from 8 lines, so the plan must win under two
+  calibrations (it does).
+- **Who travels where is assumed** (sizes of the key places, by distance); only line totals are measured.
+  Full Rav-Kav tap data would replace the assumption.
+- **Timed transfers:** today lines 1 and 2 meet line 15 at Mall HaYam; the plan's timetable has to
+  rebuild such connections.
 - **Summer** (July-August) has no ridership data.
 - **Not modelled:** a full driver roster (a rough duty check only), depot capacity and charging. The blocks show that e-bus charging is
   already needed today.
