@@ -105,6 +105,15 @@ td.pick { background: var(--stone-soft); box-shadow: inset 0 0 0 2px var(--stone
 .note { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px; display: grid; gap: 8px }
 .note ul { margin: 0; padding-inline-start: 20px; display: grid; gap: 6px }
 .note p { margin: 0 }
+.src3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px }
+@media (max-width: 820px) { .src3 { grid-template-columns: 1fr } }
+.src3 .note { align-content: start }
+.src3 .note .kind { font-size: 13px; font-weight: 700; letter-spacing: .04em; border-radius: 999px; padding: 1px 10px; width: fit-content }
+.kind.m { background: var(--stone-soft); color: var(--stone) }
+.kind.a { background: var(--loss-soft); color: var(--loss) }
+.kind.f { background: var(--bg); color: var(--ink-2); border: 1px solid var(--rule) }
+.fit td, .fit th { text-align: center }
+.fit th:first-child, .fit td:first-child { text-align: start }
 details summary { cursor: pointer; color: var(--stone); font-weight: 700 }
 footer { color: var(--ink-2); font-size: 14px }
 footer .inner { padding-block: 0 48px }
@@ -191,11 +200,61 @@ a { color: var(--stone) }
     <div class="note">
       <h3>מה המודל יודע, ומה לא</h3>
       <ul>
-        <li><b>מספר העולים לכל קו ידוע.</b> הוא לקוח מנתוני רב-קו הפומביים (סך לרבעון), והמודל מכויל עליהם בטעות של כ-14% לקו.</li>
+        <li><b>מספר העולים לכל קו ידוע,</b> והמודל מכויל עליו. דפוס הנסיעות עצמו הוא הנחה (ראו למטה).</li>
         <li><b>לא ידוע איפה ומתי כל נוסע עלה וירד, ומי הוא.</b> כמה נוסעים יש באוטובוס ברגע נתון זו הערכה של המודל.</li>
         <li><b>זמני הנסיעה אמיתיים.</b> הם נמדדו ממיקומי האוטובוסים בפועל (SIRI).</li>
         <li><b>שעות המשמרות במלונות ובבית החולים הן הנחה:</b> 07–15–23. צריך לאמת אותן מול המלונות, וחלקם מסיעים עובדים בעצמם.</li>
         <li><b>המתנה מחושבת כמחצית הזמן בין אוטובוסים.</b> מי שמתכנן לפי לוח הזמנים ממתין פחות, אבל אז נקבע לו מתי לצאת.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="h-data">
+  <h2 id="h-data">מאיפה המספרים: מה נמדד ומה הונח</h2>
+  <p class="sub">מאיפה ולאן אנשים נוסעים, ובאיזו שעה, לא נמדד. זו הנחה של המודל. נתוני התיקוף משמשים לכיול ולבדיקה, ולא כמקור לדפוס הנסיעות.</p>
+  <div class="src3">
+    <div class="note"><span class="kind m">נמדד</span>
+      <ul>
+        <li><b>עולים לכל קו:</b> ממוצע יומי לרבעון, מנתוני רב-קו הפומביים. 8 מספרים לכל הרשת, בלי תחנה, בלי שעה ובלי יעד.</li>
+        <li><b>זמני נסיעה ואיחורים:</b> ממיקומי האוטובוסים בפועל (SIRI).</li>
+        <li><b>אוכלוסייה ובעלות על רכב לפי שכונה:</b> מפקד 2022.</li>
+        <li><b>עלות שעת שירות:</b> <bdi>360</bdi> ₪, מקובץ הנסועה.</li>
+      </ul></div>
+    <div class="note"><span class="kind a">הונח</span>
+      <ul>
+        <li><b>לאן נוסעים:</b> מוקדי משיכה (מלונות, בתי ספר, מרכזי קניות, בית חולים) לפי גודלם ומרחקם.</li>
+        <li><b>מתי נוסעים:</b> פרופיל שעות לכל מטרת נסיעה.</li>
+        <li><b>שעות משמרות וצלצולים:</b> 07–15–23 במלונות ובבית החולים, ושעות הצלצול לפי מערכת השעות.</li>
+      </ul></div>
+    <div class="note"><span class="kind f">כויל</span>
+      <ul>
+        <li><b>היקף כל מטרת נסיעה</b> ורגישות הנוסעים לזמן ולבעלות על רכב, כך שסך העולים בכל קו יתאים לנתון.</li>
+        <li><b>טעות של כ-14% לקו</b> ברבעון 4, 2025. על רבעון שהמודל לא ראה (רבעון 1, 2026): 15%.</li>
+      </ul></div>
+  </div>
+  <div class="matrix"><table class="fit">
+    <thead><tr><th>עולים ביום, רבעון 4 2025</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>15</th><th>16</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">בפועל (רב-קו)</th><td class="num">1,596</td><td class="num">1,721</td><td class="num">941</td><td class="num">808</td><td class="num">1,645</td><td class="num">1,537</td><td class="num">309</td><td class="num">369</td></tr>
+      <tr><th scope="row">במודל</th><td class="num">1,399</td><td class="num">1,379</td><td class="num">1,018</td><td class="num">937</td><td class="num">1,556</td><td class="num">1,172</td><td class="num">341</td><td class="num">365</td></tr>
+    </tbody></table></div>
+  <div class="two">
+    <div class="note">
+      <h3>מה זה אומר על ההמלצה</h3>
+      <ul>
+        <li><b>8 מספרים לא קובעים דפוס נסיעות אחד.</b> הרבה דפוסים שונים נותנים אותם סכומים לכל קו. לכן כל אפשרות נבדקה בשני כיולים שונים, למשל עם 4.5% תיירים ועם 15%, ונבחרה רק אם היא טובה יותר מהיום בשניהם.</li>
+        <li><b>המודל אמין יותר בהשוואה מאשר במספרים המוחלטים.</b> הנחת ביקוש שגויה פוגעת בשתי הרשתות באותו אופן.</li>
+        <li><b>החולשה:</b> אם אנשים נוסעים ליעדים אחרים מאלה שהונחו, קו מסוים עשוי להיות חשוב יותר. לכן השלב הראשון משאיר את כל הקווים, ואיחוד הקווים מחכה למדידה. המודל אף מעריך בחסר את קווים 2 ו-6 (0.80 ו-0.76 מהמציאות).</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h3>מה היה מחליף את ההנחות בנתונים</h3>
+      <ul>
+        <li><b>תיקופי רב-קו מלאים</b> (תחנה, שעה, מזהה כרטיס), שנמצאים במשרד התחבורה. מהם משחזרים מאיפה ולאן כל נוסע נוסע: את תחנת הירידה מעריכים לפי התחנה שבה הוא עולה בנסיעה הבאה. זו שיטה מקובלת.</li>
+        <li><b>מטריצות נסיעה מנתונים סלולריים,</b> שמשרד התחבורה כבר משתמש בהן.</li>
+        <li><b>סקר הרגלי נסיעה.</b></li>
+        <li>עם אחד מהם מחליפים את הנחות היעדים ומריצים מחדש את כל ההשוואה. הבקשה הזו היא חלק משלב ההכנה.</li>
       </ul>
     </div>
   </div>
