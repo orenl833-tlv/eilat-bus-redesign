@@ -3,10 +3,11 @@ transfer walks and the walks at both ends. Used to check single trips the freque
 averages (its wait is half the headway; a timetable has fixed times, and can have timed transfers).
 
 A Network is built from a GTFS (today's extract, or an option's export).
-- Today's printed times are scaled per line and period to the measured run times (data/runtime_factor.csv,
-  SIRI); an option's export already uses them.
+- Run times are the buses' measured times on each street segment at that hour (eilat/speeds.py, from GPS):
+  today's printed times are replaced by them; an option's export is built with them.
 - `realize` draws a delayed copy of the network: each trip gets a departure delay and a run-time deviation
-  sampled from real trips (data/ride_delays.csv, SIRI), so connections can be missed as on the street.
+  sampled from real trips of its line at that hour (data/ride_delays.csv, SIRI), so connections can be
+  missed as on the street.
 - `plan` can require a minimum time at a transfer (getting off, crossing, being at the stop on time).
 """
 import io
@@ -37,28 +38,36 @@ def base_line(line):
 
 
 class DelaySampler:
-    """Real trips' (departure delay, run ratio) by line and period; the ratio is used relative to its mean,
-    which the timetables already contain, so the sampled run-time deviation averages zero."""
+    """Real trips' (departure delay, run ratio), from the most specific pool with at least min_n rides: the
+    line in that hour, all lines in that hour, the line in that period, all lines in that period, all.
+    The ratio is used relative to its pool's median: the timetable already has the median run time of that
+    hour (the measured segment times), so a draw is how much faster or slower this ride was than a typical
+    ride of the same hour (the right tail of slow rides is kept)."""
 
     def __init__(self, path="data/ride_delays.csv", min_n=30):
         D = pd.read_csv(path, dtype={"line": str})
-        self.pool = {}
-        for key, g in list(D.groupby(["line", "period"])) + list(D.groupby(["period"])):
-            k = key if isinstance(key, tuple) and len(key) == 2 else ("*", key[0] if isinstance(key, tuple) else key)
-            if len(g) >= min_n:
-                self.pool[k] = (g.d0.values.clip(-1, None), g.ratio.values / g.ratio.mean())
-        self.all = (D.d0.values.clip(-1, None), D.ratio.values / D.ratio.mean())
+        groups = [(("h", ln, h), g) for (ln, h), g in D.groupby(["line", "hour"])]
+        groups += [(("h", "*", h), g) for h, g in D.groupby("hour")]
+        groups += [(("p", ln, q), g) for (ln, q), g in D.groupby(["line", "period"])]
+        groups += [(("p", "*", q), g) for q, g in D.groupby("period")]
+        self.pool = {k: (g.d0.values.clip(-1, None), g.ratio.values / g.ratio.median())
+                     for k, g in groups if len(g) >= min_n}
+        self.all = (D.d0.values.clip(-1, None), D.ratio.values / D.ratio.median())
 
-    def sample(self, line, period, rng):
-        d0, mult = self.pool.get((base_line(line), period)) or self.pool.get(("*", period)) or self.all
+    def sample(self, line, clock, rng):
+        ln, h, q = base_line(line), int(clock // 60) % 24, _period(clock)
+        d0, mult = next((self.pool[k] for k in (("h", ln, h), ("h", "*", h), ("p", ln, q), ("p", "*", q))
+                         if k in self.pool), self.all)
         i = rng.integers(len(d0))
         return float(d0[i]), float(mult[i])
 
 
 class Network:
-    def __init__(self, stop_times, trip_line, stops, scale=1.0, foot=None):
+    def __init__(self, stop_times, trip_line, stops, scale=1.0, foot=None, speeds=None):
         """stop_times: trip_id, stop_id, stop_sequence, t (minutes); trip_line: trip_id -> public line;
-        scale: a number, or a dict trip_id -> number (run times scaled from each trip's first stop)."""
+        scale: a number, or a dict trip_id -> number (run times scaled from each trip's first stop);
+        speeds: a Speeds; if given, each trip's times are rebuilt from its first departure with the measured
+        segment times at that hour (a segment without measurements keeps its given minutes x scale)."""
         self.st = stop_times.sort_values(["trip_id", "stop_sequence"])
         self.line = trip_line
         self.stops = stops
@@ -66,7 +75,12 @@ class Network:
         for tid, g in self.st.groupby("trip_id", sort=False):
             s, t = g.stop_id.values.astype(int), g.t.values.astype(float)
             k = scale.get(tid, RUNTIME_FACTOR) if isinstance(scale, dict) else scale
-            self.trips[tid] = (s, t[0] + (t - t[0]) * k)
+            if speeds is not None:
+                d = np.diff(t)
+                t = speeds.run(list(s), t[0], lambda i, c, d=d, k=k: d[i] * k)
+            else:
+                t = t[0] + (t - t[0]) * k
+            self.trips[tid] = (s, t)
         self._build({})
         if foot is None:
             ids = list(stops.index)
@@ -97,21 +111,24 @@ class Network:
         for tid, (s, t) in self.trips.items():
             k = (keys or {}).get(tid, tid)
             rng = np.random.default_rng([seed, zlib.crc32(str(k).encode())])
-            delays[tid] = sampler.sample(self.line.get(tid, ""), _period(t[0]), rng)
+            delays[tid] = sampler.sample(self.line.get(tid, ""), t[0], rng)
         other._build(delays)
         return other
 
     @classmethod
-    def today(cls, gdir, stops, factors="data/runtime_factor.csv"):
+    def today(cls, gdir, stops, speeds=None, foot=None):
+        """Today's timetable as the buses really run it: each trip leaves at its printed time, and runs each
+        segment in the measured time for that hour (a segment without measurements: printed x the city's
+        ratio for that hour)."""
+        from .speeds import Speeds
+        sp = speeds or Speeds()
         st = pd.read_csv(gdir + "stop_times.csv")
         tr = pd.read_csv(gdir + "trips.csv").merge(pd.read_csv(gdir + "routes.csv")[["route_id", "route_short_name"]], on="route_id")
         st["t"] = st.dep / 60
         line = dict(zip(tr.trip_id, tr.route_short_name.astype(str), strict=True))
-        F = pd.read_csv(factors, dtype={"line": str})
-        fac = {(r.line, r.period): r.factor for r in F.itertuples()}
         t0 = st.groupby("trip_id").t.min()
-        scale = {tid: fac.get((base_line(line[tid]), _period(t)), RUNTIME_FACTOR) for tid, t in t0.items() if tid in line}
-        return cls(st, line, stops, scale)
+        scale = {tid: sp.city_factor(t) for tid, t in t0.items() if tid in line}
+        return cls(st, line, stops, scale, foot, sp)
 
     @classmethod
     def from_zip(cls, path, service, stops, foot=None):

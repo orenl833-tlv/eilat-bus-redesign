@@ -6,7 +6,8 @@ direction and 0.5 for the other). The phase per pattern is searched to shorten d
 2. then coordinate refinement: each pattern's phase tried on a grid, keeping the best, for SWEEPS sweeps.
 Score = mean door-to-door minutes (arrival - leaving home) over areas x key places x leaving times, weighted
 by the area's residents, planned on the timetable as buses really run:
-- every trip is delayed as a real trip of its line and period was (SIRI, data/ride_delays.csv), in N_SEEDS
+- each trip runs every street segment in the time measured by GPS at that hour (eilat/speeds.py);
+- every trip is delayed as a real trip of its line and hour was (SIRI, data/ride_delays.csv), in N_SEEDS
   draws shared by all candidates trip by trip (common random numbers);
 - the rider sees the actual departures (as with live arrival times) and needs TRANSFER_MIN minutes at a
   transfer, so tight connections are missed when the first bus is late;
@@ -32,6 +33,7 @@ import shift_trips as SHT
 from eilat import demand as Dm
 from eilat import params as P
 from eilat.evaluate import walk_min
+from eilat.speeds import Speeds
 from eilat.timetable import DelaySampler, Network
 
 PLAN, SEASON, LAST = "full_peak-3_warm", "winter", 23
@@ -42,25 +44,28 @@ N_SEEDS, N_SEEDS_CHECK = 4, 10
 TRAIN_LEAVE = range(7 * 60, 21 * 60, 60)          # 07:00, 08:00, ... 20:00
 HOLDOUT_LEAVE = range(7 * 60 + 23, 21 * 60, 30)   # 07:23, 07:53, ... (not seen by the search)
 random.seed(7)
+SPEEDS = Speeds()
 
 
-def pattern_trips(pats, phases, shift, keys=None):
-    """Stop times (trip_id, stop_id, stop_sequence, t) and trip ends for the non-school lines; keys gets each
-    trip's stable name (pattern|period|departure number) for shared random delays."""
+def pattern_trips(pats, phases, shift, keys=None, speeds=None):
+    """Stop times (trip_id, stop_id, stop_sequence, t) and trip ends for the non-school lines, each trip run at
+    the measured segment times of its hours; keys gets each trip's stable name (pattern|period|departure
+    number) for shared random delays."""
     rows, ends = [], []
     keys = {} if keys is None else keys
+    speeds = speeds or SPEEDS
     for p in pats:
         ph = phases[p.name]
         for q, (a, b) in P.PERIODS.items():
             h = p.headway.get(q, math.inf)
             if not math.isfinite(h):
                 continue
-            seg = np.asarray(p.times(q)); cum = np.concatenate([[0], np.cumsum(seg)])
             keep = [i for i, s in enumerate(p.stops) if not (s in p.skip and 0 < i < len(p.stops) - 1)]
             starts = list(np.arange(a * 60 + ph * h, min(b, LAST) * 60, h))
             if q == "19-24":
                 starts += [r.start for r in shift.itertuples() if r.pattern == p.name]
             for t0 in starts:
+                cum = speeds.pattern_run(p, t0) - t0
                 tid = f"{p.name}@{t0:.1f}"
                 keys[tid] = f"{p.name}|{q}|{len([1 for x in keys.values() if x.startswith(p.name + '|' + q + '|')])}"
                 rows += [(tid, p.stops[i], k, t0 + cum[i]) for k, i in enumerate(keep)]
@@ -141,7 +146,7 @@ def main():
         print(f"sweep {sw}: {best_s:.2f}", flush=True)
     res = {}
     check = range(100, 100 + N_SEEDS_CHECK)                    # delay draws the search did not see
-    today = Network.today("data/gtfs_eilat/", S.stops)
+    today = Network.today("data/gtfs_eilat/", S.stops, SPEEDS, S.foot)
     res["today"] = dict(holdout=round(S.score(None, HOLDOUT_LEAVE, seeds=check, net=(today, None)), 2))
     print("today", res["today"], flush=True)
     for label, ph in (("baseline", base), ("tuned", best)):

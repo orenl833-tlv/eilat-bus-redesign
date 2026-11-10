@@ -5,8 +5,8 @@ calendar_dates.txt over one year from 1 Nov 2026 (no holidays marked):
   winter Nov-Mar, spring/autumn Apr-Jun + Sep-Oct, summer holiday Jul-Aug.
 - Trips: every `headway` minutes in each period, the second direction offset by half a headway (as in
   scripts/blocking.py); the evening ends at 23:00, plus the 5 shift-change trips for the hotels and Yoseftal
-  (scripts/shift_trips.py). Times between stops are the model's: measured (SIRI) run times, so they are slower
-  than today's printed timetable. Stops a line passes without stopping are left out of its stop_times.
+  (scripts/shift_trips.py). Times between stops are measured: each street segment's GPS (SIRI) run time at the
+  hour the bus passes it (eilat/speeds.py), so 06:00 trips are faster than noon trips. Stops a line passes without stopping are left out of its stop_times.
 - School lines 80-82: today's real trips and times, not in the summer holiday.
 - block_id: the vehicle blocks of scripts/blocking.py (which bus runs which trip).
 - Line numbers are the public ones (a variant keeps its number; line 7 is new). Friday and Saturday are not
@@ -24,6 +24,7 @@ import pandas as pd
 import blocking as BL
 import shift_trips as SHT
 from eilat import params as P
+from eilat.speeds import Speeds
 from export_page import public_name
 
 EVENING_END = 23   # the recommended package: last departures before 23:00, plus the shift-change trips
@@ -31,6 +32,7 @@ PLAN = "full_peak-3_warm"   # the recommended plan (option 3)
 OUT = "exports/gtfs_eilat_proposal.zip"
 SEASON_MONTHS = {"winter": [11, 12, 1, 2, 3], "spring_autumn": [4, 5, 6, 9, 10], "summer": [7, 8]}
 START = dt.date(2026, 11, 1)
+SPEEDS = Speeds()
 
 
 def hms(m):
@@ -62,7 +64,6 @@ def option_trips(tag, se, names):
             h = p.headway.get(q, math.inf)
             if not math.isfinite(h):
                 continue
-            seg = p.times(q)
             t = a * 60 + off * h
             b = min(b, EVENING_END)
             starts = []
@@ -71,13 +72,13 @@ def option_trips(tag, se, names):
             if q == "19-24":
                 starts += [r.start for r in shift.itertuples() if r.pattern == p.name]
             for t in starts:
+                run = SPEEDS.pattern_run(p, t)
                 tid = f"{tag}_{se}_{p.name}_{len(trips)}"
                 trips.append(dict(route_id=disp, service_id=f"weekday_{se}", trip_id=tid, trip_headsign=names.get(p.stops[-1], ""),
-                                  direction_id=dr, line=p.line, start=t, end=t + sum(seg), o=p.stops[0], d=p.stops[-1]))
-                cum, k = t, 0
+                                  direction_id=dr, line=p.line, start=t, end=float(run[-1]), o=p.stops[0], d=p.stops[-1]))
+                k = 0
                 for i, s in enumerate(p.stops):
-                    if i > 0:
-                        cum += seg[i - 1]
+                    cum = run[i]
                     if s in p.skip and 0 < i < len(p.stops) - 1:
                         continue
                     k += 1

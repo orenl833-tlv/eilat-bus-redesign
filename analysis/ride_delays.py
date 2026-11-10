@@ -8,7 +8,7 @@ Per ride (urban lines):
 The ratio is later used relative to its line/period mean, which the timetables already contain (the measured
 run-time factor), so the sampled deviation has a mean of zero; d0 is used as measured.
 
-Usage: python3 analysis/ride_delays.py   Output: data/ride_delays.csv (line, period, d0, ratio)
+Usage: python3 analysis/ride_delays.py   Output: data/ride_delays.csv (line, period, hour of the scheduled start, d0, ratio)
 """
 import glob
 
@@ -53,12 +53,14 @@ def main():
             h = g.s0.iloc[0].tz_convert("Asia/Jerusalem").hour
             per = next((k for k, (a, b) in P.items() if a <= h < b), None)
             if per:
-                rows.append(dict(line=g.line.iloc[0].replace("א", ""), period=per, d0=round(d0, 2), ratio=round(ratio, 3)))
+                rows.append(dict(line=g.line.iloc[0].replace("א", ""), period=per, hour=h, d0=round(d0, 2), ratio=round(ratio, 3)))
     D = pd.DataFrame(rows)
     D.to_csv("data/ride_delays.csv", index=False)
     print(len(D), "rides")
     print("departure delay (min): median %.1f, P90 %.1f; run ratio: median %.2f, P10-P90 %.2f-%.2f" % (
         D.d0.median(), D.d0.quantile(.9), D.ratio.median(), D.ratio.quantile(.1), D.ratio.quantile(.9)))
+    print(D.groupby("hour").agg(n=("d0", "size"), d0=("d0", "median"), d0_p90=("d0", lambda v: v.quantile(.9)),
+                                ratio=("ratio", "median")).round(2).to_string())
     print(D.groupby("line").agg(n=("d0", "size"), d0=("d0", "median"), ratio=("ratio", "median")).round(2).to_string())
 
 
