@@ -34,7 +34,7 @@ import shifts as SH
 from eilat import demand as Dm
 from eilat import params as P
 
-REC = "full_warm"
+REC = "full_peak-3_warm"   # the recommended plan
 
 
 def season_trips(tag, se, st, hotels):

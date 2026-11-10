@@ -6,8 +6,8 @@ leaving home at four times 15 minutes apart (07:00-07:45, 10:00-10:45, 13:00-13:
 21:00-21:45), as a trip-planner app would. A trip's time is door to door; when no bus gets there (or walking is
 quicker) the walk counts.
 
-The examples are picked on option 2 vs today (mean over the four departures), among trips that a bus serves at
-every departure both today and in option 2, with today's mean wait at most 30 min (no "today you can only walk"
+The examples are picked on the recommended plan (option 3) vs today (mean over the four departures), among trips that a bus serves at
+every departure both today and in the plan, with today's mean wait at most 30 min (no "today you can only walk"
 or "wait an hour for the first bus" cases):
 - the three biggest gains;
 - the three biggest losses;
@@ -27,7 +27,8 @@ from eilat.evaluate import walk_min
 from eilat.timetable import Network
 from export_page import public_name
 
-NETS = {"today": "היום", "keep": "אפשרות 1", "full_warm": "אפשרות 2", "full_peak-3_warm": "אפשרות 3"}
+PLAN = "full_peak-3_warm"   # the recommended plan
+NETS = {"today": "היום", PLAN: "ההצעה"}
 LEAVE = {"06-09": 7 * 60, "09-12": 10 * 60, "12-15": 13 * 60, "15-19": 17 * 60, "19-24": 21 * 60}
 MAX_WAIT_TODAY = 30
 WHEN_HE = {"06-09": "בבוקר", "09-12": "באמצע הבוקר", "12-15": "בצהריים", "15-19": "אחר הצהריים", "19-24": "בערב"}
@@ -61,7 +62,7 @@ def main():
     stops = pd.read_csv("data/stops_all.csv").drop_duplicates("stop_id").set_index("stop_id")
     names = stops.stop_name.to_dict()
     nets = {"today": Network.today("data/gtfs_eilat/", stops)}
-    for t in ["keep", "full_warm", "full_peak-3_warm"]:
+    for t in [PLAN]:
         nets[t] = Network.from_zip(f"exports/gtfs_{t}.zip", "weekday_winter", stops)
     m = O.Problem("full").m
     pts = m.pts
@@ -91,11 +92,11 @@ def main():
                                   walk=float(np.mean([r["walk"] for r in runs])), wait=float(np.mean([r["wait"] for r in runs])),
                                   ride=float(np.mean([r["ride"] for r in runs])))
                 cand.append(dict(area=area, home=int(h), place=place, period=q, res=res,
-                                 delta=res["full_warm"]["mean"] - res["today"]["mean"]))
+                                 delta=res[PLAN]["mean"] - res["today"]["mean"]))
         print(q, len(cand), flush=True)
     # only trips a bus serves today and in option 2 at every departure: no "today you can only walk" cases
     # and no "waiting an hour for the first bus" cases either: today's mean wait at most MAX_WAIT_TODAY
-    cand = [c for c in cand if c["res"]["today"]["nobus"] == 0 and c["res"]["full_warm"]["nobus"] == 0
+    cand = [c for c in cand if c["res"]["today"]["nobus"] == 0 and c["res"][PLAN]["nobus"] == 0
             and c["res"]["today"]["wait"] <= MAX_WAIT_TODAY]
     cand.sort(key=lambda c: c["delta"])
 

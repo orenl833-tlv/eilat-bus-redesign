@@ -101,7 +101,6 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   </header>
 
   <div class="controls" role="group" aria-label="מה להציג">
-    <div class="ctl"><span>אפשרות</span><div class="seg" id="opt"></div></div>
     <p class="ctlnote">המסלולים של כל קו זהים בכל העונות ובכל שעות היום. משתנה רק התדירות, והיא מפורטת בטבלה "תדירות לפי עונה ושעה" למטה. המפות מציגות ממוצע שנתי של כל היום. בהצעות שירות הערב נגמר ב-23:00, ועוד 5 נסיעות מאוחרות לחילופי המשמרת במלונות ובבית החולים.</p>
   </div>
 
@@ -139,12 +138,12 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
 <script>
 document.documentElement.setAttribute("lang", "he");
-const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "full_peak-3_warm": "3 · ארגון מחדש, פחות אוטובוסים"};
+const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "full_peak-3_warm": "ההצעה"};
 const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer: "החופש הגדול"};
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "full_warm", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {opt: "full_peak-3_warm", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -347,7 +346,7 @@ function poiTip(e, name, tag) {
     add("במודל: " + what.join(", ") + ".");
     const sub = add("מגיעים באוטובוס ביום חול, לפי עונה:"); sub.style.marginTop = "6px";
     const row = (label, t) => { const f = F.flow[t]; if (f) add(`${label}: ` + ["winter", "spring_autumn", "summer"].map((se) => `${SNAME[se]} ${f[se].all[i][0].toLocaleString("he-IL")}`).join(" · ")) };
-    row("היום", "today"); row(OPT_HE[st.opt].replace(/^\d · /, ""), st.opt);
+    row("היום", "today"); row(OPT_HE[st.opt], st.opt);
     const pk = Object.entries(F.flow.today.summer).filter(([q]) => q !== "all").sort((a, b) => b[1][i][0] - a[1][i][0])[0];
     if (pk) add(`השעות העמוסות ביותר (היום, בחופש הגדול): ${pk[0]}, כ-${pk[1][i][0].toLocaleString("he-IL")} מגיעים`);
     const n = add("נוסעי אוטובוס בלבד, לפי המודל המכויל. מי שמגיע ברכב, במונית או ברגל ממלון סמוך לא נספר."); n.style.opacity = ".75"; n.style.marginTop = "6px";
@@ -364,7 +363,7 @@ function selectLine(selKey, name) {
   st.noteIn = other;
   const me = (D.lines[selKey === "selL" ? "today" : st.opt]?.[st.season] || []).find((x) => x.name === name);
   const fam = me?.display || parts(name).fam;
-  st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt].replace(/^\d · /, "")}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
+  st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt]}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
   render();
 }
 
@@ -425,7 +424,7 @@ function tiles() {
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
   const avg = (s.year_A + s.year_B) / 2;
-  document.getElementById("headline").textContent = `${OPT_HE[st.opt].replace(/^\d · /, "")}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מורגש מדלת לדלת.`;
+  document.getElementById("headline").textContent = `${OPT_HE[st.opt]}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מורגש מדלת לדלת.`;
 }
 
 // perceived minutes to each key place, for the chosen season and period (or the whole day): [today, option]
@@ -480,7 +479,7 @@ function legend() {
 }
 
 // lines running per hour: today and every option, the chosen season (step lines: an hour's value holds until the next hour)
-const SERIES = ["today", "keep", "full_warm", "full_peak-3_warm"];
+const SERIES = ["today", "full_peak-3_warm"];   // the one recommended plan against today
 const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
 function activeChart() {
   const A = D.active; if (!A) return;
@@ -529,7 +528,6 @@ function activeChart() {
 }
 
 function render() {
-  seg("opt", Object.keys(D.options).filter((k) => k !== "today").map((k) => [k, OPT_HE[k]]), st.opt);
   seg("ftab", [["opt", OPT_HE[st.opt]], ["today", "היום"]], st.ftab);
   seg("actseas", D.seasons.map((s) => [s, SNAME[s]]), st.actSeason, "actSeason");
   document.getElementById("optName").textContent = OPT_HE[st.opt];

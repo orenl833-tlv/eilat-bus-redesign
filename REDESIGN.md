@@ -7,6 +7,14 @@
 - **No real losers:** no neighbourhood loses more than 3%.
 - **Kept stops:** every hotel, the hospital, the campus, the malls and the terminals keep a stop.
 
+**Recommendation: option 3 (restructure), with the evening to 23:00 and the five shift-change trips.**
+- It gives the biggest gain: ~16% shorter perceived trips, with every area better.
+- It needs no extra drivers: 0 with overtime, and fewer than today with realistic terminal recovery.
+- It costs ~NIS 2.1 M a year in extra bus-hours.
+- Its "3 fewer buses" does not survive real vehicle blocks: it runs 34-35 buses, against today's 35-37.
+- The public material (decision brief, map page, summary, post) presents only this plan; the other two
+  are kept here as the alternatives checked.
+
 Three options follow, from the most cautious to the most far-reaching. The interactive comparison is in
 `web/eilat.html`. The method and every number are documented here:
 - [PARAMETERS.md](PARAMETERS.md): the assumptions, with sources and tests;
