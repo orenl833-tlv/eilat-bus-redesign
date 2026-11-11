@@ -44,16 +44,20 @@ def main():
     S = X.Search()
     today = T.TodayNet(); today.foot = S.tt.foot
     rows = {}
-    th, tm = S.tt.per_home(today.network(today.start), "holdout", SEEDS)
-    rows["today"] = dict(minutes=tm, perceived=today.perceived(today.start, T.HOLDOUT_LEAVE, P_SEEDS),
+    thb, (tm, tp) = S.tt.per_home(today.network(today.start), "holdout", SEEDS, metric="both")
+    th = {o: v[0] for o, v in thb.items()}
+    rows["today"] = dict(minutes=tm, perceived_trips=tp, perceived=today.perceived(today.start, T.HOLDOUT_LEAVE, P_SEEDS),
                          buses=today.buses(today.start), worst_area=1.0)
     for path in ["data/opt_full_peak-3_warm.json"] + sys.argv[1:]:
         st = load(S, path)
         pats = S.prob.network(st)
         N = PatsNet(S.tt, pats)
-        h, m = S.tt.per_home(N.network(None), "holdout", SEEDS)
+        hb, (m, pm) = S.tt.per_home(N.network(None), "holdout", SEEDS, metric="both")
+        h = {o: v[0] for o, v in hb.items()}
         _, hours = EN.fleet(pats)
         rows[path] = dict(minutes=m, vs_today=m / tm - 1, worst_area=max(h[o] / th[o] for o in h),
+                          perceived_trips=pm, perceived_vs_today=pm / tp - 1,
+                          worst_area_perceived=max(hb[o][1] / thb[o][1] for o in hb),
                           perceived=N.perceived(None, T.HOLDOUT_LEAVE, P_SEEDS), buses=N.buses(None), bus_hours=hours,
                           lines=sorted(k for k, v in st.items() if any(math.isfinite(x) for x in v.values())))
         print(path, {k: v for k, v in rows[path].items() if k != "lines"}, flush=True)
