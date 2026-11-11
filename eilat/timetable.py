@@ -115,12 +115,56 @@ class Network:
         other.st, other.line, other.stops, other.trips, other.foot = self.st, self.line, self.stops, self.trips, self.foot
         other.dkey = dkey
         delays = {}
+        other.delays = delays
         for tid, (s, t) in self.trips.items():
             k = (keys or {}).get(tid, tid)
             rng = np.random.default_rng([seed, zlib.crc32(str(k).encode())])
             delays[tid] = sampler.sample(dkey.get(tid, self.line.get(tid, "")), t[0], rng)
         other._build(delays)
         return other
+
+    def realized_times(self, tid):
+        """A trip's stop times in this (realized) network: the timetable's, delayed as realize() drew them."""
+        s, t = self.trips[tid]
+        d = getattr(self, "delays", {}).get(tid)
+        return s, (t if d is None else t[0] + d[0] + (t - t[0]) * d[1])
+
+    def committed(self, sched, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0):
+        """Door-to-door arrival of a rider who does NOT know the future: at t0 they plan on the timetable
+        (`sched`, the same network without delays) and commit to its first bus line; then the buses run as in
+        this realized network. They take the first bus of that line that comes to the boarding stop after they
+        get there and goes to their alighting stop; once off it they see live times and re-plan from there (or
+        walk). Returns the arrival, or None if no bus gets them there (walk)."""
+        r = sched.plan(o_lat, o_lon, d_lat, d_lon, t0, transfer_min)
+        if r is None:
+            return None
+        legs = r["legs"]
+        i = next(k for k, g in enumerate(legs) if g[0] == "ride")
+        walk_to = sum(g[1] for g in legs[:i] if g[0] == "walk")
+        _, line, a, _, b, _, _ = legs[i]
+        ready = t0 + walk_to
+        best = None
+        for tid, (s, _) in self.trips.items():
+            if self.line.get(tid) != line:
+                continue
+            sl = list(s)
+            if a not in sl or b not in sl[sl.index(a) + 1:]:
+                continue
+            _, tt = self.realized_times(tid)
+            ia = sl.index(a); ib = sl.index(b, ia + 1)
+            if tt[ia] >= ready and (best is None or tt[ia] < best[0]):
+                best = (tt[ia], tt[ib])
+        if best is None:
+            return None
+        ta = best[1]
+        S = self.stops
+        b_lat, b_lon = float(S.stop_lat[b]), float(S.stop_lon[b])
+        rest = [g for g in legs[i + 1:] if g[0] == "ride"]
+        walk_end = float(walk_min(b_lat, b_lon, d_lat, d_lon))
+        if not rest:
+            return ta + sum(g[1] for g in legs[i + 1:] if g[0] == "walk")
+        r2 = self.plan(b_lat, b_lon, d_lat, d_lon, ta + transfer_min, transfer_min)
+        return min(ta + walk_end, r2["arrive"]) if r2 else ta + walk_end
 
     @classmethod
     def today(cls, gdir, stops, speeds=None, foot=None):
