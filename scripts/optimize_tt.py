@@ -37,6 +37,8 @@ from eilat import params as P
 from eilat.evaluate import walk_min
 from eilat.timetable import _period
 
+X_walk = lambda lat, lon, st: walk_min(lat, lon, st.stop_lat.values, st.stop_lon.values)  # noqa: E731
+
 HOURS = range(6, 23)
 HALF = {6, 21, 22}
 PER_HOUR = 2
@@ -45,6 +47,7 @@ T0 = 0.004
 # objective: (1 - share) x door-to-door minutes + share x perceived minutes, each relative to today
 OBJ_PERCEIVED_SHARE = float(os.environ.get("OBJ_PERCEIVED", "0"))
 AREA_PEN = 1.0
+FREQ_TOL, FREQ_PEN = 0.15, 0.1   # an area may lose up to 15 points of its share; each point beyond costs 0.1%
 REPLACE_P = 0.25 if os.environ.get("MODE") == "design" else 0.0
 
 
@@ -172,6 +175,31 @@ class Search:
         self.today_home, (self.today, self.today_p) = self.tt.per_home(today.network(today.start), metric="both")
         print(f"today (real timetable): {self.today:.2f} min, perceived {self.today_p:.2f}", flush=True)
         self.memo = {}
+        # frequency rule (FREQ_RULE=1): each residential area keeps (almost) today's share of residents with a line
+        # every 20 min or better within 400 m (07:00-19:00) -- the level-of-service target of analysis/service_los.py
+        self.freq_rule = os.environ.get("FREQ_RULE", "0") == "1"
+        if self.freq_rule:
+            import service_los as L
+            self.L = L
+            pts = self.prob.m.pts
+            homes = pts.iloc[self.prob.m.homes]
+            st = self.tt.stops
+            self.home_near, self.home_pop, self.home_area = [], [], []
+            for _, r in homes.iterrows():
+                dm = X_walk(float(r.lat), float(r.lon), st) * P.WALK_KMH * 1000 / 60
+                self.home_near.append([sid for sid, d in zip(st.index, dm, strict=True) if d <= L.ACCESS_M])
+                self.home_pop.append(float(r["pop"])); self.home_area.append(int(r.area))
+            self.freq_today = self.freq_share(today.network(today.start)[0])
+
+    def freq_share(self, net):
+        """Per area: the share of residents with a line every 20 min or better at a stop within 400 m."""
+        _, _, best = self.L.stop_stats(net)
+        need = 60 / self.L.HEADWAY_MAX
+        ok, tot = {}, {}
+        for near, pop, a in zip(self.home_near, self.home_pop, self.home_area, strict=True):
+            tot[a] = tot.get(a, 0) + pop
+            ok[a] = ok.get(a, 0) + pop * (max((best.get(s_, 0) for s_ in near), default=0) >= need)
+        return {a: ok[a] / tot[a] for a in tot if tot[a] > 0}
 
     def score(self, state, detail=False):
         key = json.dumps({k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in sorted(state.items())})
@@ -181,7 +209,13 @@ class Search:
         pats = prob.network(state)
         buses, hours = EN.fleet(pats)
         pen = 0.02 * max(0, max(buses.values()) - prob.budget_peak) + 0.002 * max(0, hours - prob.budget_hours)
-        home, (overall, overall_p) = self.tt.per_home(self.tt.net_of(pats), metric="both")
+        nk = self.tt.net_of(pats)
+        home, (overall, overall_p) = self.tt.per_home(nk, metric="both")
+        freq_short = 0.0
+        if self.freq_rule:
+            fs = self.freq_share(nk[0])
+            freq_short = sum(max(0.0, self.freq_today[a_] - FREQ_TOL - fs.get(a_, 0.0)) for a_ in self.freq_today)
+            pen += FREQ_PEN * freq_short
         a = OBJ_PERCEIVED_SHARE
         obj = (1 - a) * overall / self.today + a * overall_p / self.today_p
         worst = max((1 - a) * home[o][0] / self.today_home[o][0] + a * home[o][1] / self.today_home[o][1] for o in home)
@@ -195,7 +229,7 @@ class Search:
         total = obj + pen
         self.memo[key] = total
         if detail:
-            return dict(total=total, obj=obj, minutes=overall, perceived=overall_p, pen=pen, buses=buses, hours=hours, worst_area=worst,
+            return dict(total=total, obj=obj, minutes=overall, perceived=overall_p, freq_short=freq_short, pen=pen, buses=buses, hours=hours, worst_area=worst,
                         violations=prob.violations(state), protected_lost=prob.protected_lost(pats))
         return total
 
@@ -235,6 +269,8 @@ def main():
         tag += "_" + os.environ["MODE"]
     if os.environ.get("OD", "residents") == "demand":
         tag += "_demand"
+    if os.environ.get("FREQ_RULE", "0") == "1":
+        tag += "_freq"
     ck = f"data/{tag}_ckpt.json"
     it0, log = 0, []
     if os.path.exists(ck):     # resume (long runs get cut off by restarts)
