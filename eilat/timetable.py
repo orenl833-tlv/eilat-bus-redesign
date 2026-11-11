@@ -37,26 +37,32 @@ def base_line(line):
     return s
 
 
+def delay_key(line, direction):
+    """'3', 1 -> '3/1'; a variant's x/s suffix is dropped ('5א' stays itself: its own measured line)."""
+    return f"{str(line).rstrip('xs')}/{direction}"
+
+
 class DelaySampler:
-    """Real trips' (departure delay, run ratio), from the most specific pool with at least min_n rides: the
-    line in that hour, all lines in that hour, the line in that period, all lines in that period, all.
-    The ratio is used relative to its pool's median: the timetable already has the median run time of that
-    hour (the measured segment times), so a draw is how much faster or slower this ride was than a typical
-    ride of the same hour (the right tail of slow rides is kept)."""
+    """Real trips' (departure delay, run ratio) from the most specific pool with at least min_n rides: the
+    line and direction in that hour, in that period, in all hours; then all lines in that hour, then all.
+    The line comes first because lines differ much more than hours do (1, 2 and 15 start ~3 min late,
+    3 and 4 on time), and the direction matters (a return trip inherits the outbound trip's lateness).
+    d0 is measured against the same typical run times the timetable uses, so it is added as is; the ratio is
+    relative to its pool's median (the timetable has the median run time of that hour)."""
 
     def __init__(self, path="data/ride_delays.csv", min_n=30):
         D = pd.read_csv(path, dtype={"line": str})
-        groups = [(("h", ln, h), g) for (ln, h), g in D.groupby(["line", "hour"])]
+        D["key"] = [delay_key(ln, d) for ln, d in zip(D.line, D.direction, strict=True)]
+        groups = [(("h", k, h), g) for (k, h), g in D.groupby(["key", "hour"])]
+        groups += [(("p", k, q), g) for (k, q), g in D.groupby(["key", "period"])]
+        groups += [(("a", k, None), g) for k, g in D.groupby("key")]
         groups += [(("h", "*", h), g) for h, g in D.groupby("hour")]
-        groups += [(("p", ln, q), g) for (ln, q), g in D.groupby(["line", "period"])]
-        groups += [(("p", "*", q), g) for q, g in D.groupby("period")]
-        self.pool = {k: (g.d0.values.clip(-1, None), g.ratio.values / g.ratio.median())
-                     for k, g in groups if len(g) >= min_n}
-        self.all = (D.d0.values.clip(-1, None), D.ratio.values / D.ratio.median())
+        self.pool = {k: (g.d0.values, g.ratio.values / g.ratio.median()) for k, g in groups if len(g) >= min_n}
+        self.all = (D.d0.values, D.ratio.values / D.ratio.median())
 
-    def sample(self, line, clock, rng):
-        ln, h, q = base_line(line), int(clock // 60) % 24, _period(clock)
-        d0, mult = next((self.pool[k] for k in (("h", ln, h), ("h", "*", h), ("p", ln, q), ("p", "*", q))
+    def sample(self, key, clock, rng):
+        h, q = int(clock // 60) % 24, _period(clock)
+        d0, mult = next((self.pool[k] for k in (("h", key, h), ("p", key, q), ("a", key, None), ("h", "*", h))
                          if k in self.pool), self.all)
         i = rng.integers(len(d0))
         return float(d0[i]), float(mult[i])
@@ -101,17 +107,20 @@ class Network:
         rows.sort(key=lambda r: r[0])
         self.conn = rows
 
-    def realize(self, sampler, seed, keys=None):
+    def realize(self, sampler, seed, keys=None, dkey=None):
         """A copy of this network with every trip delayed as a real trip of its line and period was. Each
         trip's draw depends only on (seed, its key), so two timetables share their random numbers trip by
-        trip (keys: trip_id -> a stable name, e.g. pattern/period/departure number; default the trip_id)."""
+        trip (keys: trip_id -> a stable name, e.g. pattern/period/departure number; default the trip_id).
+        dkey: trip_id -> its delay pool key, 'line/direction' (default self.dkey, else the line)."""
+        dkey = dkey if dkey is not None else getattr(self, "dkey", {})
         other = object.__new__(Network)
         other.st, other.line, other.stops, other.trips, other.foot = self.st, self.line, self.stops, self.trips, self.foot
+        other.dkey = dkey
         delays = {}
         for tid, (s, t) in self.trips.items():
             k = (keys or {}).get(tid, tid)
             rng = np.random.default_rng([seed, zlib.crc32(str(k).encode())])
-            delays[tid] = sampler.sample(self.line.get(tid, ""), t[0], rng)
+            delays[tid] = sampler.sample(dkey.get(tid, self.line.get(tid, "")), t[0], rng)
         other._build(delays)
         return other
 
@@ -128,7 +137,9 @@ class Network:
         line = dict(zip(tr.trip_id, tr.route_short_name.astype(str), strict=True))
         t0 = st.groupby("trip_id").t.min()
         scale = {tid: sp.city_factor(t) for tid, t in t0.items() if tid in line}
-        return cls(st, line, stops, scale, foot, sp)
+        net = cls(st, line, stops, scale, foot, sp)
+        net.dkey = {t: delay_key(ln, d) for t, ln, d in zip(tr.trip_id, tr.route_short_name.astype(str), tr.direction_id, strict=True)}
+        return net
 
     @classmethod
     def from_zip(cls, path, service, stops, foot=None):

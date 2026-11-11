@@ -4,7 +4,8 @@ The reported distance along the route is unreliable (jumps of kilometres within 
 matched to its stops directly:
 - the bus's track is the straight line between consecutive positions (about one a minute);
 - the time it passed a stop = the closest point of the track to the stop, if within MATCH_M, searched in route
-  order (each stop after the previous one), so routes that come back along the same street are handled;
+  order (each stop after the previous one, and within a time window from the schedule), so routes that come
+  back along the same street, and loops that end where they start, are handled;
 - a segment's time = passing time at the next stop - passing time at this stop (it includes the stop's dwell).
 Adjacent matched stops only; a stop that was not matched leaves its two segments out of that ride.
 
@@ -20,6 +21,7 @@ import pandas as pd
 
 URBAN = {"1", "2", "3", "4", "5", "5א", "6", "6א", "15", "16"}
 MATCH_M = 60.0
+SLACK, SLACK_MIN, FIRST_MIN = 2.5, 5.0, 15.0   # search window (see passing_times)
 MAX_SEG_MIN = 20.0
 
 
@@ -27,16 +29,26 @@ def local_xy(lat, lon):
     return (np.asarray(lon) - 34.95) * 96_500.0, (np.asarray(lat) - 29.55) * 111_200.0
 
 
-def passing_times(px, py, pt, sx, sy):
-    """Time the track (px, py at times pt, seconds) passed each stop (sx, sy) in order; NaN if not matched."""
+def passing_times(px, py, pt, sx, sy, sched=None):
+    """Time the track (px, py at times pt, seconds) passed each stop (sx, sy) in order; NaN if not matched.
+    sched: scheduled minutes from the first stop to each stop; a stop is then searched only up to
+    SLACK x its scheduled gap + SLACK_MIN after the last matched stop, so a loop route that comes back to its
+    start is not matched to the end of the loop."""
     ax, ay, bx, by = px[:-1], py[:-1], px[1:], py[1:]
     dx, dy = bx - ax, by - ay
     L2 = np.maximum(dx * dx + dy * dy, 1e-6)
     out = np.full(len(sx), np.nan)
     j0 = 0                      # first track segment still allowed (route order)
+    last_t, last_k = pt[0], None
     for k in range(len(sx)):
-        u = np.clip(((sx[k] - ax[j0:]) * dx[j0:] + (sy[k] - ay[j0:]) * dy[j0:]) / L2[j0:], 0, 1)
-        d = np.hypot(ax[j0:] + u * dx[j0:] - sx[k], ay[j0:] + u * dy[j0:] - sy[k])
+        jn = len(ax)
+        if sched is not None and np.isfinite(sched[k]) and (last_k is None or np.isfinite(sched[last_k])):
+            gap = sched[k] - (sched[last_k] if last_k is not None else 0.0) + (FIRST_MIN if last_k is None else 0.0)
+            jn = max(j0 + 1, int(np.searchsorted(pt[:-1], last_t + 60 * (SLACK * gap + SLACK_MIN), side="right")))
+        if j0 >= jn:
+            continue
+        u = np.clip(((sx[k] - ax[j0:jn]) * dx[j0:jn] + (sy[k] - ay[j0:jn]) * dy[j0:jn]) / L2[j0:jn], 0, 1)
+        d = np.hypot(ax[j0:jn] + u * dx[j0:jn] - sx[k], ay[j0:jn] + u * dy[j0:jn] - sy[k])
         hit = np.where(d <= MATCH_M)[0]
         if not len(hit):
             continue
@@ -44,8 +56,35 @@ def passing_times(px, py, pt, sx, sy):
         run = hit[: np.argmax(np.diff(np.r_[hit, 10**9]) > 1) + 1]
         j = run[np.argmin(d[run])]
         out[k] = pt[j0 + j] + u[j] * (pt[j0 + j + 1] - pt[j0 + j])
+        last_t, last_k = out[k], k
         j0 += j
     return out
+
+
+def route_tables(st):
+    """Each route's main stop sequence (its most common one) and the scheduled minutes from its first stop to
+    each stop of it (median over the route's trips with that sequence). st: stop_times with route_id."""
+    seqs = st.groupby("trip_id").stop_id.apply(tuple)
+    route_of = st.groupby("trip_id").route_id.first()
+    main, cum = {}, {}
+    for rid in route_of.unique():
+        sq = seqs[route_of[route_of == rid].index].value_counts().index[0]
+        x = st[st.trip_id.isin(seqs[(route_of == rid) & (seqs == sq)].index)]
+        x = x.assign(m=(x.dep - x.groupby("trip_id").dep.transform("min")) / 60, k=x.groupby("trip_id").cumcount())
+        main[rid], cum[rid] = list(sq), x.groupby("k").m.median().reindex(range(len(sq))).values
+    return main, cum
+
+
+def match_ride(g, seq_all, cum_all, pos):
+    """A ride's positions (sorted) -> (stops kept, their scheduled minutes, passing times in seconds from the
+    ride's first fix, the first fix's time)."""
+    idx = [i for i, s in enumerate(seq_all) if s in pos]
+    seq = [seq_all[i] for i in idx]
+    px, py = local_xy(g.lat.values, g.lon.values)
+    t = g.recorded_at_time
+    pt = (t - t.iloc[0]).dt.total_seconds().values
+    sx, sy = np.array([pos[s][0] for s in seq]), np.array([pos[s][1] for s in seq])
+    return seq, cum_all[idx], passing_times(px, py, pt, sx, sy, cum_all[idx]), t.iloc[0]
 
 
 def main():
@@ -58,9 +97,7 @@ def main():
     pos = dict(zip(stops.index, zip(sx_all, sy_all, strict=True), strict=True))
     # each route's main stop sequence and the scheduled minutes per segment
     st = st.merge(tr[["trip_id", "route_id"]], on="trip_id")
-    seqs = st.groupby("trip_id").stop_id.apply(tuple)
-    route_of = st.groupby("trip_id").route_id.first()
-    main = {rid: seqs[route_of[route_of == rid].index].value_counts().index[0] for rid in route_of.unique()}
+    main, cum = route_tables(st)
     st["nxt"] = st.groupby("trip_id").stop_id.shift(-1)
     st["sched"] = (st.groupby("trip_id").arr.shift(-1) - st.dep) / 60
     sched = st.dropna(subset=["nxt"]).groupby(["stop_id", "nxt"]).sched.median()
@@ -70,15 +107,11 @@ def main():
         x = x[x.siri_route__line_ref.isin(main.keys())]
         x = x[x.siri_route__line_ref.map(names).isin(URBAN)].drop_duplicates(["siri_ride__id", "recorded_at_time"])
         for rid, g in x.sort_values("recorded_at_time").groupby("siri_ride__id"):
-            seq = [s for s in main[g.siri_route__line_ref.iloc[0]] if s in pos]
-            if len(g) < 5 or len(seq) < 3:
+            rid_ = g.siri_route__line_ref.iloc[0]
+            if len(g) < 5 or len(main[rid_]) < 3:
                 continue
-            px, py = local_xy(g.lat.values, g.lon.values)
-            t = g.recorded_at_time
-            pt = (t - t.iloc[0]).dt.total_seconds().values
-            sx, sy = np.array([pos[s][0] for s in seq]), np.array([pos[s][1] for s in seq])
-            tp = passing_times(px, py, pt, sx, sy)
-            t0 = t.iloc[0].tz_convert("Asia/Jerusalem")
+            seq, _, tp, first = match_ride(g, main[rid_], cum[rid_], pos)
+            t0 = first.tz_convert("Asia/Jerusalem")
             for k in range(len(seq) - 1):
                 if np.isfinite(tp[k]) and np.isfinite(tp[k + 1]):
                     m = (tp[k + 1] - tp[k]) / 60

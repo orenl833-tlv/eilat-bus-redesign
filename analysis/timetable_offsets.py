@@ -16,7 +16,7 @@ refinement (each pattern's phase on a grid of GRID values) for SWEEPS sweeps; re
 Score = mean door-to-door minutes (arrival - leaving home) over areas x key places x leaving times, weighted
 by the area's residents, planned on the timetable as buses really run:
 - each trip runs every street segment in the time measured by GPS at that hour (eilat/speeds.py);
-- every trip is delayed as a real trip of its line and hour was (SIRI, data/ride_delays.csv), in N_SEEDS
+- every trip is delayed as a real trip of its line, direction and hour was (SIRI, data/ride_delays.csv), in N_SEEDS
   draws shared by all candidates of one network trip by trip (common random numbers);
 - the rider sees the actual departures (as with live arrival times) and needs TRANSFER_MIN minutes at a
   transfer, so tight connections are missed when the first bus is late;
@@ -44,7 +44,7 @@ from eilat import demand as Dm
 from eilat import params as P
 from eilat.evaluate import walk_min
 from eilat.speeds import Speeds
-from eilat.timetable import DelaySampler, Network
+from eilat.timetable import DelaySampler, Network, delay_key
 
 PLAN, SEASON, LAST = "full_peak-3_warm", "winter", 23
 N_RANDOM = int(sys.argv[1]) if len(sys.argv) > 1 else 300
@@ -114,6 +114,7 @@ class Base:
         self.school = timed({f"s{t}": (g.stop_id.values, g.dep.values / 60) for t, g in sch.groupby("trip_id")},
                             SPEEDS.city_factor)
         self.school_line = {f"s{t}": ln for t, ln in zip(sch.trip_id, sch.line, strict=True)}
+        self.school_dkey = {f"s{t}": delay_key(ln, d) for t, ln, d in zip(sch.trip_id, sch.line, sch.direction_id, strict=True)}
         m = O.Problem("full").m
         pts = m.pts
         homes = []
@@ -126,10 +127,11 @@ class Base:
         self.od = [(o, d, w, float(walk_min(o[0], o[1], d[0], d[1]))) for o, w in homes for d in places
                    if walk_min(o[0], o[1], d[0], d[1]) >= 15]
 
-    def make(self, rows, line, keys):
+    def make(self, rows, line, keys, dkey):
         df = pd.DataFrame(rows + self.school, columns=["trip_id", "stop_id", "stop_sequence", "t"])
         line = dict(line); line.update(self.school_line)
         net = Network(df, line, self.stops, 1.0, self.foot)
+        net.dkey = {**dkey, **self.school_dkey}
         self.foot = net.foot
         return net, keys
 
@@ -199,7 +201,11 @@ class PlanNet(Base):
     def network(self, phases):
         keys = {}
         rows, _ = pattern_trips(self.pats, phases, self.shift, keys)
-        return self.make(rows, {r[0]: r[0].split("/")[0] for r in rows}, keys)
+        tids = {r[0] for r in rows}
+        line = {t: t.split("/")[0] for t in tids}
+        # the delay pool of a pattern: its line and direction ('3/1s@...' -> '3/1'); a new line: all lines
+        dkey = {t: delay_key(t.split("/")[0], t.split("/")[1][0]) for t in tids}
+        return self.make(rows, line, keys, dkey)
 
 
 class TodayNet(Base):
@@ -211,6 +217,7 @@ class TodayNet(Base):
             self.trips[tid] = (g.stop_id.values, g.dep.values / 60)
             self.group[tid] = f"{g.line.iloc[0]}/{g.direction_id.iloc[0]}"
         self.line = {tid: n.split("/")[0] for tid, n in self.group.items()}
+        self.dkey = dict(self.group)
         self.names = sorted(set(self.group.values()))
         # typical headway of each line direction: the median gap between departures, 07:00-19:00
         self.h = {}
@@ -223,7 +230,7 @@ class TodayNet(Base):
     def network(self, phases):
         moved = {tid: (s, t + (phases[self.group[tid]] - 0.5) * self.h[self.group[tid]])
                  for tid, (s, t) in self.trips.items()}
-        return self.make(timed(moved, SPEEDS.city_factor), self.line, None)
+        return self.make(timed(moved, SPEEDS.city_factor), self.line, None, self.dkey)
 
 
 def search(S, train_od, label):
