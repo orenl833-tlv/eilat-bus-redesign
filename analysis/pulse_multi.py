@@ -38,7 +38,9 @@ HUB_STOPS = {"city_hall": [12356, 12625], "big_centre": [12719], "entrance": [50
 HUB_SETS = {"hall_big": ["city_hall", "big_centre"], "hall_entrance": ["city_hall", "entrance"],
             "hall_big_hotels": ["city_hall", "big_centre", "hotels"], "hall": ["city_hall"]}
 PULSE = int(os.environ.get("PULSE", "15"))
-ARRIVE_BEFORE, DEPART_AFTER, HOLD_MAX = 2.0, 3.0, 5.0
+ARRIVE_BEFORE = float(os.environ.get("ARRIVE_BEFORE", "2"))
+DEPART_AFTER = float(os.environ.get("DEPART_AFTER", "3"))
+HOLD_MAX = float(os.environ.get("HOLD_MAX", "5"))
 FIRST, LAST = 6 * 60, 23 * 60
 T0 = 0.004
 SPEEDS = Speeds()
@@ -182,6 +184,7 @@ class Multi:
         net.dkey = {**dkey, **self.tt.school_dkey}
         net.pulses = pulses
         net.chain_prev = chain_prev
+        net.cont = chain_prev            # riders aboard stay on through a hub
         return net, keys
 
     def score(self, state, detail=False):

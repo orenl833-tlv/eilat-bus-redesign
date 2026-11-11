@@ -114,6 +114,7 @@ class Network:
         other = object.__new__(Network)
         other.st, other.line, other.stops, other.trips, other.foot = self.st, self.line, self.stops, self.trips, self.foot
         other.dkey = dkey
+        other.cont = getattr(self, "cont", {})
         delays = {}
         other.delays = delays
         for tid, (s, t) in self.trips.items():
@@ -207,12 +208,16 @@ class Network:
             if w <= WALK_MAX_MIN:
                 best[sid] = ready[sid] = t0 + w; lab[sid] = (float(w), 0.0, 0)
         on = {}
+        cont = getattr(self, "cont", {})               # trip -> the trip its bus ran just before (a pulse hub)
         end = t0 + horizon
         for dep, arr, a, b, tid in self.conn:
             if dep < t0:
                 continue
             if dep > end:
                 break
+            prev = cont.get(tid)
+            if prev is not None and tid not in on and prev in on and self.seq[prev][-1] == a:
+                on[tid] = on[prev]                     # the same bus going on: whoever is aboard stays seated
             if tid in on or ready.get(a, np.inf) <= dep:
                 if tid not in on:
                     on[tid] = (lab.get(a, (0.0, 0.0, 0)), dep)
