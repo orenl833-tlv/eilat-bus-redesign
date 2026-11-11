@@ -24,26 +24,6 @@
    "A14H"
   ]
  },
- "data/opt_tt_today_s1.json": {
-  "minutes": 26.701633583758483,
-  "vs_today": 0.01636264417348854,
-  "worst_area": 1.5284245977253446,
-  "perceived": 41.1852432233371,
-  "buses": 31,
-  "bus_hours": 393.6463978461307,
-  "lines": [
-   "15",
-   "15x",
-   "16",
-   "1s",
-   "3",
-   "4",
-   "5",
-   "5אs",
-   "6",
-   "A14H"
-  ]
- },
  "data/opt_tt_full_peak-3_warm_s2.json": {
   "minutes": 24.59816844685638,
   "vs_today": -0.06370299607141972,
@@ -58,6 +38,42 @@
    "2",
    "3",
    "5s",
+   "6",
+   "A14H"
+  ]
+ },
+ "data/opt_tt_tt_full_peak-3_warm_s2_s5_design_demand.json": {
+  "minutes": 24.59816844685638,
+  "vs_today": -0.06370299607141972,
+  "worst_area": 1.1831730056331824,
+  "perceived": 41.25932314080199,
+  "buses": 31,
+  "bus_hours": 387.93783122926743,
+  "lines": [
+   "15",
+   "15x",
+   "16x",
+   "2",
+   "3",
+   "5s",
+   "6",
+   "A14H"
+  ]
+ },
+ "data/opt_tt_full_peak-3_warm_s6_design_demand.json": {
+  "minutes": 24.59517294115015,
+  "vs_today": -0.06381701606539014,
+  "worst_area": 1.1520577236087557,
+  "perceived": 43.475149046722834,
+  "buses": 30,
+  "bus_hours": 396.24710688565693,
+  "lines": [
+   "15x",
+   "16x",
+   "2s",
+   "3s",
+   "5x",
+   "5א",
    "6",
    "A14H"
   ]

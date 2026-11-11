@@ -42,6 +42,7 @@ HALF = {6, 21, 22}
 PER_HOUR = 2
 N_SEEDS = 2
 T0 = 0.004
+REPLACE_P = 0.25 if os.environ.get("MODE") == "design" else 0.0
 
 
 def leave_times(o, which):
@@ -186,6 +187,21 @@ class Search:
         return total
 
 
+def replace_move(prob, state):
+    """Trade one running line for one that is off (a designed line when there are any): the new line takes the
+    old one's headways, so the network stays about as costly. A single on/off move cannot do this when the
+    budget is tight: adding a line alone is penalised before anything can be taken off."""
+    s = dict(state)
+    on = [k for k, v in s.items() if any(math.isfinite(h) for h in v.values())]
+    off = [k for k in s if k not in on]
+    designed = [k for k in off if k.startswith("D")]
+    if not on or not off:
+        return O.neighbour(prob, state)
+    old = random.choice(on); new = random.choice(designed or off)
+    s[new], s[old] = dict(s[old]), {q: math.inf for q in P.PERIODS}
+    return s
+
+
 def dump(state, path):
     json.dump({k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in state.items()},
               open(path, "w"), indent=0)
@@ -221,7 +237,8 @@ def main():
     enc = lambda d: {k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in d.items()}  # noqa: E731
     for it in range(it0, iters):
         T_ = T0 * (1 - it / iters) + 1e-5
-        cand = O.neighbour(S.prob, cur); s = S.score(cand)
+        cand = replace_move(S.prob, cur) if random.random() < REPLACE_P else O.neighbour(S.prob, cur)
+        s = S.score(cand)
         if s < cur_s or random.random() < math.exp(-(s - cur_s) / T_):
             cur, cur_s = cand, s
             if s < best_s:
