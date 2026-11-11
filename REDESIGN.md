@@ -445,6 +445,10 @@ clairvoyant rider (35% of trips lose > 5 min), net_F2 3.8 (25%): net_F2 vs today
 
 **Bus lanes** (`data/segment_congestion.csv`): buses lose ~630 bus-minutes a weekday to congestion (midday vs empty
 roads); the most on Sderot HaTmarim between Derech HaArava and the city hall (up to 2.6x, 30-38 buses a day).
+Simulated (`analysis/bus_lane.py`, 8 segments on Sderot HaTmarim at free-flow speed all day, run-time deviation x0.65
+on them): door to door -1.0% today and -0.9% with net_F2 (demand-weighted, winter); -0.5% for a committed rider on
+net_F2; about 90 bus-minutes a day saved. It adds to the network change (net_F2 with the lane is best) but is small
+next to it: the lane segments are a short part of most trips.
 
 **Timed-transfer hubs** (`analysis/pulse.py`, `analysis/pulse_multi.py`): lines cut at a hub, inbound buses timed to
 arrive just before a pulse, outbound held for late buses (riders aboard stay seated); one hub (city hall or central

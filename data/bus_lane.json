@@ -1,0 +1,28 @@
+{
+ "segments": 8,
+ "lane_var": 0.65,
+ "no_lane": {
+  "today": {
+   "demand_minutes": 25.71,
+   "clairvoyant": 32.09,
+   "committed": 38.15
+  },
+  "net_F2": {
+   "demand_minutes": 23.88,
+   "clairvoyant": 29.77,
+   "committed": 34.14
+  }
+ },
+ "lane": {
+  "today": {
+   "demand_minutes": 25.46,
+   "clairvoyant": 31.63,
+   "committed": 38.16
+  },
+  "net_F2": {
+   "demand_minutes": 23.67,
+   "clairvoyant": 29.62,
+   "committed": 33.98
+  }
+ }
+}
