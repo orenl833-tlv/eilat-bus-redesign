@@ -24,58 +24,39 @@
    "A14H"
   ]
  },
- "data/opt_tt_full_peak-3_warm_s2.json": {
-  "minutes": 24.59816844685638,
-  "vs_today": -0.06370299607141972,
-  "worst_area": 1.1831730056331824,
-  "perceived": 41.25932314080199,
-  "buses": 31,
-  "bus_hours": 387.93783122926743,
+ "data/opt_tt_tt_tt_full_peak-3_warm_s2_s7_design_demand_s9_design_demand.json": {
+  "minutes": 24.192751457353243,
+  "vs_today": -0.07913466178399609,
+  "worst_area": 1.1158071119588686,
+  "perceived": 40.451987659206154,
+  "buses": 38,
+  "bus_hours": 392.5583663631373,
   "lines": [
    "15",
-   "15x",
    "16x",
-   "2",
    "3",
-   "5s",
    "6",
-   "A14H"
-  ]
- },
- "data/opt_tt_tt_full_peak-3_warm_s2_s7_design_demand.json": {
-  "minutes": 23.78471934307053,
-  "vs_today": -0.09466586878971006,
-  "worst_area": 1.3200536549018083,
-  "perceived": 39.29832737644952,
-  "buses": 32,
-  "bus_hours": 397.0474396587266,
-  "lines": [
-   "15",
-   "16",
-   "3",
-   "D12157_12719",
-   "D12169_28805",
+   "D12157_28805",
    "D12356_29094v49835",
    "D12719_42115",
-   "D28805_42115",
    "D28809_29186"
   ]
  },
- "data/opt_tt_tt_full_peak-3_warm_s6_design_demand_s8_design_demand.json": {
-  "minutes": 24.322223685437383,
-  "vs_today": -0.07420647131692781,
-  "worst_area": 1.191182747718657,
-  "perceived": 42.6287679883275,
-  "buses": 28,
-  "bus_hours": 386.17501412355824,
+ "data/opt_tt_tt_tt_full_peak-3_warm_s6_design_demand_s8_design_demand_s10_design_demand.json": {
+  "minutes": 24.17004806813127,
+  "vs_today": -0.0799988365030807,
+  "worst_area": 1.119705475555272,
+  "perceived": 42.222289227395294,
+  "buses": 30,
+  "bus_hours": 395.4465165466952,
   "lines": [
    "15x",
-   "16x",
+   "16",
    "2s",
-   "3",
-   "6",
-   "D12719_29116",
-   "D28809_29094",
+   "3s",
+   "6x",
+   "D12169_28805",
+   "D12719_42115",
    "D28809_29186"
   ]
  }
