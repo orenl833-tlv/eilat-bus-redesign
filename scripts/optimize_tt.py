@@ -44,6 +44,7 @@ HALF = {6, 21, 22}
 PER_HOUR = 2
 N_SEEDS = 2
 T0 = 0.004
+HEADWAY_ONLY = os.environ.get("HEADWAY_ONLY", "0") == "1"   # retune the headways of a fixed set of lines
 # objective: (1 - share) x door-to-door minutes + share x perceived minutes, each relative to today
 OBJ_PERCEIVED_SHARE = float(os.environ.get("OBJ_PERCEIVED", "0"))
 AREA_PEN = 1.0
@@ -249,6 +250,20 @@ def replace_move(prob, state):
     return s
 
 
+def headway_move(state):
+    """HEADWAY_ONLY: the lines stay as they are; one running line's headway in one period moves one level (a line
+    stays on in the day periods; the early morning and the evening may be switched off)."""
+    s = dict(state)
+    on = [k for k, v in s.items() if any(math.isfinite(h) for h in v.values())]
+    ln = random.choice(on)
+    q = random.choice(list(P.PERIODS))
+    h = s[ln][q]
+    i = O.LEVELS.index(h) if math.isfinite(h) else len(O.LEVELS)
+    i = max(0, min(len(O.LEVELS) if q in ("06-09", "19-24") else len(O.LEVELS) - 1, i + random.choice([-1, 1])))
+    s[ln] = dict(s[ln]); s[ln][q] = O.LEVELS[i] if i < len(O.LEVELS) else math.inf
+    return s
+
+
 def dump(state, path):
     json.dump({k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in state.items()},
               open(path, "w"), indent=0)
@@ -272,6 +287,8 @@ def main():
         tag += "_demand"
     if os.environ.get("FREQ_RULE", "0") == "1":
         tag += "_freq"
+    if HEADWAY_ONLY:
+        tag += "_hw_" + os.environ.get("SEASON", "winter")
     ck = f"data/{tag}_ckpt.json"
     it0, log = 0, []
     if os.path.exists(ck):     # resume (long runs get cut off by restarts)
@@ -287,7 +304,10 @@ def main():
     enc = lambda d: {k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in d.items()}  # noqa: E731
     for it in range(it0, iters):
         T_ = T0 * (1 - it / iters) + 1e-5
-        cand = replace_move(S.prob, cur) if random.random() < REPLACE_P else O.neighbour(S.prob, cur)
+        if HEADWAY_ONLY:
+            cand = headway_move(cur)
+        else:
+            cand = replace_move(S.prob, cur) if random.random() < REPLACE_P else O.neighbour(S.prob, cur)
         s = S.score(cand)
         if s < cur_s or random.random() < math.exp(-(s - cur_s) / T_):
             cur, cur_s = cand, s
