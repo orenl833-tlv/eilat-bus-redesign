@@ -57,14 +57,17 @@ def plan_net(tag, se):
     import json as _json
 
     import optimize as O
-    if tag not in _NETS:
+    import os as _os
+    seasonal = tag.replace(".json", f"_{se}.json")      # e.g. data/net_F2_summer.json: summer headways
+    src = seasonal if _os.path.exists(seasonal) else tag
+    if src not in _NETS:
         prob = O.Problem("design")
         st = dict(prob.state0)
-        for k, v in _json.load(open(tag)).items():
+        for k, v in _json.load(open(src)).items():
             if k in st:
                 st[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
-        _NETS[tag] = prob.network(st)
-    return _NETS[tag]
+        _NETS[src] = prob.network(st)
+    return _NETS[src]
 
 
 _NETS = {}

@@ -462,7 +462,18 @@ more than the transfers they save.
 | net_H | -7.0% | -8.0% | -7.2% / -8.5% | 31 | 85 |
 | **net_F2 (recommended)** | **-7.6%** | **-8.7%** | **-8.8% / -10.3%** | **32** | **91** |
 
-*15% terminal recovery, drivers with overtime (`analysis/fleet_tt.py`). Still to check for this
+*15% terminal recovery, drivers with overtime (`analysis/fleet_tt.py`).
+
+**Summer headways** (`scripts/optimize_tt.py HEADWAY_ONLY=1 SEASON=summer`, lines fixed): `data/net_F2_summer.json`. On unseen summer
+trips: -10.1% door to door (winter headways -8.7%), perceived -11.9%, worst origin +12% (was +16%), same bus-hours. The
+GTFS export uses it for the summer timetable; spring/autumn keep the winter headways.
+
+**Desk field check** (`analysis/field_check.py`): 48 stops lose service (45 dropped, 3 passed), ~960 boardings and
+alightings a day in the model; walk to the nearest served stop median 142 m, max 488 m. 16 to visit (6 over 300 m, 3 in
+areas with 15%+ residents 65+, 12 with 30+ a day); the worst is Hativat HaNegev/Derech HaGai (451 m, 17.8% 65+). The
+shortened lines end at existing terminals; the three new lines do not: line 9 could end at the central station (231 m
+from the city hall), line 8 at the city entrance terminal (622 m from the big centre); the hotel, Derech HaBsamim and
+Shahamon ends need a layover / turning point checked on site. Still to check for this
 network: summer (heat, seasonal frequencies), trips from hotels, demand-weighted trips, terminal recovery and
 drivers.
 
