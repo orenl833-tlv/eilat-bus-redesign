@@ -17,7 +17,7 @@
   --worse: #f1c9bd;
   --land: #ebe5d8;
   --outside: #ece6db; --land-base: #f4efe5; --sea-bg: #cfe3ee; --sea-ink: #3f7397; --poi: #1d2328;
-  --s-today: #1d2328; --s-keep: #2a78d6; --s-full_warm: #eb6834; --s-net_H: #1baf7a;   /* סדרות בגרף הקווים */
+  --s-today: #1d2328; --s-keep: #2a78d6; --s-full_warm: #eb6834; --s-net_F2: #1baf7a;   /* סדרות בגרף הקווים */
   --display: "Rubik", "IBM Plex Sans Hebrew", system-ui, sans-serif;
   --body: "IBM Plex Sans Hebrew", "Rubik", system-ui, sans-serif;
 }
@@ -25,12 +25,12 @@
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_H: #199e70; color-scheme: dark } }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_F2: #199e70; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_H: #199e70; color-scheme: dark }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_F2: #199e70; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
@@ -140,12 +140,12 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
 <script>
 document.documentElement.setAttribute("lang", "he");
-const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "net_H": "ההצעה"};
+const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "net_F2": "ההצעה"};
 const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer: "החופש הגדול"};
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {color: "los", opt: "net_H", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {color: "los", opt: "net_F2", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -496,7 +496,7 @@ function legend() {
 }
 
 // lines running per hour: today and every option, the chosen season (step lines: an hour's value holds until the next hour)
-const SERIES = ["today", "net_H"];   // the one recommended plan against today
+const SERIES = ["today", "net_F2"];   // the one recommended plan against today
 const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
 function activeChart() {
   const A = D.active; if (!A) return;

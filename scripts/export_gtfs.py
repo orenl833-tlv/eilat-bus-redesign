@@ -28,7 +28,7 @@ from eilat.speeds import Speeds
 from export_page import public_name
 
 EVENING_END = 23   # the recommended package: last departures before 23:00, plus the shift-change trips
-PLAN = "data/net_H.json"   # the recommended network (timetable-searched, scripts/optimize_tt.py); an option tag also works
+PLAN = "data/net_F2.json"   # the recommended network (timetable-searched, scripts/optimize_tt.py); an option tag also works
 OUT = "exports/gtfs_eilat_proposal.zip"
 SEASON_MONTHS = {"winter": [11, 12, 1, 2, 3], "spring_autumn": [4, 5, 6, 9, 10], "summer": [7, 8]}
 START = dt.date(2026, 11, 1)

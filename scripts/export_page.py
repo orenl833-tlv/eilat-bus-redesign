@@ -15,7 +15,7 @@ import pandas as pd
 import optimize as O
 from eilat import params as P
 
-OPTS = {"today": "Today", "net_H": "Recommended network"}
+OPTS = {"today": "Today", "net_F2": "Recommended network"}
 # the recommended network's numbers come from the timetable check (analysis/page_tt.py), not the frequency model
 PAGE_TT = "data/page_tt.json"
 
@@ -43,9 +43,12 @@ def nets(prob, tag, evening_end=None):
 
 # public names: a variant keeps its line's number; a line invented by the search gets a free urban number
 NEW_LINE_NAMES = {"A14H": ("7", "קו חדש: קמפוס – תחנה מרכזית – מלונות"),   # the old plan's new line
-                  # the recommended network's lines designed from scratch (data/net_H.json)
-                  "D12169_28805": ("7", "קו חדש: ברנע – מלונות החוף הצפוני"),
+                  # the recommended network's lines designed from scratch (data/net_F2.json)
+                  "D28805_42115": ("7", "קו חדש: מלונות החוף הצפוני – דרך הבשמים"),
                   "D12719_42115": ("8", "קו חדש: מרכז ביג – דרך הבשמים"),
+                  "D12157_12356": ("9", "קו חדש: שחמון/קטורה – עירייה"),
+                  # net_H's (an earlier candidate)
+                  "D12169_28805": ("7", "קו חדש: ברנע – מלונות החוף הצפוני"),
                   "D28809_29186": ("9", "קו חדש: קניון אייס מול – תיכון בגין")}
 VARIANT_HE = {"x": "מדלג על תחנות שקטות", "s": "מסלול מקוצר"}
 

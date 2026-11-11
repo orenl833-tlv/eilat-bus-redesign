@@ -136,24 +136,24 @@
    "ttf_median": 3.01
   }
  },
- "net_H": {
+ "net_F2": {
   "14": {
    "met": 2,
    "cls": "fair",
    "access": 1.0,
    "hours": 0.83,
    "freq": 0.67,
-   "ttf": 0.17,
-   "ttf_median": 2.52
+   "ttf": 0.0,
+   "ttf_median": 2.57
   },
   "15": {
-   "met": 1,
-   "cls": "poor",
+   "met": 2,
+   "cls": "fair",
    "access": 1.0,
    "hours": 1.0,
-   "freq": 0.17,
+   "freq": 0.67,
    "ttf": 0.0,
-   "ttf_median": 2.65
+   "ttf_median": 2.74
   },
   "16": {
    "met": 2,
@@ -161,44 +161,44 @@
    "access": 1.0,
    "hours": 1.0,
    "freq": 1.0,
-   "ttf": 0.17,
-   "ttf_median": 2.14
+   "ttf": 0.33,
+   "ttf_median": 2.12
   },
   "21": {
-   "met": 1,
-   "cls": "poor",
+   "met": 2,
+   "cls": "fair",
    "access": 1.0,
    "hours": 1.0,
-   "freq": 0.17,
-   "ttf": 0.0,
-   "ttf_median": 2.51
-  },
-  "22": {
-   "met": 1,
-   "cls": "poor",
-   "access": 1.0,
-   "hours": 1.0,
-   "freq": 0.0,
-   "ttf": 0.0,
-   "ttf_median": 2.87
-  },
-  "23": {
-   "met": 1,
-   "cls": "poor",
-   "access": 1.0,
-   "hours": 1.0,
-   "freq": 0.0,
-   "ttf": 0.0,
-   "ttf_median": 2.96
-  },
-  "24": {
-   "met": 1,
-   "cls": "poor",
-   "access": 1.0,
-   "hours": 1.0,
-   "freq": 0.5,
+   "freq": 1.0,
    "ttf": 0.0,
    "ttf_median": 2.53
+  },
+  "22": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 3.15
+  },
+  "23": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.79
+  },
+  "24": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.5
   },
   "25": {
    "met": 2,
@@ -207,43 +207,43 @@
    "hours": 1.0,
    "freq": 1.0,
    "ttf": 0.0,
-   "ttf_median": 2.45
+   "ttf_median": 2.31
   },
   "31": {
    "met": 2,
    "cls": "fair",
    "access": 1.0,
    "hours": 1.0,
-   "freq": 0.67,
+   "freq": 1.0,
    "ttf": 0.0,
-   "ttf_median": 2.44
+   "ttf_median": 2.4
   },
   "32": {
    "met": 2,
    "cls": "fair",
    "access": 0.83,
-   "hours": 0.83,
+   "hours": 0.67,
    "freq": 0.67,
-   "ttf": 0.17,
-   "ttf_median": 2.16
+   "ttf": 0.0,
+   "ttf_median": 2.25
   },
   "33": {
    "met": 2,
    "cls": "fair",
    "access": 1.0,
    "hours": 1.0,
-   "freq": 0.5,
+   "freq": 0.67,
    "ttf": 0.0,
-   "ttf_median": 2.62
+   "ttf_median": 2.56
   },
   "34": {
-   "met": 1,
-   "cls": "poor",
+   "met": 2,
+   "cls": "fair",
    "access": 1.0,
    "hours": 1.0,
-   "freq": 0.5,
+   "freq": 1.0,
    "ttf": 0.0,
-   "ttf_median": 2.71
+   "ttf_median": 2.73
   },
   "35": {
    "met": 2,
@@ -252,16 +252,16 @@
    "hours": 1.0,
    "freq": 1.0,
    "ttf": 0.0,
-   "ttf_median": 2.53
+   "ttf_median": 2.38
   },
   "36": {
-   "met": 1,
-   "cls": "poor",
+   "met": 2,
+   "cls": "fair",
    "access": 0.67,
    "hours": 0.67,
-   "freq": 0.33,
+   "freq": 0.67,
    "ttf": 0.0,
-   "ttf_median": 2.7
+   "ttf_median": 2.53
   }
  }
 }

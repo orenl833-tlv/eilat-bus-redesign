@@ -22,7 +22,7 @@ import shift_trips as SHT  # noqa: E402
 from eilat import params as P  # noqa: E402
 from export_page import public_name  # noqa: E402
 
-OPTIONS = {"today": "Today", "net_H": "Recommended network"}
+OPTIONS = {"today": "Today", "net_F2": "Recommended network"}
 HOURS = range(5, 24)
 
 

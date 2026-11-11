@@ -17,7 +17,7 @@ def main():
     X = lambda lon: (lon - LON0) / (LON1 - LON0) * W  # noqa: E731
     Y = lambda lat: (LAT1 - lat) / (LAT1 - LAT0) * H  # noqa: E731
     routes, seen = [], set()
-    for ln in d["lines"]["net_H"]["winter"]:
+    for ln in d["lines"]["net_F2"]["winter"]:
         if tuple(ln["stops"]) in seen:
             continue
         seen.add(tuple(ln["stops"]))
