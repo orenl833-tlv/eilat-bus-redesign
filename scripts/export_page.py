@@ -166,6 +166,9 @@ def main():
                           for se in P.SEASONS}
     out["tt_keys"] = pt["keys"]
     out["active"] = active()
+    # absolute level of service per area (analysis/service_los.py): each map against fixed targets
+    if os.path.exists("data/service_los.json"):
+        out["los"] = json.load(open("data/service_los.json"))
     out["poi_flow"] = poi_flows()
     ft = json.load(open(PAGE_TT))["fleet"]["today"]
     out["summary"]["today"] = dict(peak=ft["buses"], hours=ft["bus_hours"], drivers=ft["drivers_overtime"])

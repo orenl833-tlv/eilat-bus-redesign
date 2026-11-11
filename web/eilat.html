@@ -101,12 +101,14 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   </header>
 
   <div class="controls" role="group" aria-label="מה להציג">
+    <div class="seg" id="colorby" role="group" aria-label="צבע האזורים"></div>
+    <p class="ctlnote" id="losnote"></p>
     <p class="ctlnote">המסלולים של כל קו זהים בכל העונות ובכל שעות היום. משתנה רק התדירות, והיא מפורטת בטבלה "תדירות לפי עונה ושעה" למטה. המפות מציגות ממוצע שנתי של כל היום. בהצעות שירות הערב נגמר ב-23:00, ועוד 5 נסיעות מאוחרות לחילופי המשמרת במלונות ובבית החולים.</p>
   </div>
 
   <div class="maps">
-    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">המפה של היום היא נקודת הייחוס, ולכן האזורים בה בצבע אחיד.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: כמה זמן הנסיעה מהדלת לדלת של התושבים שלו משתפר לעומת היום (ממוצע שנתי, לפי לוחות הזמנים ועם איחורים). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">ברמת שירות: כל אזור צבוע לפי עמידה ביעדים הקבועים. בשינוי: המפה של היום היא נקודת הייחוס, ולכן בצבע אחיד.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">ברמת שירות: אותם יעדים כמו במפה של היום. בשינוי: כמה זמן הנסיעה מהדלת לדלת משתפר לעומת היום (ממוצע שנתי); ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
@@ -143,7 +145,7 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "net_H", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {color: "los", opt: "net_H", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -229,7 +231,8 @@ function drawMap(svg, tag, showChange) {
   const ns = "http://www.w3.org/2000/svg";
   svg.innerHTML = ""; svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("direction", "ltr");
   const g = document.createElementNS(ns, "g"); svg.appendChild(g);
-  const change = showChange ? D.summary[tag]?.area : null;
+  const los = st.color === "los" ? D.los?.[tag] : null;
+  const change = showChange && !los ? D.summary[tag]?.area : null;
   const poly = (rings, fill, stroke) => { for (const ring of rings) { const p = document.createElementNS(ns, "path");
     p.setAttribute("d", "M" + ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L") + "Z");
     p.setAttribute("fill", fill); if (stroke) { p.setAttribute("stroke", stroke); p.setAttribute("stroke-width", "1") }
@@ -245,19 +248,21 @@ function drawMap(svg, tag, showChange) {
       const p = document.createElementNS(ns, "path");
       p.setAttribute("d", "M" + ring.map(([x, y]) => `${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("L") + "Z");
       const pct = change ? change[a.id] : null;
-      p.setAttribute("fill", showChange ? areaFill(pct) : css("--land"));
+      const lv = los ? los[a.id] : null;
+      p.setAttribute("fill", los ? (lv ? LOS_FILL[lv.cls] : css("--land")) : showChange ? areaFill(pct) : css("--land"));
       p.setAttribute("stroke", css("--panel")); p.setAttribute("stroke-width", "1.2");
       p.dataset.area = a.id;
       p.addEventListener("mousemove", (e) => tip(e, a, tag));
       p.addEventListener("mouseleave", () => { document.getElementById("tip").hidden = true });
       g.appendChild(p);
     }
-    if (showChange && change && change[a.id] != null) {
+    const label = los ? (los[a.id] ? `${los[a.id].met}/3` : null) : (showChange && change && change[a.id] != null ? `${signed(change[a.id])}%` : null);
+    if (label) {
       const ring = a.rings[0]; const cx = ring.reduce((s, q) => s + q[0], 0) / ring.length, cy = ring.reduce((s, q) => s + q[1], 0) / ring.length;
       const t = document.createElementNS(ns, "text");
       t.setAttribute("x", sx(cx)); t.setAttribute("y", sy(cy)); t.setAttribute("text-anchor", "middle"); t.setAttribute("font-size", "11");
       t.setAttribute("fill", css("--ink")); t.setAttribute("pointer-events", "none"); t.setAttribute("font-family", "IBM Plex Sans Hebrew, sans-serif");
-      t.textContent = `${signed(change[a.id])}%`;
+      t.textContent = label;
       g.appendChild(t);
     }
   }
@@ -403,10 +408,12 @@ function lineList(id, tag, selKey) {
 
 function tip(e, a, tag) {
   const el = document.getElementById("tip");
+  const lv = D.los?.[tag]?.[a.id];
   const s = D.summary[tag === "today" ? st.opt : tag];
   const tt = ttFor(a.id);
   let h = `<b>אזור ${a.id}</b><br>${a.pop ? a.pop.toLocaleString("he-IL") + " תושבים · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% ממשקי הבית בלי רכב" : ""}`;
-  if (s?.area?.[a.id] != null) h += `<br>זמן נסיעה מהדלת לדלת: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
+  if (lv) h += `<br>רמת שירות (${tag === "today" ? "היום" : "בהצעה"}): <b>${lv.met}/3 יעדים</b><br><small>קו כל 20 דק' ליד הבית: ${Math.round(lv.freq * 100)}% מהתושבים · שירות 16 שעות: ${Math.round(lv.hours * 100)}% · זמן נסיעה ביחס לרכב: פי ${num(lv.ttf_median ?? "–")} (יעד: עד פי 2)</small>`;
+  if (s?.area?.[a.id] != null) h += `<br>זמן נסיעה מהדלת לדלת, ההצעה לעומת היום: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
   if (tt) h += `<br><small>${whenText()}</small><br>` + PLACES.filter((p) => tt[p]).map((p) => `${PLACE_HE[p]}: היום ${Math.round(tt[p][0])}, בהצעה ${Math.round(tt[p][1])} דק'`).join("<br>");
   el.innerHTML = h; el.hidden = false;
   const x = Math.min(e.clientX + 14, window.innerWidth - 280), y = Math.min(e.clientY + 14, window.innerHeight - 170);
@@ -474,6 +481,15 @@ function freqTable() {
 
 function legend() {
   const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
+  const T = D.los?.targets;
+  document.getElementById("losnote").textContent = st.color === "los" && T ?
+    `כל מפה נמדדת לבד מול יעד קבוע, לא מול המפה השנייה. יעדי רמת שירות (מתוך תקן Fort Collins, לפי משרד התחבורה של אורגון): תחנה עד ${T.access_m} מ' הליכה; לפחות ${T.hours} שעות שירות ביום חול; קו שיוצא כל ${T.headway} דקות או פחות (07:00–19:00); ונסיעה מהדלת לדלת עד פי ${T.ttf} מנסיעה ברכב (רכב: ${T.car_kmh} קמ"ש ועוד ${T.car_extra_min} דקות חנייה, הנחה). המספר על כל אזור: כמה מ-3 היעדים התושב הטיפוסי בו עומד. עומס הנוסעים, היעד הרביעי בתקן, לא נמדד לפי אזור.` : "";
+  if (st.color === "los") {
+    document.getElementById("legend").innerHTML =
+      `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
+      `<span>${sw(LOS_FILL.good, 10)}טוב: עומד בכל 3 היעדים</span><span>${sw(LOS_FILL.fair, 10)}בינוני: 2 מתוך 3</span><span>${sw(LOS_FILL.poor, 10)}חלש: יעד אחד או אף אחד</span>`;
+    return;
+  }
   document.getElementById("legend").innerHTML =
     `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה${st.period === "all" ? " (ממוצע על פני היום, 06:00–24:00)" : ""}</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
     `<span>${sw(css("--better-1"), 10)}האזור משתפר בפחות מ-10%</span><span>${sw(css("--better-2"), 10)}10%–20%</span><span>${sw(css("--better-3"), 10)}יותר מ-20%</span><span>${sw(css("--worse"), 10)}האזור נפגע</span>`;
@@ -528,7 +544,15 @@ function activeChart() {
   document.getElementById("acttbl").innerHTML = t + "</tbody>";
 }
 
+const LOS_FILL = {good: "rgba(27,175,122,.6)", fair: "rgba(233,178,60,.6)", poor: "rgba(214,69,65,.6)"};
+function colorButtons() {
+  const el = document.getElementById("colorby");
+  const opts = [["los", "רמת שירות מול יעד קבוע"], ["change", "שינוי לעומת היום"]];
+  el.innerHTML = opts.map(([k, l]) => `<button type="button" data-k="${k}" aria-pressed="${st.color === k}">${l}</button>`).join("");
+  el.querySelectorAll("button").forEach((b) => b.onclick = () => { st.color = b.dataset.k; render() });
+}
 function render() {
+  colorButtons();
   seg("ftab", [["opt", OPT_HE[st.opt]], ["today", "היום"]], st.ftab);
   seg("actseas", D.seasons.map((s) => [s, SNAME[s]]), st.actSeason, "actSeason");
   document.getElementById("optName").textContent = OPT_HE[st.opt];
