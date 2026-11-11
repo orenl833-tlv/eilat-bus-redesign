@@ -23,7 +23,8 @@ by the area's residents, planned on the timetable as buses really run:
 - a trip that walking does faster counts its walk.
 One scan per (home, leaving time, draw) gives the arrivals at all of that home's destinations.
 
-Check: leaving times the search did not see (HOLDOUT_LEAVE) and N_SEEDS_CHECK new delay draws, all area x
+Leaving times are random within each hour 07-21, drawn per home (see leave_times).
+Check: other random leaving times (HOLDOUT_LEAVE) and N_SEEDS_CHECK new delay draws, all area x
 place pairs, for today / today retimed / the plan / the plan retimed; also the perceived time (walk and wait
 x1.6, +5 min a transfer) on new draws; and the buses needed (vehicle blocks, scripts/blocking.py).
 
@@ -51,8 +52,17 @@ N_RANDOM = int(sys.argv[1]) if len(sys.argv) > 1 else 300
 SWEEPS, GRID = 2, 8
 TRANSFER_MIN = 2.0
 N_SEEDS, N_SEEDS_CHECK, N_SEEDS_PERCEIVED = 4, 10, 3
-TRAIN_LEAVE = range(7 * 60, 21 * 60, 60)          # 07:00, 08:00, ... 20:00
-HOLDOUT_LEAVE = range(7 * 60 + 23, 21 * 60, 30)   # 07:23, 07:53, ... (not seen by the search)
+# Leaving times: per home, PER_HOUR random times in every hour 07-21 (a different draw per home), fixed across
+# candidates. Fixed round times (07:00, 08:00 ...) let the search overfit: it learned to send buses just
+# after the hour (a first run did that, and was worse on other times). Random times leave only what helps
+# riders who leave at any time: shorter transfers.
+HOURS, PER_HOUR = range(7, 21), 2
+TRAIN_LEAVE, HOLDOUT_LEAVE = "train", "holdout"
+
+
+def leave_times(o, which):
+    rng = random.Random(f"{which}|{o[0]:.6f}|{o[1]:.6f}")
+    return [h * 60 + rng.random() * 60 for h in HOURS for _ in range(PER_HOUR)]
 random.seed(7)
 SPEEDS = Speeds()
 G = "data/gtfs_eilat/"
@@ -138,7 +148,7 @@ class Base:
     def score(self, phases, leave, od=None, seeds=range(N_SEEDS)):
         """Mean door-to-door minutes. One scan per (home, leaving time, delay draw) gives the arrivals at all
         of that home's destinations, and stops once walking would be faster for all of them."""
-        key = (tuple(sorted(phases.items())), tuple(leave), id(od), tuple(seeds))
+        key = (tuple(sorted(phases.items())), leave, id(od), tuple(seeds))
         if key in self._memo:
             return self._memo[key]
         net, keys = self.network(phases)
@@ -150,7 +160,7 @@ class Base:
             real = net.realize(self.sampler, seed, keys)
             for o, ds in by_home.items():
                 horizon = max(wd for _, _, wd in ds)
-                for t0 in leave:
+                for t0 in leave_times(o, leave):
                     arr = real.arrivals(o[0], o[1], [d for d, _, _ in ds], t0, TRANSFER_MIN, horizon)
                     for (d, w, wd), a in zip(ds, arr, strict=True):
                         tt = wd if not np.isfinite(a) else min(a - t0, wd)
@@ -167,7 +177,7 @@ class Base:
         for seed in seeds:
             real = net.realize(self.sampler, seed, keys)
             for o, d, w, wd in self.od:
-                for t0 in leave:
+                for t0 in leave_times(o, leave)[::2]:
                     r = real.plan(o[0], o[1], d[0], d[1], t0, TRANSFER_MIN)
                     if r is None or r["arrive"] - t0 >= wd:
                         v = P.W_WALK * wd
@@ -190,9 +200,9 @@ class Base:
 
 
 class PlanNet(Base):
-    def __init__(self):
+    def __init__(self, tag=PLAN):
         super().__init__()
-        net = BL.option_net(PLAN, SEASON)
+        net = BL.option_net(tag, SEASON)
         self.pats = [p for p in net if p.line not in BL.SCHOOL]
         self.shift = SHT.shift_trips(net, SHT.hotel_stops())
         self.names = [p.name for p in self.pats]
@@ -262,7 +272,7 @@ def main():
     best = {k: search(S, train_od, k) for k, S in nets.items()}
     check = range(100, 100 + N_SEEDS_CHECK)                                     # delay draws not seen
     pcheck = range(200, 200 + N_SEEDS_PERCEIVED)
-    pleave = range(7 * 60 + 23, 21 * 60, 60)
+    pleave = HOLDOUT_LEAVE
     res = {}
     for k, S in nets.items():
         for label, ph in ((k, S.start), (k + "_retimed", best[k])):
