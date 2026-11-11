@@ -99,7 +99,13 @@ class Network:
         for tid, (s, t) in self.trips.items():
             if tid in delays:
                 d0, mult = delays[tid]
-                t = t[0] + d0 + (t - t[0]) * mult
+                lane = getattr(self, "lane", None)
+                if lane:      # a bus lane: its segments run with LANE_VAR of the ride's deviation
+                    seg = np.diff(t)
+                    k = np.array([self.lane_var if (int(s[i]), int(s[i + 1])) in lane else 1.0 for i in range(len(s) - 1)])
+                    t = t[0] + d0 + np.concatenate([[0.0], np.cumsum(seg * (1 + (mult - 1) * k))])
+                else:
+                    t = t[0] + d0 + (t - t[0]) * mult
             self.seq[tid] = list(s)
             rows += [(t[i], t[i + 1], int(s[i]), int(s[i + 1]), tid) for i in range(len(s) - 1)]
         rows.sort(key=lambda r: r[0])
@@ -115,6 +121,7 @@ class Network:
         other.st, other.line, other.stops, other.trips, other.foot = self.st, self.line, self.stops, self.trips, self.foot
         other.dkey = dkey
         other.cont = getattr(self, "cont", {})
+        other.lane, other.lane_var = getattr(self, "lane", None), getattr(self, "lane_var", 1.0)
         delays = {}
         other.delays = delays
         for tid, (s, t) in self.trips.items():
