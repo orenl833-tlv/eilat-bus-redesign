@@ -42,6 +42,8 @@ HALF = {6, 21, 22}
 PER_HOUR = 2
 N_SEEDS = 2
 T0 = 0.004
+# objective: (1 - share) x door-to-door minutes + share x perceived minutes, each relative to today
+OBJ_PERCEIVED_SHARE = float(os.environ.get("OBJ_PERCEIVED", "0"))
 AREA_PEN = 1.0
 REPLACE_P = 0.25 if os.environ.get("MODE") == "design" else 0.0
 
@@ -124,34 +126,40 @@ class TT(T.Base):
         dkey = {t: T.delay_key(t.split("/")[0], t.split("/")[1][0]) for t in tids}
         return self.make(rows, line, keys, dkey)
 
-    def per_home(self, net_keys, which="train", seeds=range(N_SEEDS)):
-        """Mean door-to-door minutes per home (weighted over its places and leaving times) and overall."""
+    def per_home(self, net_keys, which="train", seeds=range(N_SEEDS), metric="minutes"):
+        """Mean door-to-door minutes per origin (weighted over its places and leaving times) and overall.
+        metric="perceived": perceived minutes of the fastest trip instead (walk and wait x1.6, +5 a transfer;
+        walking all the way counts x1.6 when it is quicker); "both": ({origin: (minutes, perceived)},
+        (minutes, perceived))."""
         net, keys = net_keys
-        tot = {o: 0.0 for o in self.homes}; wt = {o: 0.0 for o in self.homes}
+        tm = {o: 0.0 for o in self.homes}; tp = {o: 0.0 for o in self.homes}; wt = {o: 0.0 for o in self.homes}
         for seed in seeds:
             real = net.realize(self.sampler, seed, keys)
             for o in self.homes:
                 if self.demand:
-                    ds = self.dod[o]
-                    horizon = max(wd for _, wd, _ in ds)
-                    for t0, _ in leave_times(o, which):
-                        q = _period(t0)
-                        arr = real.arrivals(o[0], o[1], [d for d, _, _ in ds], t0, T.TRANSFER_MIN, horizon)
-                        for (d, wd, wq), a in zip(ds, arr, strict=True):
-                            w = wq[q] / max(hours_in(q), 1) / PER_HOUR
-                            tt = wd if not np.isfinite(a) else min(a - t0, wd)
-                            tot[o] += w * tt; wt[o] += w
-                    continue
-                ds = self.by_home[o]
-                horizon = max(wd for _, _, wd in ds)
-                for t0, wh in leave_times(o, which):
-                    arr = real.arrivals(o[0], o[1], [d for d, _, _ in ds], t0, T.TRANSFER_MIN, horizon)
-                    for (d, w, wd), a in zip(ds, arr, strict=True):
-                        tt = wd if not np.isfinite(a) else min(a - t0, wd)
-                        tot[o] += wh * w * tt; wt[o] += wh * w
-        home = {o: tot[o] / wt[o] for o in self.homes if wt[o] > 0}
-        overall = sum(tot.values()) / sum(wt.values())
-        return home, overall
+                    ds = [(d, wd, wq) for d, wd, wq in self.dod[o]]
+                    times = [(t0, None) for t0, _ in leave_times(o, which)]
+                else:
+                    ds = [(d, wd, w) for d, w, wd in self.by_home[o]]
+                    times = leave_times(o, which)
+                horizon = max(wd for _, wd, _ in ds)
+                for t0, wh in times:
+                    q = _period(t0)
+                    arr = real.arrivals(o[0], o[1], [d for d, _, _ in ds], t0, T.TRANSFER_MIN, horizon, perceived=True)
+                    for (d, wd, ww), (a, pv) in zip(ds, arr, strict=True):
+                        w = ww[q] / max(hours_in(q), 1) / PER_HOUR if self.demand else wh * ww
+                        if not np.isfinite(a) or a - t0 >= wd:
+                            m, pv = wd, P.W_WALK * wd
+                        else:
+                            m = a - t0
+                        tm[o] += w * m; tp[o] += w * pv; wt[o] += w
+        ok = [o for o in self.homes if wt[o] > 0]
+        M, Pv = sum(tm.values()) / sum(wt.values()), sum(tp.values()) / sum(wt.values())
+        if metric == "both":
+            return {o: (tm[o] / wt[o], tp[o] / wt[o]) for o in ok}, (M, Pv)
+        if metric == "perceived":
+            return {o: tp[o] / wt[o] for o in ok}, Pv
+        return {o: tm[o] / wt[o] for o in ok}, M
 
 
 class Search:
@@ -161,8 +169,8 @@ class Search:
         today = T.TodayNet()
         today.foot = self.tt.foot = today.network(today.start)[0].foot
         self.tt.foot = today.foot
-        self.today_home, self.today = self.tt.per_home(today.network(today.start))
-        print(f"today (real timetable): {self.today:.2f} min", flush=True)
+        self.today_home, (self.today, self.today_p) = self.tt.per_home(today.network(today.start), metric="both")
+        print(f"today (real timetable): {self.today:.2f} min, perceived {self.today_p:.2f}", flush=True)
         self.memo = {}
 
     def score(self, state, detail=False):
@@ -173,9 +181,10 @@ class Search:
         pats = prob.network(state)
         buses, hours = EN.fleet(pats)
         pen = 0.02 * max(0, max(buses.values()) - prob.budget_peak) + 0.002 * max(0, hours - prob.budget_hours)
-        home, overall = self.tt.per_home(self.tt.net_of(pats))
-        obj = overall / self.today
-        worst = max(home[o] / self.today_home[o] for o in home)
+        home, (overall, overall_p) = self.tt.per_home(self.tt.net_of(pats), metric="both")
+        a = OBJ_PERCEIVED_SHARE
+        obj = (1 - a) * overall / self.today + a * overall_p / self.today_p
+        worst = max((1 - a) * home[o][0] / self.today_home[o][0] + a * home[o][1] / self.today_home[o][1] for o in home)
         # an origin (an area, or a place trips start from, e.g. the intercity terminal) more than MAX_AREA_LOSS worse
         # than today: 1% over costs as much as 1% of the whole objective, so the search cannot buy it with the
         # average (0.05 here let a +25-30% loss at the city entrance terminal through)
@@ -186,7 +195,7 @@ class Search:
         total = obj + pen
         self.memo[key] = total
         if detail:
-            return dict(total=total, obj=obj, minutes=overall, pen=pen, buses=buses, hours=hours, worst_area=worst,
+            return dict(total=total, obj=obj, minutes=overall, perceived=overall_p, pen=pen, buses=buses, hours=hours, worst_area=worst,
                         violations=prob.violations(state), protected_lost=prob.protected_lost(pats))
         return total
 

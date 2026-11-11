@@ -150,18 +150,19 @@ class Network:
         net.dkey = {t: delay_key(r, d) for t, r, d in zip(tr.trip_id, tr.route_id.astype(str), tr.direction_id, strict=True)}
         return net
 
-    def arrivals(self, o_lat, o_lon, dests, t0, transfer_min=0.0, horizon=np.inf):
+    def arrivals(self, o_lat, o_lon, dests, t0, transfer_min=0.0, horizon=np.inf, perceived=False):
         """Earliest arrival at each of several destinations [(lat, lon), ...] leaving (o) at t0: one scan
         for all of them (same arrivals as plan() one by one). horizon: stop scanning at t0 + horizon (a
         trip longer than that is not wanted, e.g. it would be walked); a destination not reached by bus is
-        NaN."""
+        NaN. perceived=True: (arrival, perceived minutes of that fastest trip) per destination, perceived =
+        in-vehicle + W_WALK x walk + W_WAIT x wait + TRANSFER_PENALTY per transfer (as Base.perceived)."""
         S = self.stops
         acc = walk_min(o_lat, o_lon, S.stop_lat.values, S.stop_lon.values)
-        best = {}; ready = {}; rode = set()
+        best = {}; ready = {}; rode = set(); lab = {}          # lab: stop -> (walk, in-vehicle, rides) of its best
         for sid, w in zip(S.index, acc, strict=True):
             if w <= WALK_MAX_MIN:
-                best[sid] = ready[sid] = t0 + w
-        on = set()
+                best[sid] = ready[sid] = t0 + w; lab[sid] = (float(w), 0.0, 0)
+        on = {}
         end = t0 + horizon
         for dep, arr, a, b, tid in self.conn:
             if dep < t0:
@@ -169,19 +170,30 @@ class Network:
             if dep > end:
                 break
             if tid in on or ready.get(a, np.inf) <= dep:
-                on.add(tid)
+                if tid not in on:
+                    on[tid] = (lab.get(a, (0.0, 0.0, 0)), dep)
                 if arr < best.get(b, np.inf):          # as in plan(): a stop counts once a bus improves it
-                    best[b] = arr; rode.add(b)
+                    (wk, iv, nr), d0 = on[tid]
+                    best[b] = arr; rode.add(b); lab[b] = (wk, iv + arr - d0, nr + 1)
                     ready[b] = min(ready.get(b, np.inf), arr + transfer_min)
                     for c, w in self.foot.get(b, []):
                         if arr + w < best.get(c, np.inf):
-                            best[c] = arr + w; rode.add(c)
+                            best[c] = arr + w; rode.add(c); lab[c] = (wk + w, iv + arr - d0, nr + 1)
                             ready[c] = min(ready.get(c, np.inf), arr + w + transfer_min)
         out = []
         for d_lat, d_lon in dests:
             egr = walk_min(S.stop_lat.values, S.stop_lon.values, d_lat, d_lon)
-            v = [best[s] + e for s, e in zip(S.index, egr, strict=True) if e <= WALK_MAX_MIN and s in rode]
-            out.append(min(v) if v else np.nan)
+            v = [(best[s] + e, s, e) for s, e in zip(S.index, egr, strict=True) if e <= WALK_MAX_MIN and s in rode]
+            if not v:
+                out.append((np.nan, np.nan) if perceived else np.nan)
+                continue
+            a, s_, e = min(v)
+            if not perceived:
+                out.append(a); continue
+            wk, iv, nr = lab[s_]
+            wk += e
+            wait = max(a - t0 - wk - iv, 0.0)
+            out.append((a, iv + P.W_WALK * wk + P.W_WAIT * wait + P.TRANSFER_PENALTY * max(nr - 1, 0)))
         return out
 
     def plan(self, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0):
