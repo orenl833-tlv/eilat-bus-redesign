@@ -1,0 +1,20 @@
+{
+ "today": {
+  "clairvoyant": 31.37,
+  "committed": 37.09,
+  "gap": 5.72,
+  "lose_5min_share": 0.352,
+  "transfer_share": 0.311
+ },
+ "plan": {
+  "clairvoyant": 32.02,
+  "committed": 35.96,
+  "gap": 3.94,
+  "lose_5min_share": 0.242,
+  "transfer_share": 0.284
+ },
+ "plan_vs_today": {
+  "clairvoyant": 0.0207,
+  "committed": -0.0305
+ }
+}

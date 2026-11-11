@@ -7,14 +7,14 @@
   "transfer_share": 0.311
  },
  "plan": {
-  "clairvoyant": 30.49,
-  "committed": 33.81,
-  "gap": 3.32,
-  "lose_5min_share": 0.222,
-  "transfer_share": 0.327
+  "clairvoyant": 32.02,
+  "committed": 35.96,
+  "gap": 3.94,
+  "lose_5min_share": 0.242,
+  "transfer_share": 0.284
  },
  "plan_vs_today": {
-  "clairvoyant": -0.0281,
-  "committed": -0.0884
+  "clairvoyant": 0.0207,
+  "committed": -0.0305
  }
 }
