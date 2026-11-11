@@ -201,8 +201,17 @@ class Base:
 
 class PlanNet(Base):
     def __init__(self, tag=PLAN):
+        """tag: an option (its seasonal network), or a state file of scripts/optimize_tt.py (winter)."""
         super().__init__()
-        net = BL.option_net(tag, SEASON)
+        if tag.endswith(".json"):
+            prob = O.Problem("full")
+            st = dict(prob.state0)
+            for k, v in json.load(open(tag)).items():
+                if k in st:
+                    st[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
+            net = prob.network(st)
+        else:
+            net = BL.option_net(tag, SEASON)
         self.pats = [p for p in net if p.line not in BL.SCHOOL]
         self.shift = SHT.shift_trips(net, SHT.hotel_stops())
         self.names = [p.name for p in self.pats]
@@ -268,10 +277,12 @@ def search(S, train_od, label):
 def main():
     global N_RANDOM
     N_RANDOM = int(sys.argv[1]) if len(sys.argv) > 1 else N_RANDOM
-    nets = {"today": TodayNet(), "plan": PlanNet()}
+    # optional: a state file to retime instead of the recommended plan (today is then scored, not retimed)
+    state = sys.argv[2] if len(sys.argv) > 2 else None
+    nets = {"today": TodayNet(), "plan": PlanNet(state) if state else PlanNet()}
     nets["plan"].foot = nets["today"].network(nets["today"].start)[0].foot
     train_od = random.sample(nets["plan"].od, min(60, len(nets["plan"].od)))   # the search scores on a sample
-    best = {k: search(S, train_od, k) for k, S in nets.items()}
+    best = {k: (S.start if (state and k == "today") else search(S, train_od, k)) for k, S in nets.items()}
     check = range(100, 100 + N_SEEDS_CHECK)                                     # delay draws not seen
     pcheck = range(200, 200 + N_SEEDS_PERCEIVED)
     pleave = HOLDOUT_LEAVE
@@ -286,7 +297,8 @@ def main():
     res["phases"] = {k: {n: round(v, 3) for n, v in best[k].items()} for k in nets}
     res["setup"] = dict(transfer_min=TRANSFER_MIN, seeds_search=N_SEEDS, seeds_check=N_SEEDS_CHECK, train_od=len(train_od),
                         all_od=len(nets["plan"].od), n_random=N_RANDOM, sweeps=SWEEPS, grid=GRID)
-    json.dump(res, open("data/timetable_offsets.json", "w"), ensure_ascii=False, indent=1)
+    out = "data/timetable_offsets.json" if not state else state.replace(".json", "_retimed.json")
+    json.dump(res, open(out, "w"), ensure_ascii=False, indent=1)
 
 
 if __name__ == "__main__":
