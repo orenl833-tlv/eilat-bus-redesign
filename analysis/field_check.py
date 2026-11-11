@@ -64,7 +64,8 @@ def main():
           f"model use {S.use_today.sum():,.0f}/day; walk to the nearest served stop median {S.walk_m.median():.0f} m, max {S.walk_m.max():.0f} m")
     print(f"to visit: {int(S.visit.sum())} (over 300 m: {(S.walk_m > 300).sum()}, areas with 65+ >= 15%: {(S.age65_pcnt >= 15).sum()}, "
           f"use >= 30/day: {(S.use_today >= 30).sum()})")
-    print(S[S.visit].head(12)[["name", "kind", "lines_today", "departures_today", "use_today", "age65_pcnt", "nearest_served", "walk_m"]].to_string(index=False))
+    cols = ["name", "kind", "lines_today", "departures_today", "use_today", "age65_pcnt", "nearest_served", "walk_m"]
+    print(S[S.visit].head(12)[cols].to_string(index=False))
     # terminals of new or changed lines
     gs = g.sort_values("stop_sequence").groupby("trip_id").stop_id
     first, last = gs.first(), gs.last()
