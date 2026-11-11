@@ -32,8 +32,10 @@ Usage: PYTHONPATH=.:scripts python3 analysis/timetable_offsets.py [N_RANDOM]   O
 """
 import json
 import math
+import os
 import random
 import sys
+import zlib
 
 import numpy as np
 import pandas as pd
@@ -253,23 +255,34 @@ class TodayNet(Base):
 
 
 def search(S, train_od, label):
+    """Monte Carlo then coordinate sweeps. With CKPT=<dir> in the environment, progress is saved there after
+    every 20 random draws and every sweep, and a rerun resumes from it (long runs get cut off)."""
     f = lambda ph: S.score(ph, TRAIN_LEAVE, train_od)  # noqa: E731
-    best, best_s = dict(S.start), f(S.start)
-    print(f"[{label}] start (train sample): {best_s:.2f}", flush=True)
+    ck = os.path.join(os.environ["CKPT"], f"{label}_{zlib.crc32('|'.join(S.names).encode())}.json") if os.environ.get("CKPT") else None
+    state = json.load(open(ck)) if ck and os.path.exists(ck) else dict(best=S.start, k=0, sweep=0)
+    best = state["best"]; best_s = f(best)
+    save = lambda **kw: ck and json.dump(dict(state, best=best, **kw), open(ck, "w"))  # noqa: E731
+    print(f"[{label}] start (train sample): {best_s:.2f} (resumed at draw {state['k']}, sweep {state['sweep']})", flush=True)
     rng = random.Random(11)
     for k in range(N_RANDOM):
-        ph = {n: rng.random() for n in S.names}
+        ph = {n: rng.random() for n in S.names}       # drawn even when skipped, so a resume continues the sequence
+        if k < state["k"]:
+            continue
         s = f(ph)
         if s < best_s:
             best, best_s = ph, s
             print(f"[{label}]   MC {k}: {s:.2f}", flush=True)
-    for sw in range(SWEEPS):
+        if k % 20 == 19:
+            save(k=k + 1)
+    save(k=N_RANDOM)
+    for sw in range(state["sweep"], SWEEPS):
         for n in S.names:
             for g in range(GRID):
                 ph = dict(best); ph[n] = g / GRID
                 s = f(ph)
                 if s < best_s - 1e-6:
                     best, best_s = ph, s
+        save(k=N_RANDOM, sweep=sw + 1)
         print(f"[{label}] sweep {sw}: {best_s:.2f}", flush=True)
     return best
 
