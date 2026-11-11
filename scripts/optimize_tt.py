@@ -31,7 +31,11 @@ import pandas as pd
 import optimize as O
 import timetable_offsets as T
 from eilat import network as EN
+from eilat import demand as Dm
+from eilat import model as MD
 from eilat import params as P
+from eilat.evaluate import walk_min
+from eilat.timetable import _period
 
 HOURS = range(6, 23)
 HALF = {6, 21, 22}
@@ -45,13 +49,67 @@ def leave_times(o, which):
     return [(h * 60 + rng.random() * 60, 0.5 if h in HALF else 1.0) for h in HOURS for _ in range(PER_HOUR)]
 
 
+def demand_od(season, min_walk=10.0):
+    """Trips weighted by the demand model (eilat/demand.py potential), both ways: each area's centre to each key
+    place and back, per purpose, by its share of bus users (car-less households weigh more) and its time
+    profile; tourists from the hotels to the places and back. Returns {origin: [(dest, walk min, {period:
+    weight}), ...]} for trips at least min_walk minutes' walk."""
+    m = MD.Model()
+    pts = m.pts
+    out, prop, tour, hotel = Dm.potential(pts, season)
+    homes = pts[pts.kind == "home"].reset_index(drop=True)
+    att = Dm.ATTRACTORS
+    places = [(float(att.lat[i]), float(att.lon[i])) for i in range(len(att))]
+    per = list(P.PERIODS)
+    od = {}
+
+    def add(o, d, k, w):
+        if w <= 0:
+            return
+        wd = float(walk_min(o[0], o[1], d[0], d[1]))
+        if wd < min_walk:
+            return
+        lst = od.setdefault(o, {})
+        e = lst.setdefault(d, [wd, {q: 0.0 for q in per}])
+        e[1][per[k]] += w
+    for _, g in homes.groupby("area"):
+        c = g[["lat", "lon"]].mean()
+        h = g.index[np.argmin((g.lat - c.lat) ** 2 + (g.lon - c.lon) ** 2)]
+        o = (float(homes.lat[h]), float(homes.lon[h]))
+        for p in Dm.PURPOSES:
+            if p == "tourist":
+                continue
+            tours = (out[p][g.index] * prop[g.index][:, None]).sum(axis=0)
+            for a, n in enumerate(tours):
+                for k in range(len(per)):
+                    add(o, places[a], k, n * Dm.PROFILE[p]["out"][k])
+                    add(places[a], o, k, n * Dm.PROFILE[p]["back"][k])
+    hp = places[hotel]
+    for a, n in enumerate(tour):
+        for k in range(len(per)):
+            add(hp, places[a], k, n * Dm.PROFILE["tourist"]["out"][k])
+            add(places[a], hp, k, n * Dm.PROFILE["tourist"]["back"][k])
+    return {o: [(d, wd, w) for d, (wd, w) in ds.items()] for o, ds in od.items()}
+
+
+def hours_in(q):
+    a, b = P.PERIODS[q]
+    return len([h for h in HOURS if a <= h < b])
+
+
 class TT(T.Base):
-    """Timetable scoring of a candidate network (a list of patterns) and of today's real timetable."""
+    """Timetable scoring of a candidate network (a list of patterns) and of today's real timetable.
+    OD=demand in the environment: trips weighted by the demand model, season SEASON (default winter)."""
 
     def __init__(self):
         super().__init__()
-        self.homes = sorted({o for o, *_ in self.od})
-        self.by_home = {o: [(d, w, wd) for oo, d, w, wd in self.od if oo == o] for o in self.homes}
+        self.demand = os.environ.get("OD", "residents") == "demand"
+        if self.demand:
+            self.dod = demand_od(os.environ.get("SEASON", "winter"))
+            self.homes = sorted(self.dod)
+        else:
+            self.homes = sorted({o for o, *_ in self.od})
+            self.by_home = {o: [(d, w, wd) for oo, d, w, wd in self.od if oo == o] for o in self.homes}
         self.no_shift = pd.DataFrame(columns=["pattern", "start"])
 
     def net_of(self, pats):
@@ -71,6 +129,17 @@ class TT(T.Base):
         for seed in seeds:
             real = net.realize(self.sampler, seed, keys)
             for o in self.homes:
+                if self.demand:
+                    ds = self.dod[o]
+                    horizon = max(wd for _, wd, _ in ds)
+                    for t0, _ in leave_times(o, which):
+                        q = _period(t0)
+                        arr = real.arrivals(o[0], o[1], [d for d, _, _ in ds], t0, T.TRANSFER_MIN, horizon)
+                        for (d, wd, wq), a in zip(ds, arr, strict=True):
+                            w = wq[q] / max(hours_in(q), 1) / PER_HOUR
+                            tt = wd if not np.isfinite(a) else min(a - t0, wd)
+                            tot[o] += w * tt; wt[o] += w
+                    continue
                 ds = self.by_home[o]
                 horizon = max(wd for _, _, wd in ds)
                 for t0, wh in leave_times(o, which):
@@ -78,7 +147,7 @@ class TT(T.Base):
                     for (d, w, wd), a in zip(ds, arr, strict=True):
                         tt = wd if not np.isfinite(a) else min(a - t0, wd)
                         tot[o] += wh * w * tt; wt[o] += wh * w
-        home = {o: tot[o] / wt[o] for o in self.homes}
+        home = {o: tot[o] / wt[o] for o in self.homes if wt[o] > 0}
         overall = sum(tot.values()) / sum(wt.values())
         return home, overall
 
