@@ -1,0 +1,24 @@
+{
+ "season": "winter",
+ "plan": {
+  "app": 26.144,
+  "know": 23.712,
+  "xwait": 0.793,
+  "slow5": 0.152
+ },
+ "draws": 10,
+ "today": {
+  "app": 28.485,
+  "know": 26.057,
+  "xwait": 1.051,
+  "slow5": 0.155
+ },
+ "change_app": {
+  "mean": -0.082,
+  "ci95": 0.0102
+ },
+ "change_know": {
+  "mean": -0.0899,
+  "ci95": 0.0092
+ }
+}

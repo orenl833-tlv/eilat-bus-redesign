@@ -468,6 +468,11 @@ more than the transfers they save.
 trips: -10.1% door to door (winter headways -8.7%), perceived -11.9%, worst origin +12% (was +16%), same bus-hours. The
 GTFS export uses it for the summer timetable; spring/autumn keep the winter headways.
 
+**App rider** (`eilat/app_rider.py`, `analysis/app_rider.py`): sees every bus's current position (predicted to keep its
+lateness), plans on that, rides the bus as it really runs and re-plans at the transfer stop. Demand-weighted trips, 10
+delay draws shared by both networks: net_F2 vs today -8.2% +- 1.0% (winter), -10.1% +- 1.1% (summer, summer headways);
+an all-knowing rider -9.0% / -11.0%. Wait at transfer stops per trip 0.79 min against 1.05-1.13 today.
+
 **Desk field check** (`analysis/field_check.py`): 48 stops lose service (45 dropped, 3 passed), ~960 boardings and
 alightings a day in the model; walk to the nearest served stop median 142 m, max 488 m. 16 to visit (6 over 300 m, 3 in
 areas with 15%+ residents 65+, 12 with 30+ a day); the worst is Hativat HaNegev/Derech HaGai (451 m, 17.8% 65+). The

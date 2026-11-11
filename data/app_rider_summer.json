@@ -1,0 +1,24 @@
+{
+ "season": "summer",
+ "plan": {
+  "app": 26.158,
+  "know": 23.711,
+  "xwait": 0.791,
+  "slow5": 0.152
+ },
+ "draws": 10,
+ "today": {
+  "app": 29.094,
+  "know": 26.654,
+  "xwait": 1.13,
+  "slow5": 0.153
+ },
+ "change_app": {
+  "mean": -0.1007,
+  "ci95": 0.0109
+ },
+ "change_know": {
+  "mean": -0.1102,
+  "ci95": 0.0111
+ }
+}
