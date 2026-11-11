@@ -1,0 +1,39 @@
+{
+ "today": {
+  "label": "today",
+  "minutes": 31.13,
+  "perceived": 42.39,
+  "freq_model_perceived": 49.82,
+  "buses": 33
+ },
+ "keep": {
+  "label": "1 · keep every line",
+  "minutes": 31.3,
+  "perceived": 43.42,
+  "freq_model_perceived": 45.89,
+  "buses": 31,
+  "minutes_vs_today": 0.0055,
+  "perceived_vs_today": 0.0243,
+  "freq_model_perceived_vs_today": -0.0789
+ },
+ "full_warm": {
+  "label": "2 · restructure",
+  "minutes": 32.03,
+  "perceived": 43.46,
+  "freq_model_perceived": 45.74,
+  "buses": 32,
+  "minutes_vs_today": 0.0289,
+  "perceived_vs_today": 0.0252,
+  "freq_model_perceived_vs_today": -0.0819
+ },
+ "full_peak-3_warm": {
+  "label": "3 · restructure, fewer buses",
+  "minutes": 31.2,
+  "perceived": 42.78,
+  "freq_model_perceived": 43.71,
+  "buses": 31,
+  "minutes_vs_today": 0.0022,
+  "perceived_vs_today": 0.0092,
+  "freq_model_perceived_vs_today": -0.1226
+ }
+}

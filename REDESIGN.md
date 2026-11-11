@@ -1,5 +1,11 @@
 # Eilat urban buses: a better network on the same budget
 
+> **Under review (timetable check, Nov 2026).** The 12-18% gains below come from the frequency-based model
+> (wait = half the combined headway). Checked on the timetables as buses really run (GPS run times per street
+> segment, hour and direction; real delays per line, direction and hour; riders seeing actual departures),
+> no option shortens trips against today, and the recommended plan is about equal to today with 2 fewer buses.
+> See [Timetable check with real run times and delays](#timetable-check-with-real-run-times-and-delays).
+
 **Answer: yes.**
 - **No extra cost:** no more buses than today and about the same bus-hours, on existing streets and stops.
 - **Shorter trips:** a reorganised network cuts the door-to-door time residents and tourists feel by
@@ -349,6 +355,51 @@ network under the same rule.
 - NIS 1-2 M a year more than today, and 2-4 more drivers;
 - for 14% shorter perceived trips;
 - it stays within today's 35 buses.
+
+## Timetable check with real run times and delays (`analysis/timetable_compare.py`, `analysis/timetable_offsets.py`)
+
+**Why:** the options were chosen with a frequency-based model, which assumes a rider waits half the combined
+headway and ignores the timetable. This check plans the same trips on timetables as buses really run.
+
+**How every network is timed (today and the options alike):**
+- **Run times:** each street segment between two stops at the time measured by GPS at that hour, separately
+  per direction (stops on the two sides of a street are different stops): `analysis/segment_times.py`,
+  ~180,000 segment passes on 273 segments covering 97% of trips. The city's buses are 5% slower than printed
+  at 06:00 and 31-34% slower at 11:00-13:00 and 16:00.
+- **Delays:** each trip gets the departure delay and run-time deviation of a real trip of the same line,
+  direction and hour (`analysis/ride_delays.py`, 6,174 rides); lines differ much more than hours (1, 2 and
+  15 start ~3 min late, 3 and 4 on time).
+- **Rider:** sees the actual departures (live arrival times), needs 2 minutes at a transfer, leaves home at
+  random times within every hour 07-21 (winter weekday).
+- **Trips:** each area's centre to each key place at least 15 minutes' walk away, weighted by residents.
+- The GPS distance-along-route field is unreliable (jumps of kilometres within a minute), so rides are
+  matched to stops by position, within a time window from the schedule (loops 1 and 2 end where they start).
+
+**Result** (`data/timetable_compare.json`; 10 delay draws; noise on a difference about ±0.1 min):
+
+| | Minutes, door to door | Perceived (timetable) | Perceived (frequency model) | Buses (blocks, no recovery) |
+|---|---|---|---|---|
+| Today | 31.1 | 42.4 | 49.8 | 33 |
+| 1 · keep every line | +0.6% | +2.4% | -7.9% | 31 |
+| 2 · restructure | +2.9% | +2.5% | -8.2% | 32 |
+| 3 · recommended | +0.2% | +0.9% | -12.3% | 31 |
+
+**Where the models disagree:** almost all on today's network (frequency model 49.8, timetable 42.4; the plan
+43.7 vs 42.8). The frequency model overstates waiting on today's many sparse lines:
+- a rider with live times walks to whichever stop has the next bus (e.g. area 36, the largest, via 6א + 4:
+  11-19 min better on the timetable);
+- today's timetable has real timed connections (1 -> 15, 2 -> 15; see "Are connections timed?");
+- its run times are line averages (x1.25-1.33), not the segment and hour measurements.
+The plan is also more robust to delays (+0.1 min from delays, against +1.2 min for today), but that does not
+outweigh the rest.
+
+**Retiming the lines** (Monte Carlo over departure times, both networks): with leaving times on round hours
+the search overfit (better on its own times, worse on others); rerun with random leaving times
+(`data/timetable_offsets.json`).
+
+**What this means:** on this evidence the recommended plan is a way to run about the same service with ~2
+fewer buses, not a way to cut trip times by 16%. Not yet covered: the evening (23:00 against ~21:00 today,
+where the plan adds service), summer heat walking, tourist trips from hotels, and demand-weighted trips.
 
 ## Example trips on the real timetable (`eilat/timetable.py`, `scripts/journeys_tt.py`, `analysis/timetable_trip.py`)
 
