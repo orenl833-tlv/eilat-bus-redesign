@@ -132,7 +132,17 @@ _PROBS = {}
 
 
 def option_net(tag, season):
-    """The network of an option in a season (seasonal frequencies)."""
+    """The network of an option in a season (seasonal frequencies). A tag "net_<x>" is a network searched on the
+    timetable (data/net_<x>.json, scripts/optimize_tt.py): one set of headways for every season."""
+    if tag.startswith("net_"):
+        if "design" not in _PROBS:
+            _PROBS["design"] = O.Problem("design")
+        prob = _PROBS["design"]
+        st = dict(prob.state0)
+        for k, v in json.load(open(f"data/{tag}.json")).items():
+            if k in st:
+                st[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
+        return prob.network(st)
     if tag not in _PROBS:
         _PROBS[tag] = O.Problem("keep" if tag == "keep" else "full", -3 if "peak-3" in tag else 0)
     prob = _PROBS[tag]

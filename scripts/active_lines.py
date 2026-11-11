@@ -22,7 +22,7 @@ import shift_trips as SHT  # noqa: E402
 from eilat import params as P  # noqa: E402
 from export_page import public_name  # noqa: E402
 
-OPTIONS = {"today": "Today", "keep": "1 · Keep every line", "full_warm": "2 · Restructure", "full_peak-3_warm": "3 · Restructure, fewer buses"}
+OPTIONS = {"today": "Today", "net_H": "Recommended network"}
 HOURS = range(5, 24)
 
 

@@ -17,7 +17,7 @@
   --worse: #f1c9bd;
   --land: #ebe5d8;
   --outside: #ece6db; --land-base: #f4efe5; --sea-bg: #cfe3ee; --sea-ink: #3f7397; --poi: #1d2328;
-  --s-today: #1d2328; --s-keep: #2a78d6; --s-full_warm: #eb6834; --s-full_peak-3_warm: #1baf7a;   /* סדרות בגרף הקווים */
+  --s-today: #1d2328; --s-keep: #2a78d6; --s-full_warm: #eb6834; --s-net_H: #1baf7a;   /* סדרות בגרף הקווים */
   --display: "Rubik", "IBM Plex Sans Hebrew", system-ui, sans-serif;
   --body: "IBM Plex Sans Hebrew", "Rubik", system-ui, sans-serif;
 }
@@ -25,12 +25,12 @@
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-full_peak-3_warm: #199e70; color-scheme: dark } }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_H: #199e70; color-scheme: dark } }
 :root[data-theme="dark"] {
   --bg: #14191d; --panel: #1b2227; --ink: #ece7dd; --ink-2: #a9b0b6; --rule: #2c353c;
   --sea-1: #2b4a61; --sea-2: #3f7fae; --sea-3: #7cb6de; --sea-4: #c3e1f5; --coral: #ef7a5e;
   --better-1: #1f3a28; --better-2: #2f6b42; --better-3: #59b175; --worse: #5c2f25; --land: #20282e;
-  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-full_peak-3_warm: #199e70; color-scheme: dark }
+  --outside: #171c20; --land-base: #1d2429; --sea-bg: #12303f; --sea-ink: #8fbbd6; --poi: #ece7dd; --s-today: #ece7dd; --s-keep: #3987e5; --s-full_warm: #d95926; --s-net_H: #199e70; color-scheme: dark }
 * { box-sizing: border-box }
 body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--body); margin: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 48px }
@@ -96,8 +96,8 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 <div class="wrap" dir="rtl" lang="he">
   <header>
     <h1>האוטובוסים של אילת, מאורגנים מחדש באותו תקציב</h1>
-    <p>לא יותר אוטובוסים בשיא הצהריים מהיום, אותן שעות שירות, רחובות ותחנות קיימים. מכויל על נתוני תיקופי רב-קו, ונבדק מול תנועת
-      האוטובוסים בפועל. <strong id="headline">…</strong></p>
+    <p>פחות אוטובוסים מהיום, רחובות קיימים. כל רשת נבדקה על לוח זמנים כמו שהאוטובוסים באמת נוסעים: זמני נסיעה לפי ה-GPS
+      בכל קטע כביש, שעה וכיוון, ואיחורים אמיתיים של כל קו. <strong id="headline">…</strong></p>
   </header>
 
   <div class="controls" role="group" aria-label="מה להציג">
@@ -106,7 +106,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div class="maps">
     <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">המפה של היום היא נקודת הייחוס, ולכן האזורים בה בצבע אחיד.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: כמה זמן הנסיעה המורגש של התושבים שלו משתפר לעומת היום (ממוצע שנתי). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: כמה זמן הנסיעה מהדלת לדלת של התושבים שלו משתפר לעומת היום (ממוצע שנתי, לפי לוחות הזמנים ועם איחורים). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
@@ -138,12 +138,12 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
 <script>
 document.documentElement.setAttribute("lang", "he");
-const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "full_peak-3_warm": "ההצעה"};
+const OPT_HE = {keep: "1 · כל הקווים נשמרים", full_warm: "2 · ארגון מחדש", "net_H": "ההצעה"};
 const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer: "החופש הגדול"};
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {opt: "full_peak-3_warm", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {opt: "net_H", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -406,7 +406,7 @@ function tip(e, a, tag) {
   const s = D.summary[tag === "today" ? st.opt : tag];
   const tt = ttFor(a.id);
   let h = `<b>אזור ${a.id}</b><br>${a.pop ? a.pop.toLocaleString("he-IL") + " תושבים · " : ""}${a.nocar != null ? Math.round(a.nocar) + "% ממשקי הבית בלי רכב" : ""}`;
-  if (s?.area?.[a.id] != null) h += `<br>זמן מורגש לנסיעה: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
+  if (s?.area?.[a.id] != null) h += `<br>זמן נסיעה מהדלת לדלת: <b>${num(signed(s.area[a.id], 1) + "%")}</b>`;
   if (tt) h += `<br><small>${whenText()}</small><br>` + PLACES.filter((p) => tt[p]).map((p) => `${PLACE_HE[p]}: היום ${Math.round(tt[p][0])}, בהצעה ${Math.round(tt[p][1])} דק'`).join("<br>");
   el.innerHTML = h; el.hidden = false;
   const x = Math.min(e.clientX + 14, window.innerWidth - 280), y = Math.min(e.clientY + 14, window.innerHeight - 170);
@@ -417,14 +417,15 @@ function tiles() {
   const s = D.summary[st.opt], t = D.summary.today;
   const pct = (x) => num(`${signed((x - 1) * 100)}%`);
   const items = [
-    ["זמן מורגש מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום"],
+    ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום, לפי לוחות הזמנים ועם איחורים"],
     ["האזור שמשתפר הכי פחות", pct(s.worst_area), s.worst_area <= 1 ? "כל האזורים משתפרים לפחות בזה" : "אזור אחד נפגע בשיעור הזה (המגבלה: 10%)"],
-    ["אוטובוסים בבת אחת, בשיא", num(s.peak.year), `בעונה העמוסה ביותר. היום ${t.peak}`],
-    ["שעות אוטובוס ביום חול", num(Math.round(s.hours.year)), `ממוצע שנתי. היום ${Math.round(t.hours)} (לפי מודל התקציב)`],
+    ["אוטובוסים", num(s.peak.year), `כולל 15% זמן מנוחה במסוף. היום ${t.peak}`],
+    ["נהגים", num(s.drivers), `עם שעות נוספות, כמו היום. היום ${t.drivers}`],
+    ["שעות אוטובוס ביום חול", num(Math.round(s.hours.year)), `כולל נסיעות ריקות. היום ${Math.round(t.hours)}`],
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
   const avg = (s.year_A + s.year_B) / 2;
-  document.getElementById("headline").textContent = `${OPT_HE[st.opt]}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מורגש מדלת לדלת.`;
+  document.getElementById("headline").textContent = `${OPT_HE[st.opt]}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מהדלת לדלת.`;
 }
 
 // perceived minutes to each key place, for the chosen season and period (or the whole day): [today, option]
@@ -438,7 +439,7 @@ const whenText = () => "ממוצע שנתי על פני כל היום";
 function table() {
   const s = D.summary[st.opt];
   const ids = D.areas.map((a) => a.id).filter((id) => ttFor(id));
-  document.getElementById("tblnote").textContent = `דקות מורגשות מדלת לדלת, ${whenText()}: דקת הליכה או המתנה נחשבת כמו 1.6 דקות באוטובוס, ומעבר מוסיף 5 דקות. המספר הגדול הוא הזמן בהצעה, והקטן הוא ההפרש מהיום. עמודת השינוי היא הממוצע השנתי על פני כל מטרות הנסיעה ושני הכיולים.`;
+  document.getElementById("tblnote").textContent = `דקות מהדלת לדלת ממרכז האזור, ${whenText()}: לפי לוחות הזמנים, עם איחורים אמיתיים ו-2 דקות לכל החלפה. המספר הגדול הוא הזמן בהצעה, והקטן הוא ההפרש מהיום. עמודת השינוי היא הממוצע השנתי על פני כל הנסיעות מהאזור, לפי מודל הביקוש, לא רק המקומות שבטבלה.`;
   let h = "<thead><tr><th>אזור</th><th>תושבים</th><th>בלי רכב</th><th>שינוי</th>" + PLACES.map((p) => `<th>${PLACE_HE[p]}</th>`).join("") + "</tr></thead><tbody>";
   for (const id of ids) {
     const a = D.areas.find((x) => x.id === id), tt = ttFor(id), c = s.area[id];
@@ -479,7 +480,7 @@ function legend() {
 }
 
 // lines running per hour: today and every option, the chosen season (step lines: an hour's value holds until the next hour)
-const SERIES = ["today", "full_peak-3_warm"];   // the one recommended plan against today
+const SERIES = ["today", "net_H"];   // the one recommended plan against today
 const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
 function activeChart() {
   const A = D.active; if (!A) return;

@@ -15,7 +15,9 @@ import pandas as pd
 import optimize as O
 from eilat import params as P
 
-OPTS = {"today": "Today", "keep": "1 · Keep every line", "full_warm": "2 · Restructure", "full_peak-3_warm": "3 · Restructure, 3 fewer buses"}
+OPTS = {"today": "Today", "net_H": "Recommended network"}
+# the recommended network's numbers come from the timetable check (analysis/page_tt.py), not the frequency model
+PAGE_TT = "data/page_tt.json"
 
 
 EVENING_END = 23   # the recommended package: evening service ends at 23:00 (scripts/evening.py)
@@ -26,6 +28,11 @@ def nets(prob, tag, evening_end=None):
     (scripts/evening.py: the 19-24 average headway stretched)."""
     if tag == "today":
         return {s: prob.base for s in P.SEASONS}
+    if tag.startswith("net_"):
+        import blocking as BL
+        import evening as EV
+        n = BL.option_net(tag, "winter")
+        return {s: (EV.thinned(n, evening_end) if evening_end else n) for s in P.SEASONS}
     if evening_end:
         import evening as EV
         return {s: EV.thinned(n, evening_end) for s, n in nets(prob, tag).items()}
@@ -128,7 +135,16 @@ def main():
         names = dict(zip(stops.stop_id, stops.stop_name, strict=True))
         # line lists keep the real headways (the 19-24 column then means 19-23)
         out.setdefault("lines", {})[tag] = {s: lines(nets(prob, tag)[s], sid, names) for s in P.SEASONS}
-        if tag != "today":
+        if tag.startswith("net_"):
+            pt = json.load(open(PAGE_TT))
+            fp = pt["fleet"]["plan"]
+            out["summary"][tag] = dict(year_A=round(pt["city"]["year"], 4), year_B=round(pt["city"]["year"], 4),
+                                       worst_area=round(1 + max(pt["area"]["year"].values()) / 100, 3),
+                                       peak={s: fp["buses"] for s in list(P.SEASONS) + ["year"]},
+                                       hours={s: fp["bus_hours"] for s in list(P.SEASONS) + ["year"]},
+                                       area=pt["area"]["year"], season={k: round(v, 4) for k, v in pt["city"].items()},
+                                       drivers=fp["drivers_overtime"], source="timetable")
+        elif tag != "today":
             import assess as AS
             from eilat import network as N
             res = AS.eval_net(prob, ns)
@@ -140,36 +156,19 @@ def main():
                 year_A=round(year["A"], 4), year_B=round(year["B"], 4), worst_area=round(float(A.max(axis=1).max()), 3),
                 peak={s: max(b.values()) for s, (b, h) in fl.items()}, hours={s: round(h, 1) for s, (b, h) in fl.items()},
                 area={str(int(i)): round(float((r.max() + r.min()) / 2 - 1) * 100, 1) for i, r in A.iterrows()})
-    # perceived door-to-door minutes from each residential area to the key places, for every network, season and
-    # period, plus the whole day (periods weighted by their hours); min of bus and walking, median over the area's points
-    from eilat import demand as Dm
-    from eilat import model as Mm
-    import numpy as np
-    keys = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"]
-    m = prob_full.m
-    cols = [m.att[list(Dm.ATTRACTORS.name).index(k)] for k in keys]
-    areas_of = m.pts.area.values[m.homes]
-    hours = {q: b - a for q, (a, b) in P.PERIODS.items()}
+    # door-to-door minutes from each residential area's centre to the key places (timetable check, the same
+    # timetable in every season), for today and the recommended network
+    pt = json.load(open(PAGE_TT))
     out["tt"] = {}
     for tag in OPTS:
-        prob = prob_keep if tag == "keep" else prob_full
-        ns = nets(prob, tag, EVENING_END)
-        out["tt"][tag] = {}
-        for se in P.SEASONS:
-            per = {}
-            for q in P.PERIODS:
-                ww = P.W_WALK_HEAT if Mm.hot_midday(se, q) else P.W_WALK
-                r = m.ev.run(ns[se], q, w_walk=ww, sources=m.homes)
-                g = np.minimum(r["gc_bus"], r["walk"])[:, cols]
-                per[q] = pd.DataFrame(g, columns=keys).groupby(areas_of).median()
-            day = sum(per[q] * hours[q] for q in P.PERIODS) / sum(hours.values())
-            per["all"] = day
-            out["tt"][tag][se] = {q: {str(int(a)): [round(float(v), 1) for v in row] for a, row in df.iterrows()} for q, df in per.items()}
-    out["tt_keys"] = keys
+        src = pt["tt"]["today" if tag == "today" else "plan"]
+        out["tt"][tag] = {se: {q: {a: row[q] for a, row in src.items() if q in row} for q in list(P.PERIODS) + ["all"]}
+                          for se in P.SEASONS}
+    out["tt_keys"] = pt["keys"]
     out["active"] = active()
     out["poi_flow"] = poi_flows()
-    out["summary"]["today"] = dict(peak=json.load(open("data/assess_full_warm.json"))["fleet_today"]["peak"],
-                                   hours=json.load(open("data/assess_full_warm.json"))["fleet_today"]["hours"])
+    ft = json.load(open(PAGE_TT))["fleet"]["today"]
+    out["summary"]["today"] = dict(peak=ft["buses"], hours=ft["bus_hours"], drivers=ft["drivers_overtime"])
     # base map: the city's whole area (land), the gulf (frame south of North Beach minus the city; the city's boundary
     # there follows the shore), and landmarks
     from shapely.geometry import Point, box

@@ -1,4 +1,4 @@
-"""The decision-makers' page (web/brief.html): fills web/brief_src.html with the route map of the recommended plan (option 3), the
+"""The decision-makers' page (web/brief.html): fills web/brief_src.html with the route map of the recommended network (net_H), the
 evening variants (data/evening.csv) and the example journeys (data/journeys.json).
 
 Usage: python3 scripts/build_brief.py
@@ -17,7 +17,7 @@ def main():
     X = lambda lon: (lon - LON0) / (LON1 - LON0) * W  # noqa: E731
     Y = lambda lat: (LAT1 - lat) / (LAT1 - LAT0) * H  # noqa: E731
     routes, seen = [], set()
-    for ln in d["lines"]["full_peak-3_warm"]["winter"]:
+    for ln in d["lines"]["net_H"]["winter"]:
         if tuple(ln["stops"]) in seen:
             continue
         seen.add(tuple(ln["stops"]))
