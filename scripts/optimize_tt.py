@@ -204,10 +204,22 @@ def main():
     tag = f"opt_tt_{'today' if start == 'today' else start.split('opt_')[-1].replace('.json', '')}_s{seed}"
     if os.environ.get("MODE", "full") != "full":
         tag += "_" + os.environ["MODE"]
-    cur_s = S.score(cur); best, best_s = cur, cur_s
-    print("start", S.score(cur, detail=True), flush=True)
-    log = []; t0 = time.time()
-    for it in range(iters):
+    if os.environ.get("OD", "residents") == "demand":
+        tag += "_demand"
+    ck = f"data/{tag}_ckpt.json"
+    it0, log = 0, []
+    if os.path.exists(ck):     # resume (long runs get cut off by restarts)
+        c = json.load(open(ck))
+        load = lambda d: {k: {q: (h if h is not None else math.inf) for q, h in v.items()} for k, v in d.items()}  # noqa: E731
+        cur, best, it0, log = load(c["cur"]), load(c["best"]), c["it"], c["log"]
+        random.seed(seed * 1000 + it0)
+    cur_s = S.score(cur); best_s = S.score(best) if it0 else cur_s
+    if not it0:
+        best = cur
+    print("start", it0, S.score(cur, detail=True), flush=True)
+    t0 = time.time()
+    enc = lambda d: {k: {q: (h if math.isfinite(h) else None) for q, h in v.items()} for k, v in d.items()}  # noqa: E731
+    for it in range(it0, iters):
         T_ = T0 * (1 - it / iters) + 1e-5
         cand = O.neighbour(S.prob, cur); s = S.score(cand)
         if s < cur_s or random.random() < math.exp(-(s - cur_s) / T_):
@@ -218,6 +230,7 @@ def main():
         if it % 25 == 0:
             print(f"{it} cur {cur_s:.4f} best {best_s:.4f} ({time.time() - t0:.0f}s)", flush=True)
             dump(best, f"data/{tag}.json")
+            json.dump(dict(cur=enc(cur), best=enc(best), it=it + 1, log=log), open(ck, "w"))
     pd.DataFrame(log).to_csv(f"data/{tag}_log.csv", index=False)
     dump(best, f"data/{tag}.json")
     print("best", S.score(best, detail=True), flush=True)
