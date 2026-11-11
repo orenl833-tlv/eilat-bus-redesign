@@ -3,20 +3,23 @@
 Can a city's buses serve people better with the same fleet and the same drivers? For Eilat, a closed city of
 55,000 with ~42 urban buses, the answer from public data is **yes.**
 
-**The recommended network** (`data/net_H.json`, found by a search that scores every candidate on its timetable
+**The recommended network** (`data/net_F2.json`, found by a search that scores every candidate on its timetable
 as buses really run: GPS run times per street segment, hour and direction; real delays per line, direction
-and hour; demand-weighted trips; checked on unseen leaving times and delays):
-- **~7% shorter door-to-door trips in winter, ~8% in summer;** perceived time improves as much.
-- **Fewer buses:** 31 against today's 34, with 15% terminal recovery.
-- **Fewer drivers:** 85 against 91, with overtime as today.
-- **Costs ~NIS 1.8 M a year:** ~4% more bus-hours, mostly evening service to 23:00.
-- **19 of 30 trip origins gain;** the industrial zone (+12%) and the port (+11%) lose most.
+and hour; demand-weighted trips; every area keeps its 20-min line nearby; checked on unseen leaving times and delays):
+- **~8% shorter door-to-door trips in winter, ~9% in summer;** perceived time improves ~9-10%.
+- **Fewer buses:** 32 against today's 34, with 15% terminal recovery; **the same drivers** (91 with overtime).
+- **Costs ~NIS 1.2 M a year:** ~3% more bus-hours, mostly evening service to 23:00.
+- **No residential area loses more than 0.5%;** workplaces lose most (industrial zone +16%, Begin high school +13%).
 
 **What changes:**
-- Three new two-way lines on the fastest streets: 7 Barnea – North Beach hotels, 8 Big centre – Derech
-  HaBsamim, 9 Ice Mall – Begin high school.
-- Line 3 drops its detours and runs every 10 min by day; 15 and 6 pass their quiet stops; 2 is shortened.
-- Lines 1, 1א, 4, 5, 5א and 6א are withdrawn; evening service runs to 23:00.
+- Three new two-way lines on the fastest streets: 7 North Beach hotels – Derech HaBsamim, 8 Big centre –
+  Derech HaBsamim, 9 Shahamon – city hall.
+- Lines 3 and 5 drop their detours; 15 and 16 pass their quiet stops; 6 stays.
+- Lines 1, 1א, 2, 4, 5א and 6א are withdrawn; evening service runs to 23:00.
+
+**Also found:** missed transfers cost today's network ~6 min a trip for a rider who cannot see delays coming (the
+proposal ~4); a bus lane on Sderot HaTmarim is the best single fix; a timed-transfer hub (one or several) does not
+pay off in Eilat.
 
 **An earlier plan claimed ~16%.** It was chosen with a frequency-based model (wait = half the headway), which
 overstated waiting on today's sparse lines. On the timetable it gives ~4%. See REDESIGN.md, "Timetable check".

@@ -2,8 +2,8 @@
 
 > **Superseded (Nov 2026).** The gains below (12-18%) come from the frequency-based model and do not survive a
 > check on the timetables as buses really run (the old recommendation gives ~4%). The recommendation is now the
-> timetable-searched network `data/net_H.json`: ~7% shorter trips in winter and ~8% in summer, 31 buses, 85
-> drivers with overtime. See [A network searched on the timetable](#timetable-check-with-real-run-times-and-delays)
+> timetable-searched network `data/net_F2.json`: ~8% shorter trips in winter and ~9% in summer, 32 buses, the same
+> drivers, every area keeping its 20-min line. See [Timetable check](#timetable-check-with-real-run-times-and-delays)
 > and SUMMARY_HE.md. The sections below document the earlier work.
 
 **Answer: yes.**
@@ -431,7 +431,34 @@ the new campus - old central station - hotels line, line 3 about every 15 min, 1
 | **net_H (recommended)** | **-7.0%** | **-8.0%** | **-7.2% / -8.5%** | **31** |
 
 *With 15% terminal recovery (`analysis/fleet_tt.py`); drivers with overtime 85 vs 91; bus-hours +4%.
-Most of the extra gain over the whole day is in the early morning and the evening. Still to check for this
+Most of the extra gain over the whole day is in the early morning and the evening.
+
+**Absolute level of service and the frequency rule** (`analysis/service_los.py`). Each area against fixed targets
+(Fort Collins PTLOS, via ODOT's Public Transportation Level of Service: stop within 400 m, 16 h of service, a line
+every 20 min, door to door within 2x the car): today every area meets 2 of 3 (none meets the travel-time target);
+net_H dropped 7 of 14 areas to 1 of 3 (they lost their 20-min line). The search was rerun with a rule (each area
+keeps today's share of residents with a 20-min line, within 15 points): **net_F2**.
+
+**A rider who cannot see delays coming** (`Network.committed`, `analysis/committed_rider.py`): plans on the timetable,
+commits to the first line, misses connections when the first bus is late. Today loses 5.7 min a trip against a
+clairvoyant rider (35% of trips lose > 5 min), net_F2 3.8 (25%): net_F2 vs today -5.1% clairvoyant, -9.6% committed.
+
+**Bus lanes** (`data/segment_congestion.csv`): buses lose ~630 bus-minutes a weekday to congestion (midday vs empty
+roads); the most on Sderot HaTmarim between Derech HaArava and the city hall (up to 2.6x, 30-38 buses a day).
+
+**Timed-transfer hubs** (`analysis/pulse.py`, `analysis/pulse_multi.py`): lines cut at a hub, inbound buses timed to
+arrive just before a pulse, outbound held for late buses (riders aboard stay seated); one hub (city hall or central
+station, 20-min pulse) or two-three (city hall + big centre (+ hotels), 15-min pulse: their round trips fit 30 min).
+Best on training trips: -2.3%, -1.5%, -2.6%, -1.3% vs net_F2's -8.3%. Holding and fitting lines to the pulse cost
+more than the transfers they save.
+
+| Unseen times and delays, demand-weighted | Winter | Summer | Perceived (winter / summer) | Buses* | Drivers* |
+|---|---|---|---|---|---|
+| Today | 25.7 min | 26.3 min | - | 34 | 91 |
+| net_H | -7.0% | -8.0% | -7.2% / -8.5% | 31 | 85 |
+| **net_F2 (recommended)** | **-7.6%** | **-8.7%** | **-8.8% / -10.3%** | **32** | **91** |
+
+*15% terminal recovery, drivers with overtime (`analysis/fleet_tt.py`). Still to check for this
 network: summer (heat, seasonal frequencies), trips from hotels, demand-weighted trips, terminal recovery and
 drivers.
 
