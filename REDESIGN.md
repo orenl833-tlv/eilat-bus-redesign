@@ -393,9 +393,28 @@ headway and ignores the timetable. This check plans the same trips on timetables
 The plan is also more robust to delays (+0.1 min from delays, against +1.2 min for today), but that does not
 outweigh the rest.
 
-**Retiming the lines** (Monte Carlo over departure times, both networks): with leaving times on round hours
-the search overfit (better on its own times, worse on others); rerun with random leaving times
-(`data/timetable_offsets.json`).
+**Retiming the lines** (Monte Carlo over departure times; random leaving times, since round hours let the
+search overfit). On unseen leaving times and delay draws (07-21): today's network gains nothing (31.07 ->
+31.15 min; its printed timetable is already well coordinated), the old plan +0.4% against today.
+
+**A network searched on the timetable** (`scripts/optimize_tt.py`, same pool, moves and rules as before, each
+candidate turned into a timetable and planned as above; checked by `scripts/check_tt.py`). Two chains, from
+today's lines and from the old plan, reach the same gain with different lines, so several networks are about
+equally good. Common to both: much more service to the south beach (15 with a stop-skipping 15x, from 06:00),
+the new campus - old central station - hotels line, line 3 about every 15 min, 1א and 6א dropped, evening to
+23:00.
+
+| On unseen times and delays | Door to door | Perceived | Buses (blocks) |
+|---|---|---|---|
+| Today, 06:00-23:00 | 32.1 min | 42.7 | 33 |
+| New network, 06:00-23:00 | -5.9% | -3.6% | 31 |
+| Today, 07:00-21:00 | 31.1 min | 42.0 | 33 |
+| New network, 07:00-21:00 | -3.1% | -2.5% | 31 |
+| New network retimed, 07:00-21:00 | -3.9% | -3.3% | 31 |
+
+Most of the extra gain over the whole day is in the early morning and the evening. Still to check for this
+network: summer (heat, seasonal frequencies), trips from hotels, demand-weighted trips, terminal recovery and
+drivers.
 
 **What this means:** on this evidence the recommended plan is a way to run about the same service with ~2
 fewer buses, not a way to cut trip times by 16%. Not yet covered: the evening (23:00 against ~21:00 today,
