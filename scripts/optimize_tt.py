@@ -42,6 +42,7 @@ HALF = {6, 21, 22}
 PER_HOUR = 2
 N_SEEDS = 2
 T0 = 0.004
+AREA_PEN = 1.0
 REPLACE_P = 0.25 if os.environ.get("MODE") == "design" else 0.0
 
 
@@ -175,7 +176,10 @@ class Search:
         home, overall = self.tt.per_home(self.tt.net_of(pats))
         obj = overall / self.today
         worst = max(home[o] / self.today_home[o] for o in home)
-        pen += 0.05 * max(0, worst - (1 + P.MAX_AREA_LOSS))
+        # an origin (an area, or a place trips start from, e.g. the intercity terminal) more than MAX_AREA_LOSS worse
+        # than today: 1% over costs as much as 1% of the whole objective, so the search cannot buy it with the
+        # average (0.05 here let a +25-30% loss at the city entrance terminal through)
+        pen += AREA_PEN * max(0, worst - (1 + P.MAX_AREA_LOSS))
         pen += 0.01 * prob.violations(state) + 0.1 * prob.protected_lost(pats)
         cov, cov0 = prob.coverage(pats), prob.coverage(prob.base)
         pen += 0.01 * float(np.maximum(0, np.minimum(0.5, cov0) - cov).sum())
