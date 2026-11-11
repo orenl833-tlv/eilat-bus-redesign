@@ -35,7 +35,11 @@ def nets(prob, tag, evening_end=None):
 
 
 # public names: a variant keeps its line's number; a line invented by the search gets a free urban number
-NEW_LINE_NAMES = {"A14H": ("7", "קו חדש: קמפוס – תחנה מרכזית – מלונות")}
+NEW_LINE_NAMES = {"A14H": ("7", "קו חדש: קמפוס – תחנה מרכזית – מלונות"),   # the old plan's new line
+                  # the recommended network's lines designed from scratch (data/net_H.json)
+                  "D12169_28805": ("7", "קו חדש: ברנע – מלונות החוף הצפוני"),
+                  "D12719_42115": ("8", "קו חדש: מרכז ביג – דרך הבשמים"),
+                  "D28809_29186": ("9", "קו חדש: קניון אייס מול – תיכון בגין")}
 VARIANT_HE = {"x": "מדלג על תחנות שקטות", "s": "מסלול מקוצר"}
 
 

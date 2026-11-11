@@ -28,7 +28,7 @@ from eilat.speeds import Speeds
 from export_page import public_name
 
 EVENING_END = 23   # the recommended package: last departures before 23:00, plus the shift-change trips
-PLAN = "full_peak-3_warm"   # the recommended plan (option 3)
+PLAN = "data/net_H.json"   # the recommended network (timetable-searched, scripts/optimize_tt.py); an option tag also works
 OUT = "exports/gtfs_eilat_proposal.zip"
 SEASON_MONTHS = {"winter": [11, 12, 1, 2, 3], "spring_autumn": [4, 5, 6, 9, 10], "summer": [7, 8]}
 START = dt.date(2026, 11, 1)
@@ -49,10 +49,31 @@ def season_dates():
     return pd.DataFrame(out)
 
 
+def plan_net(tag, se):
+    """An option's seasonal network, or a state file of scripts/optimize_tt.py (one set of headways, used in
+    every season: it was searched on a winter weekday; summer was checked with the same timetable)."""
+    if not tag.endswith(".json"):
+        return BL.option_net(tag, se)
+    import json as _json
+
+    import optimize as O
+    if tag not in _NETS:
+        prob = O.Problem("design")
+        st = dict(prob.state0)
+        for k, v in _json.load(open(tag)).items():
+            if k in st:
+                st[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
+        _NETS[tag] = prob.network(st)
+    return _NETS[tag]
+
+
+_NETS = {}
+
+
 def option_trips(tag, se, names):
     """Trips and stop times of an option's non-school lines in a season."""
     trips, times = [], []
-    net = BL.option_net(tag, se)
+    net = plan_net(tag, se)
     shift = SHT.shift_trips(net, SHT.hotel_stops())
     for p in net:
         if p.line in BL.SCHOOL:
