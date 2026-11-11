@@ -1,14 +1,14 @@
 {
  "today": {
-  "minutes": 26.271758153284342,
+  "minutes": 25.714008942098225,
   "perceived": 42.748597986999194,
   "buses": 33,
   "worst_area": 1.0,
-  "minutes_check": 26.271758153284342
+  "minutes_check": 25.714008942098225
  },
  "data/opt_full_peak-3_warm.json": {
-  "minutes": 24.89305118452987,
-  "vs_today": -0.05247867161041575,
+  "minutes": 24.650294117016024,
+  "vs_today": -0.04136713289154681,
   "worst_area": 1.1487494517054941,
   "perceived": 43.68252376353439,
   "buses": 29,
@@ -25,9 +25,9 @@
   ]
  },
  "data/opt_tt_full_peak-3_warm_s2.json": {
-  "minutes": 24.59816844685638,
-  "vs_today": -0.06370299607141972,
-  "worst_area": 1.1831730056331824,
+  "minutes": 24.4185906331231,
+  "vs_today": -0.05037792091820836,
+  "worst_area": 1.18102570370781,
   "perceived": 41.25932314080199,
   "buses": 31,
   "bus_hours": 387.93783122926743,
@@ -42,40 +42,41 @@
    "A14H"
   ]
  },
- "data/opt_tt_tt_full_peak-3_warm_s2_s5_design_demand.json": {
-  "minutes": 24.59816844685638,
-  "vs_today": -0.06370299607141972,
-  "worst_area": 1.1831730056331824,
-  "perceived": 41.25932314080199,
-  "buses": 31,
-  "bus_hours": 387.93783122926743,
+ "data/opt_tt_tt_full_peak-3_warm_s2_s7_design_demand.json": {
+  "minutes": 23.544744199661285,
+  "vs_today": -0.08436120354945831,
+  "worst_area": 1.3049560363170012,
+  "perceived": 39.29832737644952,
+  "buses": 32,
+  "bus_hours": 397.0474396587266,
   "lines": [
    "15",
-   "15x",
-   "16x",
-   "2",
+   "16",
    "3",
-   "5s",
-   "6",
-   "A14H"
+   "D12157_12719",
+   "D12169_28805",
+   "D12356_29094v49835",
+   "D12719_42115",
+   "D28805_42115",
+   "D28809_29186"
   ]
  },
- "data/opt_tt_full_peak-3_warm_s6_design_demand.json": {
-  "minutes": 24.59517294115015,
-  "vs_today": -0.06381701606539014,
-  "worst_area": 1.1520577236087557,
-  "perceived": 43.475149046722834,
-  "buses": 30,
-  "bus_hours": 396.24710688565693,
+ "data/opt_tt_tt_full_peak-3_warm_s6_design_demand_s8_design_demand.json": {
+  "minutes": 24.092524734504778,
+  "vs_today": -0.06305839790460677,
+  "worst_area": 1.191182747718657,
+  "perceived": 42.6287679883275,
+  "buses": 28,
+  "bus_hours": 386.17501412355824,
   "lines": [
    "15x",
    "16x",
    "2s",
-   "3s",
-   "5x",
-   "5א",
+   "3",
    "6",
-   "A14H"
+   "D12719_29116",
+   "D28809_29094",
+   "D28809_29186"
   ]
  }
 }
