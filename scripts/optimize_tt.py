@@ -20,6 +20,7 @@ Output: data/opt_tt_<start>_s<seed>.json (+ _log.csv)
 """
 import json
 import math
+import os
 import random
 import sys
 import time
@@ -83,8 +84,8 @@ class TT(T.Base):
 
 
 class Search:
-    def __init__(self, peak_delta=0):
-        self.prob = O.Problem("full", peak_delta)
+    def __init__(self, peak_delta=0, mode=None):
+        self.prob = O.Problem(mode or os.environ.get("MODE", "full"), peak_delta)
         self.tt = TT()
         today = T.TodayNet()
         today.foot = self.tt.foot = today.network(today.start)[0].foot
@@ -132,6 +133,8 @@ def main():
             if k in cur:
                 cur[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
     tag = f"opt_tt_{'today' if start == 'today' else start.split('opt_')[-1].replace('.json', '')}_s{seed}"
+    if os.environ.get("MODE", "full") != "full":
+        tag += "_" + os.environ["MODE"]
     cur_s = S.score(cur); best, best_s = cur, cur_s
     print("start", S.score(cur, detail=True), flush=True)
     log = []; t0 = time.time()

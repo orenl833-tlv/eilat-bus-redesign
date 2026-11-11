@@ -168,3 +168,41 @@ def new_lines(sg, area_anchor):
             continue
         out.append([make(sg, f"{name}/0", name, f), make(sg, f"{name}/1", name, b)])
     return out
+
+
+def designed_lines(sg, area_anchor, via=(49835, 12719), min_stops=6, min_run=8.0, overlap=0.8):
+    """Two-way lines designed from scratch: for every pair of endpoints (neighbourhood anchors and the main
+    places in ANCHORS), the fastest path along streets buses drive today, each way (stops on the two sides of a
+    street differ, so the two directions are separate paths); and the same through one hub (old central
+    station, big centre) when that adds at most 25% to the time. Near-duplicates (stop sets overlapping more
+    than `overlap`) keep the faster. Returns [[pattern/0, pattern/1], ...] named D<a>_<b> or D<a>_<b>v<hub>."""
+    ends = sorted(set(area_anchor.values()) | set(ANCHORS))
+    ends = [e for e in ends if e in sg.ix]
+
+    def run(stops):
+        return sum(sg.edge_min.get((u, v), 1.0) for u, v in zip(stops[:-1], stops[1:], strict=True))
+
+    found = []
+    for i, a in enumerate(ends):
+        for b in ends[i + 1:]:
+            f, r = sg.path(a, b), sg.path(b, a)
+            if f is None or r is None or len(f) < min_stops or run(f) < min_run:
+                continue
+            found.append((f"D{a}_{b}", f, r, run(f) + run(r)))
+            for h in via:
+                if h in (a, b):
+                    continue
+                fv, rv = sg.through([a, h, b]), sg.through([b, h, a])
+                if fv is None or rv is None:
+                    continue
+                t = run(fv) + run(rv)
+                if t <= 1.25 * (run(f) + run(r)):
+                    found.append((f"D{a}_{b}v{h}", fv, rv, t))
+    found.sort(key=lambda x: x[3])
+    kept, sets = [], []
+    for name, f, r, t in found:
+        s = set(f) | set(r)
+        if any(len(s & o) / len(s | o) > overlap for o in sets):
+            continue
+        kept.append([make(sg, f"{name}/0", name, f), make(sg, f"{name}/1", name, r)]); sets.append(s)
+    return kept

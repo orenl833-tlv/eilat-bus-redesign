@@ -16,6 +16,7 @@ Outputs: data/opt_<mode>.json (best state), data/opt_<mode>_log.csv
 """
 import copy
 import json
+import os
 import math
 import random
 import sys
@@ -32,6 +33,7 @@ from eilat import params as P
 
 LEVELS = [10, 12, 15, 20, 24, 30, 40, 60]
 SCHOOL = {"80", "80א", "81", "82"}
+DESIGN_KEEP = "data/designed_keep.json"
 SEASONS = list(P.SEASONS)
 
 
@@ -67,7 +69,7 @@ class Problem:
                     for q in pats_v:
                         q.line = ln + tag
                     self.lines[ln + tag] = pats_v; self.family[ln + tag] = ln
-        if mode == "full":
+        if mode in ("full", "design"):
             a, _ = D.areas(); st = self.sg.stops
             anch = {}
             for r in a.itertuples():
@@ -76,6 +78,12 @@ class Problem:
                 anch[int(r.stat11)] = int(st.stop_id.iloc[int(d.argmin())])
             for pair in C.new_lines(self.sg, anch):
                 self.lines[pair[0].line] = pair; self.family[pair[0].line] = pair[0].line
+            self.anchors = anch
+            if mode == "design":   # lines designed from scratch (scripts/screen_lines.py keeps the useful ones)
+                keep = json.load(open(DESIGN_KEEP)) if os.path.exists(DESIGN_KEEP) else None
+                for pair in C.designed_lines(self.sg, anch):
+                    if keep is None or pair[0].line in keep:
+                        self.lines[pair[0].line] = pair; self.family[pair[0].line] = pair[0].line
         self.base_lines = {p.line for p in self.base if p.line not in SCHOOL}
         # today's state: base lines at their own headways (snapped to levels), variants and new lines off
         self.state0 = {}
