@@ -264,7 +264,8 @@ def main():
         for k, v in raw.items():
             if k in cur:
                 cur[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
-    tag = f"opt_tt_{'today' if start == 'today' else start.split('opt_')[-1].replace('.json', '')}_s{seed}"
+    base = "today" if start == "today" else os.path.basename(start).replace(".json", "").replace("opt_", "", 1)
+    tag = f"opt_tt_{base}_s{seed}"
     if os.environ.get("MODE", "full") != "full":
         tag += "_" + os.environ["MODE"]
     if os.environ.get("OD", "residents") == "demand":
