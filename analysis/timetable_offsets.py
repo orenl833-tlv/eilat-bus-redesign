@@ -48,7 +48,7 @@ from eilat.speeds import Speeds
 from eilat.timetable import DelaySampler, Network, delay_key
 
 PLAN, SEASON, LAST = "full_peak-3_warm", "winter", 23
-N_RANDOM = int(sys.argv[1]) if len(sys.argv) > 1 else 300
+N_RANDOM = 300   # main() takes it from the command line
 SWEEPS, GRID = 2, 8
 TRANSFER_MIN = 2.0
 N_SEEDS, N_SEEDS_CHECK, N_SEEDS_PERCEIVED = 4, 10, 3
@@ -266,6 +266,8 @@ def search(S, train_od, label):
 
 
 def main():
+    global N_RANDOM
+    N_RANDOM = int(sys.argv[1]) if len(sys.argv) > 1 else N_RANDOM
     nets = {"today": TodayNet(), "plan": PlanNet()}
     nets["plan"].foot = nets["today"].network(nets["today"].start)[0].foot
     train_od = random.sample(nets["plan"].od, min(60, len(nets["plan"].od)))   # the search scores on a sample
