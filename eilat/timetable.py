@@ -139,6 +139,40 @@ class Network:
         st["t"] = (st.arrival_time.str.split(":", expand=True).astype(int) @ [60, 1, 1 / 60]).values
         return cls(st, dict(zip(tr.trip_id, tr.route_id.astype(str), strict=True)), stops, 1.0, foot)
 
+    def arrivals(self, o_lat, o_lon, dests, t0, transfer_min=0.0, horizon=np.inf):
+        """Earliest arrival at each of several destinations [(lat, lon), ...] leaving (o) at t0: one scan
+        for all of them (same arrivals as plan() one by one). horizon: stop scanning at t0 + horizon (a
+        trip longer than that is not wanted, e.g. it would be walked); a destination not reached by bus is
+        NaN."""
+        S = self.stops
+        acc = walk_min(o_lat, o_lon, S.stop_lat.values, S.stop_lon.values)
+        best = {}; ready = {}; rode = set()
+        for sid, w in zip(S.index, acc, strict=True):
+            if w <= WALK_MAX_MIN:
+                best[sid] = ready[sid] = t0 + w
+        on = set()
+        end = t0 + horizon
+        for dep, arr, a, b, tid in self.conn:
+            if dep < t0:
+                continue
+            if dep > end:
+                break
+            if tid in on or ready.get(a, np.inf) <= dep:
+                on.add(tid)
+                if arr < best.get(b, np.inf):          # as in plan(): a stop counts once a bus improves it
+                    best[b] = arr; rode.add(b)
+                    ready[b] = min(ready.get(b, np.inf), arr + transfer_min)
+                    for c, w in self.foot.get(b, []):
+                        if arr + w < best.get(c, np.inf):
+                            best[c] = arr + w; rode.add(c)
+                            ready[c] = min(ready.get(c, np.inf), arr + w + transfer_min)
+        out = []
+        for d_lat, d_lon in dests:
+            egr = walk_min(S.stop_lat.values, S.stop_lon.values, d_lat, d_lon)
+            v = [best[s] + e for s, e in zip(S.index, egr, strict=True) if e <= WALK_MAX_MIN and s in rode]
+            out.append(min(v) if v else np.nan)
+        return out
+
     def plan(self, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0):
         """Earliest arrival leaving (o) at t0 (minutes). Returns dict(arrive, legs) or None; legs are
         ('walk', minutes, to_stop) and ('ride', line, board_stop, dep, alight_stop, arr, n_stops).
