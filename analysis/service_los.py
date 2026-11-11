@@ -58,7 +58,19 @@ def main():
     stops = pd.read_csv("data/stops_all.csv").drop_duplicates("stop_id").set_index("stop_id")
     sp = Speeds()
     today = Network.today("data/gtfs_eilat/", stops, sp)
-    plan = Network.from_zip("exports/gtfs_eilat_proposal.zip", "weekday_winter", stops, today.foot)
+    import sys
+    nets = [("today", today)]
+    if len(sys.argv) > 1:      # network states (scripts/optimize_tt.py), timed the same way as the search
+        import os
+        os.environ.setdefault("MODE", "design")
+        import check_tt as C
+        import optimize_tt as X
+        S = X.Search()
+        for path in sys.argv[1:]:
+            name = os.path.basename(path).replace(".json", "")
+            nets.append((name, C.PatsNet(S.tt, S.prob.network(C.load(S, path))).network(None)[0]))
+    else:
+        nets.append(("net_H", Network.from_zip("exports/gtfs_eilat_proposal.zip", "weekday_winter", stops, today.foot)))
     m = O.Problem("full").m
     homes = m.pts.iloc[m.homes]
     att = Dm.ATTRACTORS
@@ -66,7 +78,7 @@ def main():
     sampler = DelaySampler()
     out = {"targets": dict(access_m=ACCESS_M, hours=HOURS_MIN, headway=HEADWAY_MAX, ttf=TTF_MAX, car_kmh=CAR_KMH,
                            car_extra_min=CAR_EXTRA_MIN, source="Fort Collins PTLOS targets via ODOT Public Transportation Level of Service")}
-    for name, net in (("today", today), ("net_H", plan)):
+    for name, net in nets:
         first, last, best = stop_stats(net)
         reals = [net.realize(sampler, s) for s in SEEDS]
         rows = []
@@ -106,7 +118,8 @@ def main():
         out[name] = res
         cls = pd.Series({a: v["cls"] for a, v in res.items()})
         print(name, cls.value_counts().to_dict(), flush=True)
-    json.dump(out, open("data/service_los.json", "w"), ensure_ascii=False, indent=1)
+    json.dump(out, open("data/service_los.json" if len(nets) == 2 and nets[1][0] == "net_H" else "data/service_los_candidates.json", "w"),
+              ensure_ascii=False, indent=1)
 
 
 if __name__ == "__main__":
