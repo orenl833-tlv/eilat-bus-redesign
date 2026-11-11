@@ -1,10 +1,10 @@
 # Eilat urban buses: a better network on the same budget
 
-> **Under review (timetable check, Nov 2026).** The 12-18% gains below come from the frequency-based model
-> (wait = half the combined headway). Checked on the timetables as buses really run (GPS run times per street
-> segment, hour and direction; real delays per line, direction and hour; riders seeing actual departures),
-> no option shortens trips against today, and the recommended plan is about equal to today with 2 fewer buses.
-> See [Timetable check with real run times and delays](#timetable-check-with-real-run-times-and-delays).
+> **Superseded (Nov 2026).** The gains below (12-18%) come from the frequency-based model and do not survive a
+> check on the timetables as buses really run (the old recommendation gives ~4%). The recommendation is now the
+> timetable-searched network `data/net_H.json`: ~7% shorter trips in winter and ~8% in summer, 31 buses, 85
+> drivers with overtime. See [A network searched on the timetable](#timetable-check-with-real-run-times-and-delays)
+> and SUMMARY_HE.md. The sections below document the earlier work.
 
 **Answer: yes.**
 - **No extra cost:** no more buses than today and about the same bus-hours, on existing streets and stops.
@@ -412,6 +412,25 @@ the new campus - old central station - hotels line, line 3 about every 15 min, 1
 | New network, 07:00-21:00 | -3.1% | -2.5% | 31 |
 | New network retimed, 07:00-21:00 | -3.9% | -3.3% | 31 |
 
+**Lines designed from scratch, demand-weighted trips** (`eilat/candidates.py` designed_lines,
+`scripts/screen_lines.py`, `scripts/optimize_tt.py` MODE=design OD=demand):
+- 125 two-way lines, the fastest path along streets buses drive between every pair of neighbourhood anchors
+  and main places (and via a hub); each added alone to the best network and kept if it saves the most minutes
+  per bus-hour (30 kept).
+- Trips weighted by the demand model, both ways, with tourists from the hotels (the residents-only sample
+  favoured a network that is worse than today on these trips).
+- A trade move (one line for another, keeping the headways) was needed: adding a line alone always broke the
+  budget, so the first searches never took a designed line.
+- The penalty for an origin more than 10% worse than today was raised (0.05 -> 1.0): at 0.05 a network cut the
+  only direct line from the intercity terminal to the hotels (+30% there).
+
+| Unseen times and delays, demand-weighted | Winter | Summer | Perceived (winter / summer) | Buses* |
+|---|---|---|---|---|
+| Today | 25.7 min | 26.3 min | 35.6 / 36.4 | 34 |
+| Old recommendation | -4.1% | -5.2% | -5.2% / -6.6% | - |
+| **net_H (recommended)** | **-7.0%** | **-8.0%** | **-7.2% / -8.5%** | **31** |
+
+*With 15% terminal recovery (`analysis/fleet_tt.py`); drivers with overtime 85 vs 91; bus-hours +4%.
 Most of the extra gain over the whole day is in the early morning and the evening. Still to check for this
 network: summer (heat, seasonal frequencies), trips from hotels, demand-weighted trips, terminal recovery and
 drivers.

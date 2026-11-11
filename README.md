@@ -3,21 +3,23 @@
 Can a city's buses serve people better with the same fleet and the same drivers? For Eilat, a closed city of
 55,000 with ~42 urban buses, the answer from public data is **yes.**
 
-**The recommended plan:**
-- **~16% less perceived door-to-door time,** and every neighbourhood better off.
-- **No extra buses:** 34, against today's 35.
-- **No extra drivers,** with overtime as today. With realistic terminal recovery time it needs fewer than today.
-- **Costs ~NIS 2.1 M a year** in extra bus-hours.
-- **What riders pay:** about one bus trip in four needs a transfer, up from one in six.
+**The recommended network** (`data/net_H.json`, found by a search that scores every candidate on its timetable
+as buses really run: GPS run times per street segment, hour and direction; real delays per line, direction
+and hour; demand-weighted trips; checked on unseen leaving times and delays):
+- **~7% shorter door-to-door trips in winter, ~8% in summer;** perceived time improves as much.
+- **Fewer buses:** 31 against today's 34, with 15% terminal recovery.
+- **Fewer drivers:** 85 against 91, with overtime as today.
+- **Costs ~NIS 1.8 M a year:** ~4% more bus-hours, mostly evening service to 23:00.
+- **19 of 30 trip origins gain;** the industrial zone (+12%) and the port (+11%) lose most.
 
 **What changes:**
-- Lines 1, 4 and 6א merge into 2, 3 and 6, which run more often.
-- Lines 2 and 3 drop their detours (line 3: 31 → 24 min end to end).
-- The long lines pass their quiet stops.
-- A new line 7 runs campus – Star Eilat – hotels.
-- Evening service runs to 23:00, plus five shift-change trips for the hotels and Yoseftal.
+- Three new two-way lines on the fastest streets: 7 Barnea – North Beach hotels, 8 Big centre – Derech
+  HaBsamim, 9 Ice Mall – Begin high school.
+- Line 3 drops its detours and runs every 10 min by day; 15 and 6 pass their quiet stops; 2 is shortened.
+- Lines 1, 1א, 4, 5, 5א and 6א are withdrawn; evening service runs to 23:00.
 
-![Today vs the recommended plan](figs/proposal_full_peak-3_warm.png)
+**An earlier plan claimed ~16%.** It was chosen with a frequency-based model (wait = half the headway), which
+overstated waiting on today's sparse lines. On the timetable it gives ~4%. See REDESIGN.md, "Timetable check".
 
 **Read first:**
 - the [decision brief](https://claude.ai/artifact/EhZ6aFgBzyymEFFGG5fVSP) (Hebrew, `web/brief.html`);
