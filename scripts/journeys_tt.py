@@ -4,7 +4,12 @@
 For every residential area (its point nearest the area's centre) x key place x time of day, the trip is planned
 leaving home at four times 15 minutes apart (07:00-07:45, 10:00-10:45, 13:00-13:45, 17:00-17:45,
 21:00-21:45), as a trip-planner app would. A trip's time is door to door; when no bus gets there (or walking is
-quicker) the walk counts.
+quicker) the walk counts. Today and the plan are timed the same way: every street segment at the GPS-measured
+time of that hour and direction (eilat/speeds.py), and 2 minutes needed at a transfer.
+
+Two times per trip: as printed (the timetable's own times) and as it really goes on average: over DRAWS
+delay draws (each bus late or slow as a real trip of its line, direction and hour; data/ride_delays.csv),
+the rider seeing the actual departures. The examples are picked on the real average.
 
 The examples are picked on the recommended plan (option 3) vs today (mean over the four departures), among trips that a bus serves at
 every departure both today and in the plan, with today's mean wait at most 30 min (no "today you can only walk"
@@ -24,13 +29,15 @@ import journeys as JR
 import optimize as O
 from eilat import demand as Dm
 from eilat.evaluate import walk_min
-from eilat.timetable import Network
+from eilat.timetable import DelaySampler, Network
 from export_page import public_name
 
 PLAN = "full_peak-3_warm"   # the recommended plan
 NETS = {"today": "היום", PLAN: "ההצעה"}
 LEAVE = {"06-09": 7 * 60, "09-12": 10 * 60, "12-15": 13 * 60, "15-19": 17 * 60, "19-24": 21 * 60}
 MAX_WAIT_TODAY = 30
+TRANSFER_MIN = 2.0
+DRAWS = 10
 WHEN_HE = {"06-09": "בבוקר", "09-12": "באמצע הבוקר", "12-15": "בצהריים", "15-19": "אחר הצהריים", "19-24": "בערב"}
 
 
@@ -39,7 +46,7 @@ def hhmm(m):
 
 
 def trip(net, o, d, t0, names, walk_direct):
-    r = net.plan(o[0], o[1], d[0], d[1], t0)
+    r = net.plan(o[0], o[1], d[0], d[1], t0, TRANSFER_MIN)
     if r is None or r["arrive"] - t0 >= walk_direct:
         return dict(mode="walk", total=round(walk_direct), walk=round(walk_direct), wait=0, ride=0, transfers=0, steps=[], nobus=r is None)
     walk = ride = 0.0; steps = []; rides = 0
@@ -63,7 +70,9 @@ def main():
     names = stops.stop_name.to_dict()
     nets = {"today": Network.today("data/gtfs_eilat/", stops)}
     for t in [PLAN]:
-        nets[t] = Network.from_zip("exports/gtfs_eilat_proposal.zip", "weekday_winter", stops)
+        nets[t] = Network.from_zip("exports/gtfs_eilat_proposal.zip", "weekday_winter", stops, nets["today"].foot)
+    sampler = DelaySampler()
+    real = {t: [net.realize(sampler, 500 + k) for k in range(DRAWS)] for t, net in nets.items()}
     m = O.Problem("full").m
     pts = m.pts
     att = list(Dm.ATTRACTORS.name)
@@ -72,6 +81,22 @@ def main():
     for a, g in pts.iloc[m.homes].groupby("area"):
         c = g[["lat", "lon"]].mean()
         homes[int(a)] = g.index[np.argmin((g.lat - c.lat) ** 2 + (g.lon - c.lon) ** 2)]
+    # real average door to door: one scan per (network, draw, home, leaving time) for all places
+    place_xy = [(float(Dm.ATTRACTORS.lat[i]), float(Dm.ATTRACTORS.lon[i])) for i in range(len(att))]
+    real_mean = {}
+    for t, rs in real.items():
+        for area, h in homes.items():
+            o = (float(pts.lat[h]), float(pts.lon[h]))
+            wds = [float(walk_min(o[0], o[1], d[0], d[1])) for d in place_xy]
+            for q, t0 in LEAVE.items():
+                acc = np.zeros(len(att))
+                for rn in rs:
+                    for k in range(4):
+                        a = rn.arrivals(o[0], o[1], place_xy, t0 + k * 15, TRANSFER_MIN, max(wds))
+                        acc += [wd if not np.isfinite(x) else min(x - (t0 + k * 15), wd) for x, wd in zip(a, wds, strict=True)]
+                for i, pl in enumerate(att):
+                    real_mean[(t, area, pl, q)] = acc[i] / (4 * len(rs))
+        print("real", t, flush=True)
     cand = []
     for q, t0 in LEAVE.items():
         for a_i, place in enumerate(att):
@@ -90,9 +115,10 @@ def main():
                                   lo=min(r["total"] for r in runs), hi=max(r["total"] for r in runs),
                                   nobus=sum(r["nobus"] or r["mode"] == "walk" for r in runs),
                                   walk=float(np.mean([r["walk"] for r in runs])), wait=float(np.mean([r["wait"] for r in runs])),
-                                  ride=float(np.mean([r["ride"] for r in runs])))
+                                  ride=float(np.mean([r["ride"] for r in runs])), real=real_mean[(t, area, place, q)])
                 cand.append(dict(area=area, home=int(h), place=place, period=q, res=res,
-                                 delta=res[PLAN]["mean"] - res["today"]["mean"]))
+                                 delta=res[PLAN]["real"] - res["today"]["real"],
+                                 delta_printed=res[PLAN]["mean"] - res["today"]["mean"]))
         print(q, len(cand), flush=True)
     # only trips a bus serves today and in option 2 at every departure: no "today you can only walk" cases
     # and no "waiting an hour for the first bus" cases either: today's mean wait at most MAX_WAIT_TODAY
@@ -122,13 +148,20 @@ def main():
             opts = {}
             for t, label in NETS.items():
                 r = c["res"][t]
-                opts[label] = dict(r["first"], total=round(r["mean"]), walk=round(r["walk"]), wait=round(r["wait"]), ride=round(r["ride"]),
-                                   lo=r["lo"], hi=r["hi"], nobus=r["nobus"])
+                opts[label] = dict(r["first"], total=round(r["real"]), printed=round(r["mean"]), walk=round(r["walk"]),
+                                   wait=round(r["wait"]), ride=round(r["ride"]), lo=r["lo"], hi=r["hi"], nobus=r["nobus"])
             t0 = LEAVE[c["period"]]
             out.append(dict(group=group, area=c["area"], home_stop=near, place=JR.PLACE_HE[c["place"]], period=c["period"],
                             when=f"{WHEN_HE[c['period']]}, יציאה מהבית בין {hhmm(t0)} ל-{hhmm(t0 + 45)}",
-                            delta=round(c["delta"]), options=opts))
-            print(group, c["area"], c["place"], c["period"], {t: round(c["res"][t]["mean"]) for t in NETS}, flush=True)
+                            delta=round(c["delta"]), delta_printed=round(c["delta_printed"]), options=opts))
+            print(group, c["area"], c["place"], c["period"], {t: (round(c["res"][t]["mean"]), round(c["res"][t]["real"])) for t in NETS},
+                  flush=True)
+    # all candidate trips: how the plan compares on average, printed and real
+    d_real = np.array([c["delta"] for c in cand]); d_pr = np.array([c["delta_printed"] for c in cand])
+    t_real = np.array([c["res"]["today"]["real"] for c in cand]); t_pr = np.array([c["res"]["today"]["mean"] for c in cand])
+    print(f"all {len(cand)} trips: plan - today, printed {d_pr.mean():+.1f} min ({d_pr.sum() / t_pr.sum():+.1%}), "
+          f"real {d_real.mean():+.1f} min ({d_real.sum() / t_real.sum():+.1%}); plan faster in {np.mean(d_real < -0.5):.0%}, "
+          f"slower in {np.mean(d_real > 0.5):.0%}")
     json.dump(out, open("data/journeys_tt.json", "w"), ensure_ascii=False, indent=1)
 
 

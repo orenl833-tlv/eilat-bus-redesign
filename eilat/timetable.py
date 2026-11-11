@@ -31,15 +31,13 @@ def _period(minute):
     return next((k for k, (a, b) in PERIODS.items() if a <= h < b), "19-24")
 
 
-def base_line(line):
-    """'5אx' -> '5', 'A14H' -> 'A14H': the line whose measured delays apply."""
-    s = str(line).rstrip("xs").replace("א", "")
-    return s
-
-
 def delay_key(line, direction):
-    """'3', 1 -> '3/1'; a variant's x/s suffix is dropped ('5א' stays itself: its own measured line)."""
-    return f"{str(line).rstrip('xs')}/{direction}"
+    """'3', 1 -> '3/1'; a plan variant's suffix (one trailing 'x' skipping or 's' straightened, after a digit
+    or 'א') is dropped; '5א' stays itself (its own measured line)."""
+    s = str(line)
+    if len(s) > 1 and s[-1] in "xs" and (s[-2].isdigit() or s[-2] == "א"):
+        s = s[:-1]
+    return f"{s}/{direction}"
 
 
 class DelaySampler:
@@ -148,7 +146,9 @@ class Network:
         tr = rd("trips.txt"); tr = tr[tr.service_id == service]
         st = rd("stop_times.txt"); st = st[st.trip_id.isin(tr.trip_id)].copy()
         st["t"] = (st.arrival_time.str.split(":", expand=True).astype(int) @ [60, 1, 1 / 60]).values
-        return cls(st, dict(zip(tr.trip_id, tr.route_id.astype(str), strict=True)), stops, 1.0, foot)
+        net = cls(st, dict(zip(tr.trip_id, tr.route_id.astype(str), strict=True)), stops, 1.0, foot)
+        net.dkey = {t: delay_key(r, d) for t, r, d in zip(tr.trip_id, tr.route_id.astype(str), tr.direction_id, strict=True)}
+        return net
 
     def arrivals(self, o_lat, o_lon, dests, t0, transfer_min=0.0, horizon=np.inf):
         """Earliest arrival at each of several destinations [(lat, lon), ...] leaving (o) at t0: one scan
