@@ -1,0 +1,62 @@
+{
+ "today@0.0": {
+  "buses": 33,
+  "bus_hours": 478.2,
+  "duties_standard": 77,
+  "drivers_standard": 96,
+  "driver_cost_day_standard": 42768,
+  "duties_overtime": 69,
+  "drivers_overtime": 86,
+  "driver_cost_day_overtime": 42968
+ },
+ "today@0.1": {
+  "buses": 33,
+  "bus_hours": 480.0,
+  "duties_standard": 77,
+  "drivers_standard": 96,
+  "driver_cost_day_standard": 43055,
+  "duties_overtime": 72,
+  "drivers_overtime": 90,
+  "driver_cost_day_overtime": 43068
+ },
+ "today@0.15": {
+  "buses": 34,
+  "bus_hours": 487.3,
+  "duties_standard": 80,
+  "drivers_standard": 100,
+  "driver_cost_day_standard": 43702,
+  "duties_overtime": 73,
+  "drivers_overtime": 91,
+  "driver_cost_day_overtime": 43972
+ },
+ "data/net_H.json@0.0": {
+  "buses": 30,
+  "bus_hours": 494.6,
+  "duties_standard": 89,
+  "drivers_standard": 111,
+  "driver_cost_day_standard": 44739,
+  "duties_overtime": 68,
+  "drivers_overtime": 85,
+  "driver_cost_day_overtime": 44788
+ },
+ "data/net_H.json@0.1": {
+  "buses": 30,
+  "bus_hours": 494.6,
+  "duties_standard": 87,
+  "drivers_standard": 109,
+  "driver_cost_day_standard": 45110,
+  "duties_overtime": 70,
+  "drivers_overtime": 88,
+  "driver_cost_day_overtime": 45358
+ },
+ "data/net_H.json@0.15": {
+  "buses": 31,
+  "bus_hours": 507.3,
+  "duties_standard": 85,
+  "drivers_standard": 106,
+  "driver_cost_day_standard": 45509,
+  "duties_overtime": 68,
+  "drivers_overtime": 85,
+  "driver_cost_day_overtime": 45534
+ }
+}
