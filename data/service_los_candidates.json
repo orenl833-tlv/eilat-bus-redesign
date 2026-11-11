@@ -1,0 +1,523 @@
+{
+ "targets": {
+  "access_m": 400,
+  "hours": 16,
+  "headway": 20,
+  "ttf": 2.0,
+  "car_kmh": 30.0,
+  "car_extra_min": 3.0,
+  "source": "Fort Collins PTLOS targets via ODOT Public Transportation Level of Service"
+ },
+ "today": {
+  "14": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.51
+  },
+  "15": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.83
+  },
+  "16": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.27
+  },
+  "21": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.63
+  },
+  "22": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 3.19
+  },
+  "23": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.97
+  },
+  "24": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.66
+  },
+  "25": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.42
+  },
+  "31": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.58
+  },
+  "32": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.83,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.46
+  },
+  "33": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.58
+  },
+  "34": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.67
+  },
+  "35": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.84
+  },
+  "36": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.67,
+   "hours": 0.67,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 3.01
+  }
+ },
+ "net_F": {
+  "14": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.51
+  },
+  "15": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.75
+  },
+  "16": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.17,
+   "ttf_median": 2.14
+  },
+  "21": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.55
+  },
+  "22": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 3.25
+  },
+  "23": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.9
+  },
+  "24": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.47
+  },
+  "25": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.37
+  },
+  "31": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.41
+  },
+  "32": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.83,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.28
+  },
+  "33": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.63
+  },
+  "34": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.73
+  },
+  "35": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.47
+  },
+  "36": {
+   "met": 1,
+   "cls": "poor",
+   "access": 0.67,
+   "hours": 0.67,
+   "freq": 0.33,
+   "ttf": 0.0,
+   "ttf_median": 2.8
+  }
+ },
+ "net_F2": {
+  "14": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.57
+  },
+  "15": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.74
+  },
+  "16": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.33,
+   "ttf_median": 2.12
+  },
+  "21": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.53
+  },
+  "22": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 3.15
+  },
+  "23": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.79
+  },
+  "24": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.5
+  },
+  "25": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.31
+  },
+  "31": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.4
+  },
+  "32": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.83,
+   "hours": 0.67,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.25
+  },
+  "33": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.56
+  },
+  "34": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.73
+  },
+  "35": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.38
+  },
+  "36": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.67,
+   "hours": 0.67,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.53
+  }
+ },
+ "net_F3": {
+  "14": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.65
+  },
+  "15": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.77
+  },
+  "16": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.17,
+   "ttf_median": 2.04
+  },
+  "21": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.52
+  },
+  "22": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 3.09
+  },
+  "23": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.82
+  },
+  "24": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.54
+  },
+  "25": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.48
+  },
+  "31": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.71
+  },
+  "32": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.83,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.24
+  },
+  "33": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.85
+  },
+  "34": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 1.0,
+   "freq": 1.0,
+   "ttf": 0.0,
+   "ttf_median": 2.77
+  },
+  "35": {
+   "met": 2,
+   "cls": "fair",
+   "access": 1.0,
+   "hours": 0.83,
+   "freq": 0.83,
+   "ttf": 0.0,
+   "ttf_median": 2.97
+  },
+  "36": {
+   "met": 2,
+   "cls": "fair",
+   "access": 0.67,
+   "hours": 0.67,
+   "freq": 0.67,
+   "ttf": 0.0,
+   "ttf_median": 2.88
+  }
+ }
+}
