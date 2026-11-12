@@ -101,14 +101,14 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
   </header>
 
   <div class="controls" role="group" aria-label="מה להציג">
-    <div class="seg" id="colorby" role="group" aria-label="צבע האזורים"></div>
-    <p class="ctlnote" id="losnote"></p>
+    <div class="seg" id="colorby" style="display:none" role="group" aria-label="צבע האזורים"></div>
+    <p class="ctlnote" id="losnote" hidden></p>
     <p class="ctlnote">המסלולים של כל קו זהים בכל העונות ובכל שעות היום. משתנה רק התדירות, והיא מפורטת בטבלה "תדירות לפי עונה ושעה" למטה. המפות מציגות ממוצע שנתי של כל היום. בהצעות שירות הערב נגמר ב-23:00, ועוד 5 נסיעות מאוחרות לחילופי המשמרת במלונות ובבית החולים.</p>
   </div>
 
   <div class="maps">
-    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">ברמת שירות: כל אזור צבוע לפי עמידה ביעדים הקבועים. בשינוי: המפה של היום היא נקודת הייחוס, ולכן בצבע אחיד.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">ברמת שירות: אותם יעדים כמו במפה של היום. בשינוי: כמה זמן הנסיעה מהדלת לדלת משתפר לעומת היום (ממוצע שנתי); ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">הקווים של היום. האזורים לא צבועים כאן, כי זו נקודת ההשוואה: הצבעים במפה של ההצעה מראים את השינוי לעומת המפה הזו.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: בכמה מתקצרת הנסיעה מהבית ליעד, כולל הליכה והמתנה, לעומת היום (ממוצע שנתי). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
@@ -145,7 +145,7 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {color: "los", opt: "net_F2", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {color: "change", opt: "net_F2", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -483,7 +483,7 @@ function legend() {
   const sw = (v, w) => `<i style="height:${w}px;background:${v}"></i>`;
   const T = D.los?.targets;
   document.getElementById("losnote").textContent = st.color === "los" && T ?
-    `כל מפה נמדדת לבד מול יעד קבוע, לא מול המפה השנייה. יעדי רמת שירות (מתוך תקן Fort Collins, לפי משרד התחבורה של אורגון): תחנה עד ${T.access_m} מ' הליכה; לפחות ${T.hours} שעות שירות ביום חול; קו שיוצא כל ${T.headway} דקות או פחות (07:00–19:00); ונסיעה מהדלת לדלת עד פי ${T.ttf} מנסיעה ברכב (רכב: ${T.car_kmh} קמ"ש ועוד ${T.car_extra_min} דקות חנייה, הנחה). המספר על כל אזור: כמה מ-3 היעדים התושב הטיפוסי בו עומד. עומס הנוסעים, היעד הרביעי בתקן, לא נמדד לפי אזור.` : "";
+    `הצבע של כל אזור משווה אותו לרמת שירות טובה (לפי תקן אמריקאי מקובל), לא למפה השנייה. התנאי הבסיסי: תחנה במרחק של עד ${T.access_m} מ' הליכה מהבית. מי שאין לו תחנה כזו נחשב שירות חלש. מעבר לזה נבדקים 3 דברים: (1) אוטובוסים עוברים בתחנה לפחות ${T.hours} שעות ביום; (2) בשעות היום (07:00–19:00) יש אוטובוס לפחות כל ${T.headway} דקות; (3) הנסיעה באוטובוס, כולל הליכה והמתנה, לוקחת עד פי ${T.ttf} מנסיעה ברכב באותו מסלול. ירוק: התושב הטיפוסי באזור מקבל את שלושתם. כתום: 2 מתוך 3. אדום: אחד או אף אחד.` : "";
   if (st.color === "los") {
     document.getElementById("legend").innerHTML =
       `<span>${sw(css("--sea-1"), 2)}1–2 אוטובוסים בשעה</span><span>${sw(css("--sea-2"), 3)}3–5</span><span>${sw(css("--sea-3"), 4)}6–8</span><span>${sw(css("--sea-4"), 6)}9 ומעלה</span>` +
