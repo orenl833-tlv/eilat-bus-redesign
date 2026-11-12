@@ -368,7 +368,8 @@ function selectLine(selKey, name) {
   st.noteIn = other;
   const me = (D.lines[selKey === "selL" ? "today" : st.opt]?.[st.season] || []).find((x) => x.name === name);
   const fam = me?.display || parts(name).fam;
-  st.note = st[other] ? "" : (selKey === "selL" ? `לקו ${fam} אין קו מקביל ב${OPT_HE[st.opt]}: הוא אוחד או בוטל.` : `לקו ${fam} אין קו מקביל היום: זה קו חדש.`);
+  const MERGED = {"1": "קווים 5 ו-6", "1א": "קווים 5 ו-9", "2": "קווים 6 ו-3", "4": "קו 8 החדש", "5א": "קו 5", "6א": "קו 6"};
+  st.note = st[other] ? "" : (selKey === "selL" ? (MERGED[fam] ? `קו ${fam} מתבטל בהצעה. רוב המסלול שלו עובר עכשיו ב${MERGED[fam]}, ושאר התחנות שלו (כמעט כולן) במרחק של עד 400 מ' הליכה מתחנה של קו אחר.` : `קו ${fam} מתבטל בהצעה.`) : `קו ${fam} הוא קו חדש, אין לו קו מקביל היום.`);
   render();
 }
 
@@ -388,7 +389,7 @@ function lineList(id, tag, selKey) {
   if (st[selKey] && !ls.some((x) => x.name === st[selKey])) st[selKey] = null;
   const label = (n) => n.replace(/\/\d/, "");
   const prevScroll = el.scrollTop;
-  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
+  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. קו שנוסע בשני הכיוונים מופיע פעמיים, פעם לכל כיוון (לכן יש מספרים כפולים). בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
     (st.note && st.noteIn === selKey ? `<div class="hint" style="color:var(--coral)">${st.note}</div>` : "");
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
