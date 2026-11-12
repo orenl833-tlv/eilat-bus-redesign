@@ -64,6 +64,7 @@ svg { width: 100%; height: auto; display: block }
 .lines button[aria-pressed="true"] { background: var(--coral); color: #fff }
 .lines button:focus-visible { outline: 2px solid var(--coral); outline-offset: 1px }
 .lines .no { font-weight: 600; font-variant-numeric: tabular-nums }
+.lines .no small { display: block; font-size: 11px; font-weight: 400; color: var(--ink-2) }
 .lines .route { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .lines .route small { display: block; font-size: 11px; opacity: .75; white-space: normal }
 .lines .hw { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .8 }
@@ -389,14 +390,18 @@ function lineList(id, tag, selKey) {
   if (st[selKey] && !ls.some((x) => x.name === st[selKey])) st[selKey] = null;
   const label = (n) => n.replace(/\/\d/, "");
   const prevScroll = el.scrollTop;
-  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. קו שנוסע בשני הכיוונים מופיע פעמיים, פעם לכל כיוון (לכן יש מספרים כפולים). בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
+  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. קו שנוסע בשני הכיוונים מופיע פעמיים, פעם לכל כיוון, והכיוון כתוב מתחת למספר. בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
     (st.note && st.noteIn === selKey ? `<div class="hint" style="color:var(--coral)">${st.note}</div>` : "");
+  const cnt = {}; for (const l of ls) { const k = l.display || label(l.name); cnt[k] = (cnt[k] || 0) + 1 }
+  const dy = (l) => D.stops[l.stops[l.stops.length - 1]][0] - D.stops[l.stops[0]][0];
+  const ns = {}; for (const l of ls) { const k = l.display || label(l.name); ns[k] = (ns[k] ?? true) && Math.abs(dy(l)) > 0.004 }
+  const dirOf = (l) => ns[l.display || label(l.name)] ? (dy(l) > 0 ? "צפונה" : "דרומה") : "אל " + l.end.split("/")[0];
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
     const h = st.period === "all" ? null : l.hw[st.period];
     const freq = st.period === "all" ? (tripsDay(l) ? `${Math.round(tripsDay(l))} נסיעות ביום` : "אין שירות") : (h ? "כל " + h + " דק'" : "אין שירות");
-    b.innerHTML = `<span class="no">${num(l.display || label(l.name))}</span><span class="route">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</span>` +
+    b.innerHTML = `<span class="no">${num(l.display || label(l.name))}${cnt[l.display || label(l.name)] > 1 ? `<small>${dirOf(l)}</small>` : ""}</span><span class="route">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</span>` +
       `<span class="hw">${freq}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
     b.onclick = () => selectLine(selKey, st[selKey] === l.name ? null : l.name);
     el.appendChild(b);
