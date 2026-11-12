@@ -10,6 +10,8 @@ Output: data/committed_rider.json
 import json
 import sys
 
+import numpy as np
+
 
 import check_tt as C
 import optimize_tt as X
@@ -27,17 +29,22 @@ def main():
     for name, net in nets.items():
         clair, comm, w, lost5, transfers = 0.0, 0.0, 0.0, 0.0, 0.0
         reals = [net.realize(S.tt.sampler, s, None) for s in SEEDS]
+        by_home = {}
         for o, d, wt, wd in S.tt.od:
+            by_home.setdefault(o, []).append((d, wt, wd))
+        for o, ds in by_home.items():
             for t0 in T.leave_times(o, "holdout")[::2]:
-                sch = net.plan(o[0], o[1], d[0], d[1], t0, T.TRANSFER_MIN)
-                nride = sum(1 for g in sch["legs"] if g[0] == "ride") if sch and sch["arrive"] - t0 < wd else 0
+                dl = [d for d, _, _ in ds]
+                schs = net.plan_many(o[0], o[1], dl, t0, T.TRANSFER_MIN)          # one scan per origin and time
                 for real in reals:
-                    r = real.plan(o[0], o[1], d[0], d[1], t0, T.TRANSFER_MIN)
-                    a = wd if r is None else min(r["arrive"] - t0, wd)
-                    c = real.committed(net, o[0], o[1], d[0], d[1], t0, T.TRANSFER_MIN) if nride else None
-                    b = wd if c is None else min(c - t0, wd)
-                    clair += wt * a; comm += wt * b; w += wt
-                    lost5 += wt * (b - a > 5); transfers += wt * (nride >= 2)
+                    knows = real.arrivals(o[0], o[1], dl, t0, T.TRANSFER_MIN)
+                    for (d, wt, wd), sch, ka in zip(ds, schs, knows, strict=True):
+                        nride = sum(1 for g in sch["legs"] if g[0] == "ride") if sch and sch["arrive"] - t0 < wd else 0
+                        a = wd if not np.isfinite(ka) else min(ka - t0, wd)
+                        c = real.committed(net, o[0], o[1], d[0], d[1], t0, T.TRANSFER_MIN, sch) if nride else None
+                        b = wd if c is None else min(c - t0, wd)
+                        clair += wt * a; comm += wt * b; w += wt
+                        lost5 += wt * (b - a > 5); transfers += wt * (nride >= 2)
         out[name] = dict(clairvoyant=round(clair / w, 2), committed=round(comm / w, 2), gap=round((comm - clair) / w, 2),
                          lose_5min_share=round(lost5 / w, 3), transfer_share=round(transfers / w, 3))
         print(name, out[name], flush=True)

@@ -137,13 +137,14 @@ class Network:
         d = getattr(self, "delays", {}).get(tid)
         return s, (t if d is None else t[0] + d[0] + (t - t[0]) * d[1])
 
-    def committed(self, sched, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0):
+    def committed(self, sched, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0, r=False):
         """Door-to-door arrival of a rider who does NOT know the future: at t0 they plan on the timetable
         (`sched`, the same network without delays) and commit to its first bus line; then the buses run as in
         this realized network. They take the first bus of that line that comes to the boarding stop after they
         get there and goes to their alighting stop; once off it they see live times and re-plan from there (or
         walk). Returns the arrival, or None if no bus gets them there (walk)."""
-        r = sched.plan(o_lat, o_lon, d_lat, d_lon, t0, transfer_min)
+        if r is False:          # the timetable plan, unless made in advance (sched.plan_many)
+            r = sched.plan(o_lat, o_lon, d_lat, d_lon, t0, transfer_min)
         if r is None:
             return None
         legs = r["legs"]
@@ -251,6 +252,64 @@ class Network:
             wait = max(a - t0 - wk - iv, 0.0)
             out.append((a, iv + P.W_WALK * wk + P.W_WAIT * wait + P.TRANSFER_PENALTY * max(nr - 1, 0)))
         return out
+
+    def plan_many(self, o_lat, o_lon, dests, t0, transfer_min=0.0):
+        """plan() to several destinations [(lat, lon), ...] from one scan: the same result for each as plan()
+        one by one (labels only improve, and the scan stops once every destination's best arrival is passed)."""
+        S = self.stops
+        acc = walk_min(o_lat, o_lon, S.stop_lat.values, S.stop_lon.values)
+        best = {}; ready = {}; jp = {}
+        for sid, w in zip(S.index, acc, strict=True):
+            if w <= WALK_MAX_MIN:
+                best[sid] = ready[sid] = t0 + w; jp[sid] = ("start", float(w))
+        egress, by_stop = [], {}
+        for k, (d_lat, d_lon) in enumerate(dests):
+            egr = walk_min(S.stop_lat.values, S.stop_lon.values, d_lat, d_lon)
+            e = {sid: float(w) for sid, w in zip(S.index, egr, strict=True) if w <= WALK_MAX_MIN}
+            egress.append(e)
+            for sid, w in e.items():
+                by_stop.setdefault(sid, []).append((k, w))
+        target = [np.inf] * len(dests)
+        end = np.inf
+        on = {}
+        for dep, arr, a, b, tid in self.conn:
+            if dep < t0:
+                continue
+            if dep > end:
+                break
+            if tid in on or ready.get(a, np.inf) <= dep:
+                if tid not in on:
+                    on[tid] = (a, dep)
+                if arr < best.get(b, np.inf):
+                    best[b] = arr; jp[b] = ("ride", tid, on[tid][0], on[tid][1], arr)
+                    ready[b] = min(ready.get(b, np.inf), arr + transfer_min)
+                    if b in by_stop:
+                        for k, w in by_stop[b]:
+                            target[k] = min(target[k], arr + w)
+                        end = max(target)
+                    for c, w in self.foot.get(b, []):
+                        if arr + w < best.get(c, np.inf):
+                            best[c] = arr + w; jp[c] = ("foot", b, w)
+                            ready[c] = min(ready.get(c, np.inf), arr + w + transfer_min)
+        out = []
+        for e in egress:
+            reach = [(best[s] + e[s], s) for s in e if s in best and jp[s][0] != "start"]
+            out.append(self._legs(jp, e, min(reach)) if reach else None)
+        return out
+
+    def _legs(self, jp, egress, best_pair):
+        arrive, last = best_pair
+        legs, x = [("walk", egress[last], None)], last
+        while jp[x][0] != "start":
+            k = jp[x]
+            if k[0] == "foot":
+                legs.append(("walk", k[2], x)); x = k[1]
+            else:
+                q = self.seq[k[1]]
+                n = q.index(x, q.index(k[2]) + 1) - q.index(k[2]) if x in q[q.index(k[2]) + 1:] else None
+                legs.append(("ride", self.line[k[1]], k[2], k[3], x, k[4], n)); x = k[2]
+        legs.append(("walk", jp[x][1], x))
+        return dict(arrive=arrive, legs=list(reversed(legs)))
 
     def plan(self, o_lat, o_lon, d_lat, d_lon, t0, transfer_min=0.0):
         """Earliest arrival leaving (o) at t0 (minutes). Returns dict(arrive, legs) or None; legs are

@@ -48,13 +48,20 @@ class AppRider:
         self.cache[tau] = snap
         return snap
 
-    def trip(self, o_lat, o_lon, d_lat, d_lon, t0):
-        """Door-to-door arrival and the time spent waiting at transfer stops (after the first bus)."""
+    def trips(self, o_lat, o_lon, dests, t0):
+        """trip() to several destinations from one origin and time: the first plan, on the same snapshot, is one
+        scan for all of them."""
+        first = self.snapshot(t0).plan_many(o_lat, o_lon, dests, t0, 0.0)
+        return [self.trip(o_lat, o_lon, d[0], d[1], t0, r) for d, r in zip(dests, first, strict=True)]
+
+    def trip(self, o_lat, o_lon, d_lat, d_lon, t0, first=False):
+        """Door-to-door arrival and the time spent waiting at transfer stops (after the first bus). first: the
+        first plan if already made (None = no bus)."""
         lat, lon, t, wait_xfer, rides = o_lat, o_lon, float(t0), 0.0, 0
         direct = float(walk_min(o_lat, o_lon, d_lat, d_lon))
-        for _ in range(6):
+        for step in range(6):
             snap = self.snapshot(t)
-            r = snap.plan(lat, lon, d_lat, d_lon, t, self.tm if rides else 0.0)
+            r = first if (step == 0 and first is not False) else snap.plan(lat, lon, d_lat, d_lon, t, self.tm if rides else 0.0)
             walk_rest = float(walk_min(lat, lon, d_lat, d_lon))
             if r is None or r["arrive"] - t >= walk_rest:
                 return min(t + walk_rest, t0 + direct), wait_xfer

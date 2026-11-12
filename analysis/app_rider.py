@@ -35,13 +35,13 @@ def run(S, net, keys, seed):
         for h in X.HOURS:
             t0 = h * 60 + rng.random() * 60
             q = _period(t0)
-            for d, wd, wq in ds:
-                w = wq[q] / max(X.hours_in(q), 1)
-                if w <= 0:
-                    continue
-                r = real.plan(o[0], o[1], d[0], d[1], t0, T.TRANSFER_MIN)
-                know = wd if r is None else min(r["arrive"] - t0, wd)
-                arr, xw = rider.trip(o[0], o[1], d[0], d[1], t0)
+            ds_w = [(d, wd, wq[q] / max(X.hours_in(q), 1)) for d, wd, wq in ds]
+            ds_w = [x for x in ds_w if x[2] > 0]
+            dl = [d for d, _, _ in ds_w]
+            known = real.arrivals(o[0], o[1], dl, t0, T.TRANSFER_MIN)          # one scan for all destinations
+            apps = rider.trips(o[0], o[1], dl, t0)
+            for (d, wd, w), ka, (arr, xw) in zip(ds_w, known, apps, strict=True):
+                know = wd if not np.isfinite(ka) else min(ka - t0, wd)
                 app = min(arr - t0, wd)
                 tot["app"] += w * app; tot["know"] += w * know; tot["xwait"] += w * xw
                 tot["slow5"] += w * (app - know > 5); tot["w"] += w

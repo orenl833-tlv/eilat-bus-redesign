@@ -175,21 +175,25 @@ class Base:
         earliest arrival, or walks if that is faster. (The wait includes the wait for the first bus, the
         rider leaving home at the given time.)"""
         net, keys = self.network(phases)
+        by_home = {}
+        for o, d, w, wd in self.od:
+            by_home.setdefault(o, []).append((d, w, wd))
         tot = wsum = 0.0
         for seed in seeds:
             real = net.realize(self.sampler, seed, keys)
-            for o, d, w, wd in self.od:
+            for o, ds in by_home.items():
                 for t0 in leave_times(o, leave)[::2]:
-                    r = real.plan(o[0], o[1], d[0], d[1], t0, TRANSFER_MIN)
-                    if r is None or r["arrive"] - t0 >= wd:
-                        v = P.W_WALK * wd
-                    else:
-                        rides = [g for g in r["legs"] if g[0] == "ride"]
-                        ivt = sum(g[5] - g[3] for g in rides)
-                        walk = sum(g[1] for g in r["legs"] if g[0] == "walk")
-                        wait = (r["arrive"] - t0) - ivt - walk
-                        v = ivt + P.W_WALK * walk + P.W_WAIT * wait + P.TRANSFER_PENALTY * (len(rides) - 1)
-                    tot += w * v; wsum += w
+                    plans = real.plan_many(o[0], o[1], [d for d, _, _ in ds], t0, TRANSFER_MIN)   # one scan per origin
+                    for (d, w, wd), r in zip(ds, plans, strict=True):
+                        if r is None or r["arrive"] - t0 >= wd:
+                            v = P.W_WALK * wd
+                        else:
+                            rides = [g for g in r["legs"] if g[0] == "ride"]
+                            ivt = sum(g[5] - g[3] for g in rides)
+                            walk = sum(g[1] for g in r["legs"] if g[0] == "walk")
+                            wait = (r["arrive"] - t0) - ivt - walk
+                            v = ivt + P.W_WALK * walk + P.W_WAIT * wait + P.TRANSFER_PENALTY * (len(rides) - 1)
+                        tot += w * v; wsum += w
         return tot / wsum
 
     def buses(self, phases):
