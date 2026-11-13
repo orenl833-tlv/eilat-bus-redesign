@@ -146,7 +146,7 @@ const SNAME = {winter: "חורף", spring_autumn: "אביב וסתיו", summer:
 const PLACES = ["City hall / centre", "Old central station (Star Eilat)", "Hotels, North Beach", "Big centre", "Yoseftal hospital", "Coral Beach"];
 const PLACE_HE = {"City hall / centre": "מרכז העיר", "Old central station (Star Eilat)": "התחנה המרכזית הישנה", "Hotels, North Beach": "המלונות",
   "Big centre": "מרכז ביג", "Yoseftal hospital": "בית החולים יוספטל", "Coral Beach": "חוף האלמוגים"};
-const st = {color: "change", opt: "net_F2", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "winter", ftab: "opt"};
+const st = {color: "change", opt: "net_F2", season: "year", period: "all", selL: null, selR: null, note: "", actSeason: "summer", ftab: "opt"};
 SNAME.year = "ממוצע שנתי";
 const SW = {winter: 5 / 12, spring_autumn: 5 / 12, summer: 2 / 12};   // months a year in each season
 // the year view: every season's data blended by its months (maps, line lists, travel times, landmarks, tiles)
@@ -508,7 +508,7 @@ const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
 // seasons whose active-lines numbers are identical in every series are shown as one button
 function actGroups() {
   const g = [];
-  for (const s of D.seasons) {
+  for (const s of [...D.seasons].sort((a, b) => (b === "summer") - (a === "summer"))) {   // summer first
     const key = JSON.stringify(SERIES.map((k) => D.active.data[k][s]));
     const hit = g.find((x) => x.key === key);
     if (hit) hit.push(s); else { const n = [s]; n.key = key; g.push(n) }
