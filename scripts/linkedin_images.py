@@ -36,7 +36,11 @@ def lines_svg(tag):
     names = sorted({l["display"] for l in ls}, key=lambda n: (len(n), n))
     col = {n: PAL[k % len(PAL)] for k, n in enumerate(names)}
     s = ""
+    seen = set()
     for l in ls:
+        if l["display"] in seen:          # one direction per line: the other runs the same streets
+            continue
+        seen.add(l["display"])
         pts = [xy(*D["stops"][i][:2]) for i in l["stops"]]
         s += f'<path d="{path(pts)}" stroke="{col[l["display"]]}" class="ln"/>'
     return s, len(names)

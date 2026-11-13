@@ -450,7 +450,7 @@ function tiles() {
     ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום, לפי לוחות הזמנים ועם איחורים"],
     [s.worst_area > 1 ? "האזור שנפגע הכי הרבה" : "האזור שמשתפר הכי פחות", pct(s.worst_area, 1), "שינוי בזמן הנסיעה לעומת היום"],
     ["אוטובוסים", num(s.peak.year), `כולל 15% זמן מנוחה במסוף. היום ${t.peak}`],
-    ["נהגים", num(s.drivers), `עם שעות נוספות, כמו היום. היום ${t.drivers}`],
+    ["נהגים", num(s.drivers), s.drivers === t.drivers ? "בדיוק כמו היום" : `היום ${t.drivers}`],
     ["שעות אוטובוס ביום חול", num(Math.round(s.hours.year)), `כולל נסיעות ריקות. היום ${Math.round(t.hours)}`],
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
