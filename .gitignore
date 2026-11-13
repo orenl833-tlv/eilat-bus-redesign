@@ -1,3 +1,4 @@
 data/raw/
 data/siri/
 __pycache__/
+data/rerun/*.log
