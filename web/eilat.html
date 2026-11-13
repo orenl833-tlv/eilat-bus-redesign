@@ -395,7 +395,7 @@ function lineList(id, tag, selKey) {
   const cnt = {}; for (const l of ls) { const k = l.display || label(l.name); cnt[k] = (cnt[k] || 0) + 1 }
   const dy = (l) => D.stops[l.stops[l.stops.length - 1]][0] - D.stops[l.stops[0]][0];
   const ns = {}; for (const l of ls) { const k = l.display || label(l.name); ns[k] = (ns[k] ?? true) && Math.abs(dy(l)) > 0.004 }
-  const dirOf = (l) => ns[l.display || label(l.name)] ? (dy(l) > 0 ? "צפונה" : "דרומה") : "אל " + l.end.split("/")[0];
+  const dirOf = (l) => ns[l.display || label(l.name)] ? (dy(l) > 0 ? "צפונה" : "דרומה") : "אל " + ({"עירייה": "העירייה"}[l.end.split("/")[0]] || l.end.split("/")[0]);
   for (const l of ls) {
     const b = document.createElement("button"); b.type = "button"; b.id = `${id}-${l.name}`;
     b.setAttribute("aria-pressed", String(st[selKey] === l.name));
