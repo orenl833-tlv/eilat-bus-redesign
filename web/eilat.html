@@ -96,20 +96,20 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
 <div class="wrap" dir="rtl" lang="he">
   <header>
-    <h1>האוטובוסים של אילת, מאורגנים מחדש באותו תקציב</h1>
-    <p>פחות אוטובוסים מהיום, ברחובות ובתחנות שקיימים היום: לא מוקמת אף תחנה חדשה. כל רשת נבדקה על לוח זמנים כמו שהאוטובוסים באמת נוסעים: זמני נסיעה לפי ה-GPS
-      בכל קטע כביש, שעה וכיוון, ואיחורים אמיתיים של כל קו. <strong id="headline">…</strong></p>
+    <h1>האוטובוסים של אילת, בסידור חדש</h1>
+    <p>מה יקרה אם נסדר מחדש את קווי האוטובוס בעיר? פחות אוטובוסים, אותם רחובות ואותן תחנות, בלי לבנות אף תחנה חדשה.
+      כל רשת נבדקה כמו שהאוטובוסים באמת נוסעים: המהירות בכל קטע כביש לפי ה-GPS, בכל שעה ובכל כיוון, עם האיחורים האמיתיים של כל קו. <strong id="headline">…</strong></p>
   </header>
 
   <div class="controls" role="group" aria-label="מה להציג">
     <div class="seg" id="colorby" style="display:none" role="group" aria-label="צבע האזורים"></div>
     <p class="ctlnote" id="losnote" hidden></p>
-    <p class="ctlnote">המסלולים עצמם לא משתנים לפי העונה: כל קו נוסע באותו מסלול כל השנה ובכל שעות היום. בין העונות משתנה רק התדירות, והיא מפורטת בטבלה "תדירות לפי עונה ושעה" למטה. המפות מציגות ממוצע שנתי של כל היום. בהצעות שירות הערב נגמר ב-23:00, ועוד 5 נסיעות מאוחרות לחילופי המשמרת במלונות ובבית החולים.</p>
+    <p class="ctlnote">כל קו נוסע באותו מסלול כל השנה. בין העונות משתנה רק כמה פעמים בשעה הוא יוצא, והפירוט בטבלת התדירות למטה. המפות מראות ממוצע של כל השנה. בהצעה האוטובוס האחרון יוצא קצת לפני 23:00, ואחריו יש עוד 5 נסיעות לעובדי משמרת הלילה במלונות ובבית החולים.</p>
   </div>
 
   <div class="maps">
-    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">הקווים של היום. האזורים לא צבועים כאן, כי זו נקודת ההשוואה: הצבעים במפה של ההצעה מראים את השינוי לעומת המפה הזו.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
-    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">צבע כל אזור: בכמה מתקצרת הנסיעה מהבית ליעד, כולל הליכה והמתנה, לעומת היום (ממוצע שנתי). ירוק כהה יותר = שיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
+    <figure><figcaption><b>היום</b><span id="capL"></span></figcaption><p class="maphint">כך נראית הרשת היום. האזורים לא צבועים, כי זו נקודת ההשוואה.</p><svg id="mapL" role="img" aria-label="רשת האוטובוסים היום"></svg><div class="lines" id="linesL"></div></figure>
+    <figure><figcaption><b id="optName">הצעה</b><span id="capR"></span></figcaption><p class="maphint">הצבע מראה בכמה מתקצרת הנסיעה מכל אזור, כולל ההליכה וההמתנה (ממוצע שנתי). ככל שהאזור ירוק יותר, השיפור גדול יותר.</p><svg id="mapR" role="img" aria-label="הרשת המוצעת"></svg><div class="lines" id="linesR"></div></figure>
   </div>
   <div class="legend" id="legend"></div>
 
@@ -117,14 +117,14 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div>
     <h2>תדירות לפי עונה ושעה</h2>
-    <p class="note">כל כמה דקות יוצא אוטובוס, לכל מסלול קו. כשהתדירות זהה בכל העונות מופיע מספר אחד. כשהיא שונה מופיעים שלושה מספרים, לפי הסדר: חורף / אביב וסתיו / החופש הגדול. "–" פירושו שהקו לא פועל באותן שעות. לוח הזמנים של היום זהה בכל השנה. קווי בתי הספר 80–82 לא מופיעים: הם נשארים כמו היום, ולא פועלים בחופש הגדול. בהצעות, הנסיעה האחרונה בערב יוצאת לפני 23:00, ואחריה יש רק 5 נסיעות לחילופי המשמרת במלונות ובבית החולים.</p>
+    <p class="note">כל כמה דקות יוצא אוטובוס. מספר אחד: אותה תדירות כל השנה. שלושה מספרים: חורף / אביב וסתיו / החופש הגדול. "–": הקו לא נוסע בשעות האלה. היום לוח הזמנים זהה כל השנה. קווי בתי הספר (80–82) לא מופיעים, כי הם נשארים כמו שהם.</p>
   </div>
   <div class="seg" id="ftab" role="group" aria-label="איזו רשת"></div>
   <div class="tablewrap"><table id="ftbl" class="ftbl"></table></div>
 
   <div>
     <h2>כמה קווים פועלים בכל שעה</h2>
-    <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול (<span id="actseason"></span>). גרסה של קו (מדלגת על תחנות שקטות או במסלול מקוצר) נספרת יחד עם הקו המקורי. קווי בתי הספר 80–82 כלולים, חוץ מבחופש הגדול. לוח הזמנים של היום זהה בכל העונות. בהצעות, התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
+    <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול (<span id="actseason"></span>). גרסאות של קו (מקוצרת, או כזו שמדלגת על תחנות) נספרות יחד איתו. קווי בתי הספר כלולים, חוץ מבחופש הגדול. בהצעה התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
   </div>
   <div class="chart"><div class="seg" id="actseas" role="group" aria-label="עונה" style="margin-bottom:8px"></div><div class="legend" id="actlegend"></div><svg id="act" dir="ltr" role="img" aria-label="מספר הקווים הפעילים בכל שעה, היום ובכל אחת מההצעות"></svg>
     <details><summary>הצג כטבלה</summary><div class="tablewrap"><table id="acttbl"></table></div></details></div>
@@ -365,7 +365,7 @@ function poiTip(e, name, tag) {
     if (leisure >= 1.5) what.push("מוקד פנאי מרכזי"); else if (leisure >= 0.5) what.push("מוקד פנאי");
     if (tourist >= 2) what.push("יעד מרכזי לתיירים"); else if (tourist >= 1) what.push("יעד לתיירים");
     if (place === "Hotels, North Beach") what.push("כאן ישנים התיירים, ומכאן הם יוצאים");
-    if (place === "Eilat campus") { add("במודל: " + what.join(", ") + "."); const w = add("טעות שלנו: ה-300 הוא הערכה ולא נתון, והסטודנטים לא נכללו במודל בכלל. לכן מספר הנוסעים לקמפוס כאן כנראה נמוך מהמציאות. הקמפוס נשמר בהצעה כתחנה שחייבים לעצור בה, אבל התדירות אליו לא נבדקה על הביקוש האמיתי. על התוצאה בכל העיר ההשפעה כנראה זניחה, כי הקמפוס הוא יעד אחד מתוך רבים."); w.style.color = "var(--coral)"; } else
+    if (place === "Eilat campus") add("במודל: " + what.join(", ") + ", ועוד כ-360 סטודנטים שמגיעים בימי לימודים (מתוך כ-750. חלקם גרים במעונות, וחלק מהם עובדים בעיר)."); else
     add("במודל: " + what.join(", ") + ".");
     const sub = add("מגיעים באוטובוס ביום חול, לפי עונה:"); sub.style.marginTop = "6px";
     const row = (label, t) => { const f = F.flow[t]; if (f) add(`${label}: ` + ["winter", "spring_autumn", "summer"].map((se) => `${SNAME[se]} ${f[se].all[i][0].toLocaleString("he-IL")}`).join(" · ")) };
@@ -407,7 +407,7 @@ function lineList(id, tag, selKey) {
   if (st[selKey] && !ls.some((x) => x.name === st[selKey])) st[selKey] = null;
   const label = (n) => n.replace(/\/\d/, "");
   const prevScroll = el.scrollTop;
-  el.innerHTML = `<div class="hint">${ls.length} מסלולי קו. קו שנוסע בשני הכיוונים מופיע פעמיים, פעם לכל כיוון, והכיוון כתוב מתחת למספר. בחרו קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה היא תחנה שהקו עובר בה בלי לעצור.</div>` +
+  el.innerHTML = `<div class="hint">${ls.length} מסלולים. קו שנוסע בשני הכיוונים מופיע פעמיים, והכיוון כתוב מתחת למספר. לחצו על קו כדי לראות את המסלול שלו, והקו המקביל יסומן גם במפה השנייה. נקודה חלולה: תחנה שהקו עובר בה בלי לעצור.</div>` +
     (st.note && st.noteIn === selKey ? `<div class="hint" style="color:var(--coral)">${st.note}</div>` : "");
   const cnt = {}; for (const l of ls) { const k = l.display || label(l.name); cnt[k] = (cnt[k] || 0) + 1 }
   const dy = (l) => D.stops[l.stops[l.stops.length - 1]][0] - D.stops[l.stops[0]][0];
@@ -447,7 +447,7 @@ function tiles() {
   const s = D.summary[st.opt], t = D.summary.today;
   const pct = (x, d = 0) => num(`${signed((x - 1) * 100, d)}%`);
   const items = [
-    ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום, לפי לוחות הזמנים ועם איחורים"],
+    ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "בממוצע על כל השנה, כולל איחורים"],
     [s.worst_area > 1 ? "האזור שנפגע הכי הרבה" : "האזור שמשתפר הכי פחות", pct(s.worst_area, 1), "שינוי בזמן הנסיעה לעומת היום"],
     ["אוטובוסים", num(s.peak.year), `כולל 15% זמן מנוחה במסוף. היום ${t.peak}`],
     ["נהגים", num(s.drivers), s.drivers === t.drivers ? "בדיוק כמו היום" : `היום ${t.drivers}`],
@@ -472,7 +472,7 @@ const whenText = () => "ממוצע שנתי על פני כל היום";
 function table() {
   const s = D.summary[st.opt];
   const ids = D.areas.map((a) => a.id).filter((id) => ttFor(id));
-  document.getElementById("tblnote").textContent = `דקות מהדלת לדלת ממרכז האזור, ${whenText()}: לפי לוחות הזמנים, עם איחורים אמיתיים ו-2 דקות לכל החלפה. המספר הגדול הוא הזמן בהצעה, והקטן הוא ההפרש מהיום. עמודת השינוי היא הממוצע השנתי על פני כל הנסיעות מהאזור, לפי מודל הביקוש, לא רק המקומות שבטבלה.`;
+  document.getElementById("tblnote").textContent = `כמה דקות לוקחת הנסיעה ממרכז כל אזור, ${whenText()}, כולל איחורים ו-2 דקות לכל החלפה. המספר הגדול: בהצעה. הקטן: ההבדל מהיום. עמודת "שינוי" היא הממוצע השנתי של כל הנסיעות מהאזור, לא רק למקומות שבטבלה.`;
   let h = "<thead><tr><th>אזור</th><th>תושבים</th><th>בלי רכב</th><th>שינוי</th>" + PLACES.map((p) => `<th>${PLACE_HE[p]}</th>`).join("") + "</tr></thead><tbody>";
   for (const id of ids) {
     const a = D.areas.find((x) => x.id === id), tt = ttFor(id), c = s.area[id];
