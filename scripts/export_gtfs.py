@@ -150,11 +150,11 @@ def build(tag, stops):
     files = {
         "agency.txt": pd.DataFrame([dict(agency_id="proposal",
                                          agency_name="Eilat bus network proposal (research model, not an operator timetable)",
-                                         agency_url="https://github.com/orenl833-tlv/test-claude", agency_timezone="Asia/Jerusalem", agency_lang="he")]),
+                                         agency_url="https://github.com/orenl833-tlv/eilat-bus-redesign", agency_timezone="Asia/Jerusalem", agency_lang="he")]),
         "stops.txt": used, "routes.txt": pd.DataFrame(routes),
         "trips.txt": T[["route_id", "service_id", "trip_id", "trip_headsign", "direction_id", "block_id"]],
         "stop_times.txt": S, "calendar_dates.txt": season_dates(),
-        "feed_info.txt": pd.DataFrame([dict(feed_publisher_name="eilat-transit research model", feed_publisher_url="https://github.com/orenl833-tlv/test-claude",
+        "feed_info.txt": pd.DataFrame([dict(feed_publisher_name="eilat-transit research model", feed_publisher_url="https://github.com/orenl833-tlv/eilat-bus-redesign",
                                             feed_lang="he", feed_start_date="20261101", feed_end_date="20271031", feed_version=tag)]),
     }
     check(files)

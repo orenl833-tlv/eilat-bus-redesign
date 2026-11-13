@@ -1,7 +1,9 @@
 # Eilat bus network redesign
 
+**Interactive map, today against the proposal (Hebrew):** https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV
+
 Can a city's buses serve people better with the same fleet and the same drivers? For Eilat, a closed city of
-55,000 with ~42 urban buses, the answer from public data is **yes.**
+55,000 with ~35 urban buses, the answer from public data is **yes.**
 
 **The recommended network** (`data/net_F2.json`, found by a search that scores every candidate on its timetable
 as buses really run: GPS run times per street segment, hour and direction; real delays per line, direction
@@ -9,7 +11,7 @@ and hour; demand-weighted trips; every area keeps its 20-min line nearby; checke
 - **~5% shorter door-to-door trips in winter, ~10% in summer** (summer headways, `data/net_F2_summer.json`); perceived time improves ~5% in winter and ~11% in summer.
 - **Fewer buses:** 32 against today's 34, with 15% terminal recovery; **the same drivers** (91 with overtime).
 - **Costs ~NIS 1.2 M a year:** ~3% more bus-hours, mostly evening service to 23:00.
-- **No residential area loses more than 0.5%;** workplaces lose most (industrial zone +16%, Begin high school +13%).
+- **Two residential areas lose:** area 33 (+2% in winter) and area 14 (+3% in summer); workplaces lose most (industrial zone +15%, Begin high school +14%).
 
 **What changes:**
 - Three new two-way lines on the fastest streets: 7 North Beach hotels – Derech HaBsamim, 8 Big centre –
