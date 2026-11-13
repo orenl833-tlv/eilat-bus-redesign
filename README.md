@@ -72,6 +72,20 @@ PYTHONPATH=. python3 scripts/optimize.py keep 2000
 PYTHONPATH=.:scripts python3 scripts/seasonal.py keep 400 && PYTHONPATH=.:scripts python3 scripts/assess.py keep
 ```
 
+## Route checks and open items
+
+- **Route checks (OSM roads, OSRM car routing; streets assumed wide enough for a bus):** the 9 stop-to-stop links not
+  driven today are direct on main streets, 4-30% longer than straight (`data/new_links_osrm.json`); every end of lines
+  7-9 has a legal turnaround without a U-turn, 243-605 m around a block (`data/new_terminals_osrm.json`).
+- **Line 9** is a loop (out via Argaman, the central station, the city hall and the hotels; back direct along Eilot).
+  Two-way alternatives ending at the city hall or the central station were checked and are worse
+  (`analysis/line9_variant.py`, `data/line9_variant_*.json`).
+- **For the operator:** a layover spot at each end. Common practice (NZTA, Transport for NSW guidance): kerb space away
+  from the stop itself, for one bus at a time here, sized on site by swept-path analysis, with driver facilities nearby.
+- **Re-runs on the updated demand** (students and campus dorms, more beach trips in summer, 35% of tourists by bus):
+  `scripts/rerun.sh`, outputs in `data/rerun/`.
+- **To do:** when the LinkedIn post is published, link it from the map page (`web/eilat.html` footer) and here.
+
 ## Honest limits
 
 - **The model compares networks.** It doesn't forecast ridership exactly.

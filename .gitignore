@@ -5,3 +5,4 @@ data/rerun/*.log
 data/*_ckpt.json
 .pytest_cache/
 .ruff_cache/
+data/rerun/*.done
