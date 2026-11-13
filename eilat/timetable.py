@@ -14,6 +14,8 @@ import io
 import zipfile
 import zlib
 
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -55,12 +57,21 @@ class DelaySampler:
         groups += [(("p", k, q), g) for (k, q), g in D.groupby(["key", "period"])]
         groups += [(("a", k, None), g) for k, g in D.groupby("key")]
         groups += [(("h", "*", h), g) for h, g in D.groupby("hour")]
+        # a line with no history of its own (the new lines) is not given the all-lines average: it draws from
+        # the late half of today's lines (by mean start delay), so new lines are not assumed more punctual
+        # than the lines they replace. NEW_LINE_DELAY=all restores the old all-lines pool.
+        late = D.groupby("key").d0.mean()
+        L = D[D.key.isin(late[late >= late.median()].index)]
+        groups += [(("h", "late", h), g) for h, g in L.groupby("hour")]
+        self.new_pool = "late" if os.environ.get("NEW_LINE_DELAY", "late") == "late" else "*"
+        self.known = set(D.key)
         self.pool = {k: (g.d0.values, g.ratio.values / g.ratio.median()) for k, g in groups if len(g) >= min_n}
         self.all = (D.d0.values, D.ratio.values / D.ratio.median())
 
     def sample(self, key, clock, rng):
         h, q = int(clock // 60) % 24, _period(clock)
-        d0, mult = next((self.pool[k] for k in (("h", key, h), ("p", key, q), ("a", key, None), ("h", "*", h))
+        fall = "*" if key in self.known else self.new_pool
+        d0, mult = next((self.pool[k] for k in (("h", key, h), ("p", key, q), ("a", key, None), ("h", fall, h), ("h", "*", h))
                          if k in self.pool), self.all)
         i = rng.integers(len(d0))
         return float(d0[i]), float(mult[i])
