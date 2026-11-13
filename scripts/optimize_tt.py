@@ -118,7 +118,8 @@ def demand_od(season, min_walk=10.0):
         if acc + x > trim * tot:
             break
         acc += x; cut = x
-    return {o: [(d, wd, w) for d, (wd, w) in ds.items() if sum(w.values()) > cut] for o, ds in od.items()}
+    od = {o: [(d, wd, w) for d, (wd, w) in ds.items() if sum(w.values()) > cut] for o, ds in od.items()}
+    return {o: ds for o, ds in od.items() if ds}                     # e.g. the campus in the summer holiday
 
 
 def hours_in(q):

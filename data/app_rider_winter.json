@@ -1,24 +1,25 @@
 {
  "season": "winter",
- "plan": {
-  "app": 26.144,
-  "know": 23.712,
-  "xwait": 0.793,
-  "slow5": 0.152
- },
+ "plan_file": "data/net_F2.json",
  "draws": 10,
  "today": {
-  "app": 28.485,
-  "know": 26.057,
-  "xwait": 1.051,
-  "slow5": 0.155
+  "app": 28.391,
+  "know": 25.786,
+  "xwait": 0.98,
+  "slow5": 0.176
+ },
+ "plan": {
+  "app": 26.808,
+  "know": 24.272,
+  "xwait": 0.9,
+  "slow5": 0.17
  },
  "change_app": {
-  "mean": -0.082,
-  "ci95": 0.0102
+  "mean": -0.0557,
+  "ci95": 0.0078
  },
  "change_know": {
-  "mean": -0.0899,
-  "ci95": 0.0092
+  "mean": -0.0587,
+  "ci95": 0.0067
  }
 }
