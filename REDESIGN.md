@@ -470,7 +470,7 @@ GTFS export uses it for the summer timetable; spring/autumn keep the winter head
 
 **App rider** (`eilat/app_rider.py`, `analysis/app_rider.py`): sees every bus's current position (predicted to keep its
 lateness), plans on that, rides the bus as it really runs and re-plans at the transfer stop. Demand-weighted trips, 10
-delay draws shared by both networks: net_F2 vs today -8.2% +- 1.0% (winter), -10.1% +- 1.1% (summer, summer headways);
+delay draws shared by both networks: net_F2 vs today -8.2% +- 1.0% (winter), -10.1% +- 1.1% (summer, summer headways) [updated demand, Nov 2026: -5.6% +- 0.8% / -9.8% +- 1.0%; committed rider -9.2%, losing 3.5 min against today's 5.7];
 an all-knowing rider -9.0% / -11.0%. Wait at transfer stops per trip 0.79 min against 1.05-1.13 today.
 
 **Desk field check** (`analysis/field_check.py`): 48 stops lose service (45 dropped, 3 passed), ~960 boardings and
