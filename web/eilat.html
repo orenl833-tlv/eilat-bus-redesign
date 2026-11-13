@@ -130,7 +130,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
     <details><summary>הצג כטבלה</summary><div class="tablewrap"><table id="acttbl"></table></div></details></div>
 
   <div>
-    <h2>מדלת לדלת, לפי שכונה</h2>
+    <h2>מהדלת לדלת, לפי שכונה</h2>
     <p class="note" id="tblnote"></p>
   </div>
   <div class="tablewrap"><table id="tbl"></table></div>
@@ -447,7 +447,7 @@ function tiles() {
   const s = D.summary[st.opt], t = D.summary.today;
   const pct = (x, d = 0) => num(`${signed((x - 1) * 100, d)}%`);
   const items = [
-    ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "בממוצע על כל השנה, כולל איחורים"],
+    ["זמן הנסיעה מהדלת לדלת", pct((s.year_A + s.year_B) / 2), s.season ? `ממוצע שנתי: בחורף כ-${Math.round((1 - s.season.winter) * 100)}% פחות, ובקיץ כ-${Math.round((1 - s.season.summer) * 100)}% פחות. כולל איחורים` : "ממוצע שנתי, כולל איחורים"],
     [s.worst_area > 1 ? "האזור שנפגע הכי הרבה" : "האזור שמשתפר הכי פחות", pct(s.worst_area, 1), "שינוי בזמן הנסיעה לעומת היום"],
     ["אוטובוסים", num(s.peak.year), `כולל 15% זמן מנוחה במסוף. היום ${t.peak}`],
     ["נהגים", num(s.drivers), s.drivers === t.drivers ? "בדיוק כמו היום" : `היום ${t.drivers}`],
