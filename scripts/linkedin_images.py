@@ -57,7 +57,7 @@ h1{font-size:46px;margin:0 0 10px;line-height:1.15} p.sub{font-size:24px;margin:
 .maps{display:flex;gap:28px;justify-content:center} figure{margin:0;text-align:center}
 figcaption{font-size:30px;font-weight:700;margin-bottom:8px} figcaption span{font-weight:400;color:#52606d;font-size:22px}
 svg{background:#d6e6ee;border-radius:14px;display:block}
-.land{fill:#f1ede4;stroke:#d9d2c3} .sea{fill:#d6e6ee} .ln{fill:none;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.land{fill:#f1ede4;stroke:#d9d2c3} .sea{fill:#d6e6ee} .ln{fill:none;stroke-width:6.5;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
 .area{stroke:#fff;stroke-width:1.2} .lbl{font-size:13px;font-weight:700;fill:#1f2933;paint-order:stroke;stroke:#fff;stroke-width:4px}
 .foot{font-size:20px;color:#52606d;margin-top:18px} .leg{display:flex;gap:22px;font-size:22px;margin-top:16px;justify-content:center}
 .leg i{display:inline-block;width:26px;height:18px;border-radius:4px;margin-left:8px;vertical-align:middle}
