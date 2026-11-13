@@ -13,6 +13,7 @@ Usage: PYTHONPATH=.:scripts python3 scripts/blocking.py   Output: data/blocking.
 """
 import json
 import math
+import os
 
 import numpy as np
 import pandas as pd
@@ -133,13 +134,15 @@ _PROBS = {}
 
 def option_net(tag, season):
     """The network of an option in a season (seasonal frequencies). A tag "net_<x>" is a network searched on the
-    timetable (data/net_<x>.json, scripts/optimize_tt.py): one set of headways for every season."""
+    timetable (data/net_<x>.json, scripts/optimize_tt.py); summer takes data/net_<x>_summer.json when there is one
+    (HEADWAY_ONLY=1 SEASON=summer), the other seasons the winter headways."""
     if tag.startswith("net_"):
         if "design" not in _PROBS:
             _PROBS["design"] = O.Problem("design")
         prob = _PROBS["design"]
         st = dict(prob.state0)
-        for k, v in json.load(open(f"data/{tag}.json")).items():
+        f = f"data/{tag}_summer.json" if season == "summer" and os.path.exists(f"data/{tag}_summer.json") else f"data/{tag}.json"
+        for k, v in json.load(open(f)).items():
             if k in st:
                 st[k] = {q: (h if h is not None else math.inf) for q, h in v.items()}
         return prob.network(st)

@@ -31,8 +31,8 @@ def nets(prob, tag, evening_end=None):
     if tag.startswith("net_"):
         import blocking as BL
         import evening as EV
-        n = BL.option_net(tag, "winter")
-        return {s: (EV.thinned(n, evening_end) if evening_end else n) for s in P.SEASONS}
+        ns = {s: BL.option_net(tag, "summer" if s == "summer" else "winter") for s in P.SEASONS}
+        return {s: (EV.thinned(n, evening_end) if evening_end else n) for s, n in ns.items()}
     if evening_end:
         import evening as EV
         return {s: EV.thinned(n, evening_end) for s, n in nets(prob, tag).items()}

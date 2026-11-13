@@ -1,7 +1,7 @@
 """Numbers for the map page (web/eilat.html) from the timetable check, for today and the recommended network.
 
 - area change: each residential area's demand-weighted door-to-door minutes (its centre to the key places and
-  back, scripts/optimize_tt.py OD=demand), the network against today, per season (spring/autumn uses the
+  back, scripts/optimize_tt.py OD=demand), the network against today, per season (summer with its own headways when data/net_<x>_summer.json exists; spring/autumn uses the
   winter trips: same timetable and no summer tourism peak);
 - travel times: door-to-door minutes from each area's centre to the page's key places, per period and the whole
   day (periods weighted by hours), mean over leaving times in the period and SEEDS delay draws;
@@ -42,7 +42,9 @@ def main():
         S = X.Search()
         pts = S.prob.m.pts
         today = T.TodayNet(); today.foot = S.tt.foot
-        nets = {"today": today.network(today.start), "plan": C.PatsNet(S.tt, S.prob.network(C.load(S, path))).network(None)}
+        sp = path.replace(".json", "_summer.json")
+        pth = sp if season == "summer" and os.path.exists(sp) else path      # summer headways when searched
+        nets = {"today": today.network(today.start), "plan": C.PatsNet(S.tt, S.prob.network(C.load(S, pth))).network(None)}
         res = {k: S.tt.per_home(n, "holdout", C.SEEDS) for k, n in nets.items()}
         homes = [o for o in res["today"][0] if (o[0], o[1]) not in {(float(a), float(b)) for a, b in zip(Dm.ATTRACTORS.lat, Dm.ATTRACTORS.lon, strict=True)}]
         out["area"][season] = {area_of(pts, o): round((res["plan"][0][o] / res["today"][0][o] - 1) * 100, 1) for o in homes}
