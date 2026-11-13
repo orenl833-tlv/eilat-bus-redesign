@@ -349,7 +349,7 @@ function poiTip(e, name, tag) {
     if (leisure >= 1.5) what.push("מוקד פנאי מרכזי"); else if (leisure >= 0.5) what.push("מוקד פנאי");
     if (tourist >= 2) what.push("יעד מרכזי לתיירים"); else if (tourist >= 1) what.push("יעד לתיירים");
     if (place === "Hotels, North Beach") what.push("כאן ישנים התיירים, ומכאן הם יוצאים");
-    if (place === "Eilat campus") { add("במודל: " + what.join(", ") + "."); const w = add("טעות שלנו: ה-300 הוא הערכה ולא נתון, והסטודנטים לא נכללו במודל בכלל. לכן מספר הנוסעים לקמפוס כאן כנראה נמוך מהמציאות. הקמפוס נשמר בהצעה כתחנה שחייבים לעצור בה, אבל התדירות אליו לא נבדקה על הביקוש האמיתי. על התוצאה בכל העיר ההשפעה כנראה זניחה, כי הקמפוס הוא יעד אחד מתוך הרבה."); w.style.color = "var(--coral)"; } else
+    if (place === "Eilat campus") { add("במודל: " + what.join(", ") + "."); const w = add("טעות שלנו: ה-300 הוא הערכה ולא נתון, והסטודנטים לא נכללו במודל בכלל. לכן מספר הנוסעים לקמפוס כאן כנראה נמוך מהמציאות. הקמפוס נשמר בהצעה כתחנה שחייבים לעצור בה, אבל התדירות אליו לא נבדקה על הביקוש האמיתי. על התוצאה בכל העיר ההשפעה כנראה זניחה, כי הקמפוס הוא יעד אחד מתוך רבים."); w.style.color = "var(--coral)"; } else
     add("במודל: " + what.join(", ") + ".");
     const sub = add("מגיעים באוטובוס ביום חול, לפי עונה:"); sub.style.marginTop = "6px";
     const row = (label, t) => { const f = F.flow[t]; if (f) add(`${label}: ` + ["winter", "spring_autumn", "summer"].map((se) => `${SNAME[se]} ${f[se].all[i][0].toLocaleString("he-IL")}`).join(" · ")) };
