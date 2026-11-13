@@ -16,3 +16,6 @@
 - Still for the operator: a layover spot at each end. Common practice (NZTA, Transport for NSW guidance): kerb space
   away from the stop itself, for one bus at a time here (layover shorter than the headway), sized on site by
   swept-path analysis, with driver facilities (toilet) nearby.
+
+## When the project moves to its own repository
+- Link the repository and the LinkedIn post from the map page (web/eilat.html), and republish the map.
