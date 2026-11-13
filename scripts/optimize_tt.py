@@ -69,6 +69,8 @@ def demand_od(season, min_walk=10.0):
     att = Dm.ATTRACTORS
     places = [(float(att.lat[i]), float(att.lon[i])) for i in range(len(att))]
     per = list(P.PERIODS)
+    camp = int(att.index[att.name == Dm.CAMPUS][0])
+    uni = Dm.uni_tours(homes["pop"].values, season)
     od = {}
 
     def add(o, d, k, w):
@@ -92,12 +94,30 @@ def demand_od(season, min_walk=10.0):
                 for k in range(len(per)):
                     add(o, places[a], k, n * Dm.PROFILE[p]["out"][k])
                     add(places[a], o, k, n * Dm.PROFILE[p]["back"][k])
+        n = float((uni[g.index] * prop[g.index]).sum())          # students: home -> campus and back
+        for k in range(len(per)):
+            add(o, places[camp], k, n * Dm.UNI_PROFILE["out"][k])
+            add(places[camp], o, k, n * Dm.UNI_PROFILE["back"][k])
+    dw, _ = Dm.dorm_work_tours()                                   # dorm residents' jobs in the city (car-less)
+    for a, n in enumerate(dw):
+        for k in range(len(per)):
+            add(places[camp], places[a], k, n * Dm.PROFILE["work"]["out"][k])
+            add(places[a], places[camp], k, n * Dm.PROFILE["work"]["back"][k])
     hp = places[hotel]
     for a, n in enumerate(tour):
         for k in range(len(per)):
             add(hp, places[a], k, n * Dm.PROFILE["tourist"]["out"][k])
             add(places[a], hp, k, n * Dm.PROFILE["tourist"]["back"][k])
-    return {o: [(d, wd, w) for d, (wd, w) in ds.items()] for o, ds in od.items()}
+    # realism: drop the rarest trips (the lightest origin-destination pairs that together are OD_TRIM of all trips),
+    # the same for every network, so the score is not moved by trips almost nobody makes
+    trim = float(os.environ.get("OD_TRIM", "0.02"))
+    ws = sorted(sum(w.values()) for ds in od.values() for _, w in ds.values())
+    cut, acc, tot = 0.0, 0.0, sum(ws)
+    for x in ws:
+        if acc + x > trim * tot:
+            break
+        acc += x; cut = x
+    return {o: [(d, wd, w) for d, (wd, w) in ds.items() if sum(w.values()) > cut] for o, ds in od.items()}
 
 
 def hours_in(q):

@@ -7,6 +7,8 @@ and on car ownership. Every tour is an outbound trip in one period and a return 
 """
 from __future__ import annotations
 
+import os
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -26,7 +28,7 @@ ATTRACTORS = pd.DataFrame([
     ("Big centre",                29.5677, 34.9596, 1500, 0,    2.5, 0.3, 0.3),
     ("Industrial zone / depot",   29.5742, 34.9612, 1500, 0,    0.5, 0.0, 0.0),
     ("Yoseftal hospital",         29.5549, 34.9401, 900,  0,    1.5, 0.0, 0.0),
-    ("Eilat campus",              29.5665, 34.9522, 300,  0,    0.3, 0.0, 0.0),
+    ("Eilat campus",              29.5665, 34.9522, 80,   0,    0.3, 0.0, 0.0),
     ("Rabin high school",         29.5534, 34.9358, 90,   1191, 0.0, 0.0, 0.0),
     ("Begin high school",         29.5622, 34.9379, 90,   1084, 0.0, 0.0, 0.0),
     ("Goldwater high school",     29.5536, 34.9481, 90,   1067, 0.0, 0.0, 0.0),
@@ -35,6 +37,12 @@ ATTRACTORS = pd.DataFrame([
     ("Port",                      29.5355, 34.9404, 600,  0,    0.0, 0.0, 0.0),
     ("City entrance terminal",    29.5713, 34.9623, 100,  0,    0.3, 0.0, 0.3),
 ], columns=["name", "lat", "lon", "jobs", "school", "services", "leisure", "tourist"])
+# robustness: DEMAND_PERTURB=<seed> multiplies every attractor's jobs, services, leisure and tourist size by its own
+# random factor between 0.5 and 1.5 (school sizes are enrolment, kept), to test results not fitted to these guesses
+if os.environ.get("DEMAND_PERTURB"):
+    _rng = np.random.default_rng(int(os.environ["DEMAND_PERTURB"]))
+    for _c in ("jobs", "services", "leisure", "tourist"):
+        ATTRACTORS[_c] = ATTRACTORS[_c] * _rng.uniform(0.5, 1.5, len(ATTRACTORS))
 
 # share of a purpose's daily outbound / return trips in each period (assumptions; school from bell times,
 # work from hotel shifts 07/15/23 and office hours, tourists from beach and evening habits)
@@ -47,6 +55,27 @@ PROFILE = {
 }
 BETA = {"work": 0.15, "school": 0.25, "services": 0.30, "leisure": 0.20, "tourist": 0.15}  # per km (assumption)
 PURPOSES = list(PROFILE)
+# students of the Eilat campus, kept apart from PURPOSES (no ridership to calibrate them on): two waves, as many
+# students work (assumption); no classes in the long summer holiday
+UNI_PROFILE = dict(out=[.25, .30, .15, .25, .05], back=[0, .10, .30, .30, .30])
+CAMPUS = "Eilat campus"
+
+
+def uni_tours(pop, season):
+    """Student tours to the campus per day (all modes) from each home point, by population; dorm residents walk."""
+    if not P.SEASONS[season]["school"] or DAY == "saturday":
+        return np.zeros(len(pop))
+    n = P.UNI_STUDENTS * P.UNI_ATTEND * (1 - P.UNI_DORM_SHARE) * (0.2 if DAY == "friday" else 1.0)
+    return n * pop / pop.sum()
+
+
+def dorm_work_tours():
+    """Work tours per day from the campus dorms to each attractor (all modes), by the work gravity model."""
+    att = ATTRACTORS
+    c = att.index[att.name == CAMPUS][0]
+    dk = walk_min(att.lat[c], att.lon[c], att.lat.values, att.lon.values) * (P.WALK_KMH * 1000 / 60) / P.DETOUR / 1000
+    w = att.jobs.values * np.exp(-BETA["work"] * dk); w[c] = 0
+    return P.UNI_STUDENTS * P.UNI_DORM_SHARE * P.UNI_DORM_WORK * DAY_FACTORS[DAY]["work"] * w / w.sum(), c
 HOTEL = "Hotels, North Beach"
 
 

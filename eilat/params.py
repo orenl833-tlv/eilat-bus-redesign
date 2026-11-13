@@ -45,6 +45,11 @@ CAR_PROPENSITY = 0.2    # assumption, calibrated: bus use of residents in car-ow
 HOTEL_ROOMS = 11_500     # press reports 11,000-12,000
 GUESTS_PER_ROOM = 2.0    # assumption
 OCCUPANCY = {"winter": 0.65, "spring_autumn": 0.72, "summer": 0.85}  # assumption: Eilat leads national occupancy; summer = Israeli holiday peak
+# Eilat campus (BGU): assumptions from public sources (700-800 enrolled), not data
+UNI_STUDENTS = 750      # enrolled
+UNI_ATTEND = 0.6        # share on campus on a given weekday
+UNI_DORM_SHARE = 0.2    # live in the campus dorms (one building of 72 beds opened 2010; seven were planned) and walk
+UNI_DORM_WORK = 0.35    # dorm residents with a city job (hotels, restaurants, shops) on a given weekday
 TOURIST_TOUR_RATE = 0.8  # assumption: outings from the hotel per guest per day, all modes
 
 # --- mode choice (bus vs walking / car) ---
