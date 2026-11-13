@@ -504,9 +504,19 @@ function legend() {
 // lines running per hour: today and every option, the chosen season (step lines: an hour's value holds until the next hour)
 const SERIES = ["today", "net_F2"];   // the one recommended plan against today
 const SER_HE = (k) => k === "today" ? "היום" : OPT_HE[k];
+// seasons whose active-lines numbers are identical in every series are shown as one button
+function actGroups() {
+  const g = [];
+  for (const s of D.seasons) {
+    const key = JSON.stringify(SERIES.map((k) => D.active.data[k][s]));
+    const hit = g.find((x) => x.key === key);
+    if (hit) hit.push(s); else { const n = [s]; n.key = key; g.push(n) }
+  }
+  return g;
+}
 function activeChart() {
   const A = D.active; if (!A) return;
-  document.getElementById("actseason").textContent = SNAME[st.actSeason];
+  document.getElementById("actseason").textContent = actGroups().find((g) => g[0] === st.actSeason).map((x) => SNAME[x]).join(", ");
   const hrs = A.hours, svg = document.getElementById("act");
   const w = 760, h = 260, m = {l: 36, r: 16, t: 12, b: 30};
   const x0 = hrs[0], x1 = hrs[hrs.length - 1] + 1;
@@ -560,7 +570,7 @@ function colorButtons() {
 function render() {
   colorButtons();
   seg("ftab", [["opt", OPT_HE[st.opt]], ["today", "היום"]], st.ftab);
-  seg("actseas", D.seasons.map((s) => [s, SNAME[s]]), st.actSeason, "actSeason");
+  seg("actseas", actGroups().map((g) => [g[0], g.map((x) => SNAME[x]).join(", ")]), st.actSeason, "actSeason");
   document.getElementById("optName").textContent = OPT_HE[st.opt];
   const busesL = segsFor("today").reduce((m, x) => Math.max(m, x[2]), 0);
   const busesR = segsFor(st.opt).reduce((m, x) => Math.max(m, x[2]), 0);
