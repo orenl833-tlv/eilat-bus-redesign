@@ -9,3 +9,10 @@
 - **Demand robustness:** re-score net_F2 against today with perturbed attractor sizes (e.g. hotel jobs +-50%), a flat
   PROFILE and other BETA values, not only new leaving times and delays.
 - Keep the 2-min transfer time.
+
+# Route checks done (OSM roads, OSRM car routing; streets assumed wide enough for a bus)
+- The 9 stop-to-stop links not driven today are direct on main streets (4-30% longer than straight): `data/new_links_osrm.json`.
+- Every end of lines 7-9 has a legal turnaround without a U-turn, 243-605 m around a block: `data/new_terminals_osrm.json`.
+- Still for the operator: a layover spot at each end. Common practice (NZTA, Transport for NSW guidance): kerb space
+  away from the stop itself, for one bus at a time here (layover shorter than the headway), sized on site by
+  swept-path analysis, with driver facilities (toilet) nearby.
