@@ -6,7 +6,7 @@ Can a city's buses serve people better with the same fleet and the same drivers?
 **The recommended network** (`data/net_F2.json`, found by a search that scores every candidate on its timetable
 as buses really run: GPS run times per street segment, hour and direction; real delays per line, direction
 and hour; demand-weighted trips; every area keeps its 20-min line nearby; checked on unseen leaving times and delays):
-- **~5% shorter door-to-door trips in winter, ~9% in summer** (summer headways, `data/net_F2_summer.json`); perceived time improves ~5% in winter and ~11% in summer.
+- **~5% shorter door-to-door trips in winter, ~10% in summer** (summer headways, `data/net_F2_summer.json`); perceived time improves ~5% in winter and ~11% in summer.
 - **Fewer buses:** 32 against today's 34, with 15% terminal recovery; **the same drivers** (91 with overtime).
 - **Costs ~NIS 1.2 M a year:** ~3% more bus-hours, mostly evening service to 23:00.
 - **No residential area loses more than 0.5%;** workplaces lose most (industrial zone +16%, Begin high school +13%).

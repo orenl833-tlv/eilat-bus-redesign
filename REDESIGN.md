@@ -2,7 +2,7 @@
 
 > **Superseded (Nov 2026).** The gains below (12-18%) come from the frequency-based model and do not survive a
 > check on the timetables as buses really run (the old recommendation gives ~4%). The recommendation is now the
-> timetable-searched network `data/net_F2.json`: ~5% shorter trips in winter and ~9% in summer (demand updated Nov 2026: students, summer beach trips, 35% of tourists by bus), 32 buses, the same
+> timetable-searched network `data/net_F2.json`: ~5% shorter trips in winter and ~10% in summer (demand updated Nov 2026: students, summer beach trips, 35% of tourists by bus), 32 buses, the same
 > drivers, every area keeping its 20-min line. See [Timetable check](#timetable-check-with-real-run-times-and-delays)
 > and SUMMARY_HE.md. The sections below document the earlier work.
 

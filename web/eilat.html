@@ -455,7 +455,10 @@ function tiles() {
   ];
   document.getElementById("tiles").innerHTML = items.map(([a, b, c]) => `<div class="tile"><span>${a}</span><b>${b}</b><small>${c}</small></div>`).join("");
   const avg = (s.year_A + s.year_B) / 2;
-  document.getElementById("headline").textContent = `${OPT_HE[st.opt]}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מהדלת לדלת.`;
+  const se = s.season || {};
+  document.getElementById("headline").textContent = se.winter && se.summer
+    ? `${OPT_HE[st.opt]}: כ-${Math.round((1 - se.winter) * 100)}% פחות זמן נסיעה מהדלת לדלת בחורף, וכ-${Math.round((1 - se.summer) * 100)}% בקיץ.`
+    : `${OPT_HE[st.opt]}: כ-${Math.round((1 - avg) * 100)}% פחות זמן נסיעה מהדלת לדלת.`;
 }
 
 // perceived minutes to each key place, for the chosen season and period (or the whole day): [today, option]
