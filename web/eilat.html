@@ -124,7 +124,7 @@ h2 { font: 700 20px var(--display); margin: 6px 0 0 }
 
   <div>
     <h2>כמה קווים פועלים בכל שעה</h2>
-    <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול, <span id="actseason"></span>. גרסה של קו (מדלגת על תחנות שקטות או במסלול מקוצר) נספרת יחד עם הקו המקורי. קווי בתי הספר 80–82 כלולים, חוץ מבחופש הגדול. לוח הזמנים של היום זהה בכל העונות. בהצעות, התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
+    <p class="note">קו פעיל בשעה מסוימת אם יוצאת בה לפחות נסיעה אחת שלו, ביום חול (<span id="actseason"></span>). גרסה של קו (מדלגת על תחנות שקטות או במסלול מקוצר) נספרת יחד עם הקו המקורי. קווי בתי הספר 80–82 כלולים, חוץ מבחופש הגדול. לוח הזמנים של היום זהה בכל העונות. בהצעות, התדירות משתנה רק בשעות 06, 09, 12, 15 ו-19.</p>
   </div>
   <div class="chart"><div class="seg" id="actseas" role="group" aria-label="עונה" style="margin-bottom:8px"></div><div class="legend" id="actlegend"></div><svg id="act" dir="ltr" role="img" aria-label="מספר הקווים הפעילים בכל שעה, היום ובכל אחת מההצעות"></svg>
     <details><summary>הצג כטבלה</summary><div class="tablewrap"><table id="acttbl"></table></div></details></div>
@@ -514,9 +514,10 @@ function actGroups() {
   }
   return g;
 }
+const actLabel = (g) => g.length > 1 && !g.includes("summer") && g.length === D.seasons.length - 1 ? "יתר השנה" : g.map((x) => SNAME[x]).join(", ");
 function activeChart() {
   const A = D.active; if (!A) return;
-  document.getElementById("actseason").textContent = actGroups().find((g) => g[0] === st.actSeason).map((x) => SNAME[x]).join(", ");
+  document.getElementById("actseason").textContent = actLabel(actGroups().find((g) => g[0] === st.actSeason));
   const hrs = A.hours, svg = document.getElementById("act");
   const w = 760, h = 260, m = {l: 36, r: 16, t: 12, b: 30};
   const x0 = hrs[0], x1 = hrs[hrs.length - 1] + 1;
@@ -570,7 +571,7 @@ function colorButtons() {
 function render() {
   colorButtons();
   seg("ftab", [["opt", OPT_HE[st.opt]], ["today", "היום"]], st.ftab);
-  seg("actseas", actGroups().map((g) => [g[0], g.map((x) => SNAME[x]).join(", ")]), st.actSeason, "actSeason");
+  seg("actseas", actGroups().map((g) => [g[0], actLabel(g)]), st.actSeason, "actSeason");
   document.getElementById("optName").textContent = OPT_HE[st.opt];
   const busesL = segsFor("today").reduce((m, x) => Math.max(m, x[2]), 0);
   const busesR = segsFor(st.opt).reduce((m, x) => Math.max(m, x[2]), 0);
