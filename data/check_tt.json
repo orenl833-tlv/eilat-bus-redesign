@@ -28,68 +28,25 @@
    "A14H"
   ]
  },
- "data/net_F2.json": {
-  "minutes": 24.387394642757435,
-  "vs_today": -0.04592225571239272,
-  "worst_area": 1.1536310662513285,
-  "perceived_trips": 33.599008235794685,
-  "perceived_vs_today": -0.05049227312155702,
-  "worst_area_perceived": 1.2041697663397994,
-  "perceived": 40.48186539038619,
-  "buses": 31,
-  "bus_hours": 395.8638080549439,
-  "lines": [
-   "15x",
-   "16x",
-   "3s",
-   "5s",
-   "6",
-   "D12157_12356",
-   "D12719_42115",
-   "D28805_42115"
-  ]
- },
- "data/opt_tt_net_F2_s51_design_demand_freq.json": {
-  "minutes": 24.38124518983377,
-  "vs_today": -0.04616283311969516,
-  "worst_area": 1.1642712805102686,
-  "perceived_trips": 33.479417866670815,
-  "perceived_vs_today": -0.053871896077879455,
-  "worst_area_perceived": 1.2501245147613547,
-  "perceived": 41.06224357357253,
-  "buses": 31,
-  "bus_hours": 395.2851193880898,
+ "data/net_H.json": {
+  "minutes": 24.537027738563204,
+  "vs_today": -0.04006834599352349,
+  "worst_area": 1.1127528008165348,
+  "perceived_trips": 34.14879585053013,
+  "perceived_vs_today": -0.03495527915227581,
+  "worst_area_perceived": 1.178462512933774,
+  "perceived": 41.722071357356484,
+  "buses": 30,
+  "bus_hours": 395.4440668178872,
   "lines": [
    "15x",
    "16",
+   "2s",
    "3s",
-   "5",
-   "6",
-   "D12157_12356",
+   "6x",
+   "D12169_28805",
    "D12719_42115",
-   "D28805_42115"
-  ]
- },
- "data/opt_tt_net_H_s52_design_demand_freq.json": {
-  "minutes": 24.644282991028536,
-  "vs_today": -0.03587233199390949,
-  "worst_area": 1.126449408422896,
-  "perceived_trips": 34.37994048265609,
-  "perceived_vs_today": -0.02842313353982706,
-  "worst_area_perceived": 1.186948773003619,
-  "perceived": 41.50287238492848,
-  "buses": 32,
-  "bus_hours": 393.03224892388255,
-  "lines": [
-   "15",
-   "16",
-   "3s",
-   "4",
-   "6",
-   "D12356_12357",
-   "D12356_12668",
-   "D28805_29085",
-   "D28809_29094"
+   "D28809_29186"
   ]
  }
 }
