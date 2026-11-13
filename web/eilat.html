@@ -429,10 +429,10 @@ function tip(e, a, tag) {
 
 function tiles() {
   const s = D.summary[st.opt], t = D.summary.today;
-  const pct = (x) => num(`${signed((x - 1) * 100)}%`);
+  const pct = (x, d = 0) => num(`${signed((x - 1) * 100, d)}%`);
   const items = [
     ["זמן נסיעה מדלת לדלת", pct((s.year_A + s.year_B) / 2), "ממוצע שנתי, לעומת היום, לפי לוחות הזמנים ועם איחורים"],
-    ["האזור שמשתפר הכי פחות", pct(s.worst_area), s.worst_area <= 1 ? "כל האזורים משתפרים לפחות בזה" : "אזור אחד נפגע בשיעור הזה (המגבלה: 10%)"],
+    ["האזור שמשתפר הכי פחות", pct(s.worst_area, 1), "שינוי בזמן הנסיעה לעומת היום"],
     ["אוטובוסים", num(s.peak.year), `כולל 15% זמן מנוחה במסוף. היום ${t.peak}`],
     ["נהגים", num(s.drivers), `עם שעות נוספות, כמו היום. היום ${t.drivers}`],
     ["שעות אוטובוס ביום חול", num(Math.round(s.hours.year)), `כולל נסיעות ריקות. היום ${Math.round(t.hours)}`],
