@@ -6,7 +6,7 @@
   "place": "מלון הנסיכה ומעבר טאבה",
   "period": "15-19",
   "when": "אחר הצהריים, יציאה מהבית בין 17:00 ל-17:45",
-  "delta": -21,
+  "delta": -22,
   "delta_printed": -24,
   "options": {
    "היום": {
@@ -92,7 +92,7 @@
    },
    "ההצעה": {
     "mode": "bus",
-    "total": 53,
+    "total": 52,
     "walk": 8,
     "ride": 35,
     "wait": 8,
@@ -175,7 +175,7 @@
   "place": "חוף האלמוגים",
   "period": "15-19",
   "when": "אחר הצהריים, יציאה מהבית בין 17:00 ל-17:45",
-  "delta": -18,
+  "delta": -19,
   "delta_printed": -19,
   "options": {
    "היום": {
@@ -236,7 +236,7 @@
    },
    "ההצעה": {
     "mode": "bus",
-    "total": 37,
+    "total": 35,
     "walk": 11,
     "ride": 22,
     "wait": 5,
@@ -304,7 +304,7 @@
   "place": "קניון אייס מול",
   "period": "19-24",
   "when": "בערב, יציאה מהבית בין 21:00 ל-21:45",
-  "delta": -7,
+  "delta": -8,
   "delta_printed": -6,
   "options": {
    "היום": {
@@ -375,7 +375,7 @@
    },
    "ההצעה": {
     "mode": "bus",
-    "total": 43,
+    "total": 42,
     "walk": 8,
     "ride": 29,
     "wait": 9,
@@ -469,7 +469,7 @@
    },
    "ההצעה": {
     "mode": "bus",
-    "total": 34,
+    "total": 35,
     "walk": 5,
     "ride": 26,
     "wait": 6,
@@ -745,120 +745,26 @@
  },
  {
   "group": "typical",
-  "area": 35,
-  "home_stop": "עין יהב/דרך הרים",
+  "area": 36,
+  "home_stop": "דודאים/דרך התבלינים",
   "place": "בית החולים יוספטל",
   "period": "06-09",
   "when": "בבוקר, יציאה מהבית בין 07:00 ל-07:45",
   "delta": -3,
-  "delta_printed": -5,
+  "delta_printed": 1,
   "options": {
    "היום": {
     "mode": "bus",
-    "total": 15,
-    "walk": 6,
-    "ride": 8,
-    "wait": 3,
-    "transfers": 0,
-    "steps": [
-     {
-      "kind": "walk",
-      "min": 7.3,
-      "to": "הנבטים/בני ישראל"
-     },
-     {
-      "kind": "ride",
-      "lines": [
-       {
-        "line": "5",
-        "note": ""
-       }
-      ],
-      "board": "הנבטים/בני ישראל",
-      "alight": "ששת הימים/דרך יותם",
-      "dep": "07:09",
-      "arr": "07:12",
-      "ride": 3.3,
-      "stops": 4
-     },
-     {
-      "kind": "walk",
-      "min": 2.8,
-      "to": "היעד"
-     }
-    ],
-    "leave": "07:00",
-    "arrive": "07:15",
-    "nobus": 0,
-    "printed": 16,
-    "lo": 15,
-    "hi": 17
-   },
-   "ההצעה": {
-    "mode": "bus",
-    "total": 12,
-    "walk": 5,
-    "ride": 6,
+    "total": 20,
+    "walk": 7,
+    "ride": 12,
     "wait": 0,
     "transfers": 0,
     "steps": [
      {
       "kind": "walk",
-      "min": 4.6,
-      "to": "דרך הרים/עין יהב"
-     },
-     {
-      "kind": "ride",
-      "lines": [
-       {
-        "line": "3",
-        "note": ""
-       }
-      ],
-      "board": "דרך הרים/עין יהב",
-      "alight": "בית חולים יוספטל",
-      "dep": "07:05",
-      "arr": "07:11",
-      "ride": 6.0,
-      "stops": 7
-     },
-     {
-      "kind": "walk",
-      "min": 0.0,
-      "to": "היעד"
-     }
-    ],
-    "leave": "07:00",
-    "arrive": "07:11",
-    "nobus": 0,
-    "printed": 11,
-    "lo": 8,
-    "hi": 14
-   }
-  }
- },
- {
-  "group": "typical",
-  "area": 35,
-  "home_stop": "עין יהב/דרך הרים",
-  "place": "קמפוס אילת",
-  "period": "09-12",
-  "when": "באמצע הבוקר, יציאה מהבית בין 10:00 ל-10:45",
-  "delta": -4,
-  "delta_printed": -1,
-  "options": {
-   "היום": {
-    "mode": "bus",
-    "total": 28,
-    "walk": 7,
-    "ride": 14,
-    "wait": 4,
-    "transfers": 0,
-    "steps": [
-     {
-      "kind": "walk",
-      "min": 13.2,
-      "to": "עין נטפים/משעול אשכולית"
+      "min": 5.5,
+      "to": "דרך התבלינים/שיבולים"
      },
      {
       "kind": "ride",
@@ -868,12 +774,126 @@
         "note": ""
        }
       ],
-      "board": "עין נטפים/משעול אשכולית",
+      "board": "דרך התבלינים/שיבולים",
+      "alight": "בית חולים יוספטל",
+      "dep": "07:07",
+      "arr": "07:21",
+      "ride": 14.0,
+      "stops": 16
+     },
+     {
+      "kind": "walk",
+      "min": 0.0,
+      "to": "היעד"
+     }
+    ],
+    "leave": "07:00",
+    "arrive": "07:21",
+    "nobus": 0,
+    "printed": 19,
+    "lo": 16,
+    "hi": 22
+   },
+   "ההצעה": {
+    "mode": "bus",
+    "total": 17,
+    "walk": 5,
+    "ride": 11,
+    "wait": 4,
+    "transfers": 0,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 3.4,
+      "to": "דרך הבשמים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "7",
+        "note": ""
+       }
+      ],
+      "board": "דרך הבשמים",
+      "alight": "בית חולים יוספטל",
+      "dep": "07:10",
+      "arr": "07:22",
+      "ride": 11.6,
+      "stops": 12
+     },
+     {
+      "kind": "walk",
+      "min": 0.0,
+      "to": "היעד"
+     }
+    ],
+    "leave": "07:00",
+    "arrive": "07:22",
+    "nobus": 0,
+    "printed": 20,
+    "lo": 17,
+    "hi": 22
+   }
+  }
+ },
+ {
+  "group": "typical",
+  "area": 35,
+  "home_stop": "עין יהב/דרך הרים",
+  "place": "קמפוס אילת",
+  "period": "06-09",
+  "when": "בבוקר, יציאה מהבית בין 07:00 ל-07:45",
+  "delta": -2,
+  "delta_printed": -2,
+  "options": {
+   "היום": {
+    "mode": "bus",
+    "total": 27,
+    "walk": 5,
+    "ride": 18,
+    "wait": 5,
+    "transfers": 1,
+    "steps": [
+     {
+      "kind": "walk",
+      "min": 0.7,
+      "to": "עין יהב/דרך הרים"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "2",
+        "note": ""
+       }
+      ],
+      "board": "עין יהב/דרך הרים",
+      "alight": "דובדבן/שקד",
+      "dep": "07:06",
+      "arr": "07:11",
+      "ride": 5.5,
+      "stops": 7
+     },
+     {
+      "kind": "walk",
+      "min": 0.5,
+      "to": "הדובדבן/משעול אגוז"
+     },
+     {
+      "kind": "ride",
+      "lines": [
+       {
+        "line": "4",
+        "note": ""
+       }
+      ],
+      "board": "הדובדבן/משעול אגוז",
       "alight": "קמפוס אילת/המלחה",
-      "dep": "10:16",
-      "arr": "10:28",
-      "ride": 11.3,
-      "stops": 14
+      "dep": "07:15",
+      "arr": "07:29",
+      "ride": 13.7,
+      "stops": 17
      },
      {
       "kind": "walk",
@@ -881,19 +901,19 @@
       "to": "היעד"
      }
     ],
-    "leave": "10:00",
-    "arrive": "10:28",
+    "leave": "07:00",
+    "arrive": "07:29",
     "nobus": 0,
-    "printed": 25,
-    "lo": 18,
-    "hi": 29
+    "printed": 28,
+    "lo": 25,
+    "hi": 30
    },
    "ההצעה": {
     "mode": "bus",
-    "total": 24,
-    "walk": 6,
-    "ride": 15,
-    "wait": 2,
+    "total": 25,
+    "walk": 12,
+    "ride": 13,
+    "wait": 0,
     "transfers": 0,
     "steps": [
      {
@@ -911,9 +931,9 @@
       ],
       "board": "דרך הרים/עין יהב",
       "alight": "קמפוס אילת/המלחה",
-      "dep": "10:06",
-      "arr": "10:19",
-      "ride": 12.9,
+      "dep": "07:06",
+      "arr": "07:18",
+      "ride": 12.7,
       "stops": 11
      },
      {
@@ -922,12 +942,12 @@
       "to": "היעד"
      }
     ],
-    "leave": "10:00",
-    "arrive": "10:19",
+    "leave": "07:00",
+    "arrive": "07:19",
     "nobus": 0,
-    "printed": 24,
+    "printed": 26,
     "lo": 19,
-    "hi": 28
+    "hi": 30
    }
   }
  }
