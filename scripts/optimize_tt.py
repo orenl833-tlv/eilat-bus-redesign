@@ -107,8 +107,8 @@ def demand_od(season, min_walk=10.0):
     hp = places[hotel]
     for a, n in enumerate(tour):
         for k in range(len(per)):
-            add(hp, places[a], k, n * Dm.PROFILE["tourist"]["out"][k])
-            add(places[a], hp, k, n * Dm.PROFILE["tourist"]["back"][k])
+            add(hp, places[a], k, n * P.TOURIST_BUS_SHARE * Dm.PROFILE["tourist"]["out"][k])
+            add(places[a], hp, k, n * P.TOURIST_BUS_SHARE * Dm.PROFILE["tourist"]["back"][k])
     # realism: drop the rarest trips (the lightest origin-destination pairs that together are OD_TRIM of all trips),
     # the same for every network, so the score is not moved by trips almost nobody makes
     trim = float(os.environ.get("OD_TRIM", "0.02"))
