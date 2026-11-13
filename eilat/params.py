@@ -50,6 +50,7 @@ UNI_STUDENTS = 750      # enrolled
 UNI_ATTEND = 0.6        # share on campus on a given weekday
 UNI_DORM_SHARE = 0.2    # live in the campus dorms (one building of 72 beds opened 2010; seven were planned) and walk
 UNI_DORM_WORK = 0.35    # dorm residents with a city job (hotels, restaurants, shops) on a given weekday
+SUMMER_BEACH = 3.0      # assumption: in Jul-Aug a beach draws 3x its usual share of leisure and tourist outings
 TOURIST_TOUR_RATE = 0.8  # assumption: outings from the hotel per guest per day, all modes
 
 # --- mode choice (bus vs walking / car) ---

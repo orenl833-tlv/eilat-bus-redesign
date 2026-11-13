@@ -98,11 +98,12 @@ def demand_od(season, min_walk=10.0):
         for k in range(len(per)):
             add(o, places[camp], k, n * Dm.UNI_PROFILE["out"][k])
             add(places[camp], o, k, n * Dm.UNI_PROFILE["back"][k])
-    dw, _ = Dm.dorm_work_tours()                                   # dorm residents' jobs in the city (car-less)
-    for a, n in enumerate(dw):
-        for k in range(len(per)):
-            add(places[camp], places[a], k, n * Dm.PROFILE["work"]["out"][k])
-            add(places[a], places[camp], k, n * Dm.PROFILE["work"]["back"][k])
+    dorm, _ = Dm.dorm_tours(season)                                # dorm residents: jobs and outings (car-less)
+    for p, arr in dorm.items():
+        for a, n in enumerate(arr):
+            for k in range(len(per)):
+                add(places[camp], places[a], k, n * Dm.PROFILE[p]["out"][k])
+                add(places[a], places[camp], k, n * Dm.PROFILE[p]["back"][k])
     hp = places[hotel]
     for a, n in enumerate(tour):
         for k in range(len(per)):

@@ -55,6 +55,9 @@ PROFILE = {
 }
 BETA = {"work": 0.15, "school": 0.25, "services": 0.30, "leisure": 0.20, "tourist": 0.15}  # per km (assumption)
 PURPOSES = list(PROFILE)
+HOTEL = "Hotels, North Beach"
+# beaches draw far more leisure and tourist outings in the summer than malls and the centre do
+BEACHES = ("Hotels, North Beach", "Coral Beach", "Taba / Princess")
 # students of the Eilat campus, kept apart from PURPOSES (no ridership to calibrate them on): two waves, as many
 # students work (assumption); no classes in the long summer holiday
 UNI_PROFILE = dict(out=[.25, .30, .15, .25, .05], back=[0, .10, .30, .30, .30])
@@ -69,14 +72,21 @@ def uni_tours(pop, season):
     return n * pop / pop.sum()
 
 
-def dorm_work_tours():
-    """Work tours per day from the campus dorms to each attractor (all modes), by the work gravity model."""
+def dorm_tours(season):
+    """Tours per day from the campus dorms (all modes, residents mostly car-less) to each attractor, by purpose:
+    jobs in the city (hotels, restaurants, shops), and outings to restaurants, malls and the beach like other
+    residents. Dorms are taken as empty in the long summer holiday."""
     att = ATTRACTORS
     c = att.index[att.name == CAMPUS][0]
+    n = P.UNI_STUDENTS * P.UNI_DORM_SHARE * (1 if P.SEASONS[season]["school"] else 0)
     dk = walk_min(att.lat[c], att.lon[c], att.lat.values, att.lon.values) * (P.WALK_KMH * 1000 / 60) / P.DETOUR / 1000
-    w = att.jobs.values * np.exp(-BETA["work"] * dk); w[c] = 0
-    return P.UNI_STUDENTS * P.UNI_DORM_SHARE * P.UNI_DORM_WORK * DAY_FACTORS[DAY]["work"] * w / w.sum(), c
-HOTEL = "Hotels, North Beach"
+    gen = {"work": n * P.UNI_DORM_WORK, "services": n * P.TOUR_RATE["services"], "leisure": n * P.TOUR_RATE["leisure"]}
+    size = {"work": att.jobs.values, "services": att.services.values, "leisure": att.leisure.values}
+    out = {}
+    for p, g in gen.items():
+        w = size[p] * np.exp(-BETA[p] * dk); w[c] = 0
+        out[p] = g * DAY_FACTORS[DAY][p] * w / w.sum()
+    return out, c
 
 
 def areas(n_points=6):
@@ -154,8 +164,9 @@ def potential(pts, season, rates=None, car_prop=P.CAR_PROPENSITY):
     gen = {"work": pop * P.EMPLOYED_SHARE * rates["work"],
            "school": pop * P.SECONDARY_SHARE * rates["school"] * (1 if cfg["school"] else 0),
            "services": pop * rates["services"], "leisure": pop * rates["leisure"] * (1.5 if season == "summer" else 1.0)}
+    beach = np.where(att.name.isin(BEACHES), P.SUMMER_BEACH if season == "summer" else 1.0, 1.0)
     size = {"work": att.jobs.values, "school": att.school.values, "services": att.services.values,
-            "leisure": att.leisure.values}
+            "leisure": att.leisure.values * beach}
     f = DAY_FACTORS[DAY]
     gen = {p: g * f[p] for p, g in gen.items()}
     out = {}
@@ -168,6 +179,6 @@ def potential(pts, season, rates=None, car_prop=P.CAR_PROPENSITY):
     guests = P.HOTEL_ROOMS * P.OCCUPANCY[season] * P.GUESTS_PER_ROOM * P.TOURIST_TOUR_RATE
     hotel = att.index[att.name == HOTEL][0]
     dk = walk_min(att.lat[hotel], att.lon[hotel], att.lat.values, att.lon.values) * (P.WALK_KMH * 1000 / 60) / P.DETOUR / 1000
-    tw = att.tourist.values * np.exp(-BETA["tourist"] * dk); tw[hotel] = 0
+    tw = att.tourist.values * beach * np.exp(-BETA["tourist"] * dk); tw[hotel] = 0
     tour = guests * tw / tw.sum() * f["tourist"]
     return out, prop, tour, hotel
