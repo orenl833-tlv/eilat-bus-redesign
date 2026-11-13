@@ -2,7 +2,7 @@
 
 > **Superseded (Nov 2026).** The gains below (12-18%) come from the frequency-based model and do not survive a
 > check on the timetables as buses really run (the old recommendation gives ~4%). The recommendation is now the
-> timetable-searched network `data/net_F2.json`: ~5% shorter trips in winter and ~9% in summer (demand updated Nov 2026: students, summer beach trips, 35% of tourists by bus; the table below is on the old demand), 32 buses, the same
+> timetable-searched network `data/net_F2.json`: ~5% shorter trips in winter and ~9% in summer (demand updated Nov 2026: students, summer beach trips, 35% of tourists by bus), 32 buses, the same
 > drivers, every area keeping its 20-min line. See [Timetable check](#timetable-check-with-real-run-times-and-delays)
 > and SUMMARY_HE.md. The sections below document the earlier work.
 
@@ -424,11 +424,11 @@ the new campus - old central station - hotels line, line 3 about every 15 min, 1
 - The penalty for an origin more than 10% worse than today was raised (0.05 -> 1.0): at 0.05 a network cut the
   only direct line from the intercity terminal to the hotels (+30% there).
 
-| Unseen times and delays, demand-weighted | Winter | Summer | Perceived (winter / summer) | Buses* |
+| Unseen times and delays, demand-weighted (updated demand) | Winter | Summer | Perceived (winter / summer) | Buses* |
 |---|---|---|---|---|
-| Today | 25.7 min | 26.3 min | 35.6 / 36.4 | 34 |
-| Old recommendation | -4.1% | -5.2% | -5.2% / -6.6% | - |
-| **net_H (recommended)** | **-7.0%** | **-8.0%** | **-7.2% / -8.5%** | **31** |
+| Today | 25.6 min | 28.5 min | 35.4 / 39.5 | 34 |
+| Old recommendation | -1.2% | -4.7% | -1.5% / -5.8% | - |
+| **net_H (recommended at this stage)** | **-4.0%** | **-7.9%** | **-3.5% / -8.3%** | **31** |
 
 *With 15% terminal recovery (`analysis/fleet_tt.py`); drivers with overtime 85 vs 91; bus-hours +4%.
 Most of the extra gain over the whole day is in the early morning and the evening.
@@ -441,7 +441,7 @@ keeps today's share of residents with a 20-min line, within 15 points): **net_F2
 
 **A rider who cannot see delays coming** (`Network.committed`, `analysis/committed_rider.py`): plans on the timetable,
 commits to the first line, misses connections when the first bus is late. Today loses 5.7 min a trip against a
-clairvoyant rider (35% of trips lose > 5 min), net_F2 3.8 (25%): net_F2 vs today -5.1% clairvoyant, -9.6% committed.
+clairvoyant rider (35% of trips lose > 5 min), net_F2 3.5 (24%): net_F2 vs today -3.8% clairvoyant, -9.2% committed.
 
 **Bus lanes** (`data/segment_congestion.csv`): buses lose ~630 bus-minutes a weekday to congestion (midday vs empty
 roads); the most on Sderot HaTmarim between Derech HaArava and the city hall (up to 2.6x, 30-38 buses a day).
@@ -458,20 +458,25 @@ more than the transfers they save.
 
 | Unseen times and delays, demand-weighted | Winter | Summer | Perceived (winter / summer) | Buses* | Drivers* |
 |---|---|---|---|---|---|
-| Today | 25.7 min | 26.3 min | - | 34 | 91 |
-| net_H | -7.0% | -8.0% | -7.2% / -8.5% | 31 | 85 |
-| **net_F2 (recommended)** | **-7.6%** | **-8.7%** | **-8.8% / -10.3%** | **32** | **91** |
+| Today | 25.6 min | 28.5 min | - | 34 | 91 |
+| net_H | -4.0% | -7.9% | -3.5% / -8.3% | 31 | 85 |
+| **net_F2 (recommended)** | **-4.6%** | **-9.6%** | **-5.0% / -11.2%** | **32** | **91** |
 
-*15% terminal recovery, drivers with overtime (`analysis/fleet_tt.py`).
+*15% terminal recovery, drivers with overtime (`analysis/fleet_tt.py`). Summer for net_F2 with its summer headways
+(net_H has none). All rows on the updated demand (Nov 2026: students and campus dorms, more beach trips in summer, 35%
+of tourists by bus, the 2% lightest trip pairs dropped, new lines drawing delays from today's later lines; scripts in
+`scripts/rerun.sh`, outputs in `data/rerun/`). On the old demand net_F2 gave -7.6% / -8.7%; the gap is mostly the
+tourists (all by bus: -7.3% in winter).
 
 **Summer headways** (`scripts/optimize_tt.py HEADWAY_ONLY=1 SEASON=summer`, lines fixed): `data/net_F2_summer.json`. On unseen summer
-trips: -10.1% door to door (winter headways -8.7%), perceived -11.9%, worst origin +12% (was +16%), same bus-hours. The
+trips: -9.6% door to door (winter headways -8.4%), perceived -11.2%, worst origin +13% (winter headways +15%), same bus-hours. The
 GTFS export uses it for the summer timetable; spring/autumn keep the winter headways.
 
 **App rider** (`eilat/app_rider.py`, `analysis/app_rider.py`): sees every bus's current position (predicted to keep its
 lateness), plans on that, rides the bus as it really runs and re-plans at the transfer stop. Demand-weighted trips, 10
-delay draws shared by both networks: net_F2 vs today -8.2% +- 1.0% (winter), -10.1% +- 1.1% (summer, summer headways) [updated demand, Nov 2026: -5.6% +- 0.8% / -9.8% +- 1.0%; committed rider -9.2%, losing 3.5 min against today's 5.7];
-an all-knowing rider -9.0% / -11.0%. Wait at transfer stops per trip 0.79 min against 1.05-1.13 today.
+delay draws shared by both networks: net_F2 vs today -5.6% +- 0.8% (winter), -9.8% +- 1.0% (summer, summer headways);
+an all-knowing rider -5.9% / -10.4%. Wait at transfer stops per trip 0.90 min against 0.98 today in winter, 1.03 against
+1.35 in summer.
 
 **Desk field check** (`analysis/field_check.py`): 48 stops lose service (45 dropped, 3 passed), ~960 boardings and
 alightings a day in the model; walk to the nearest served stop median 142 m, max 488 m. 16 to visit (6 over 300 m, 3 in

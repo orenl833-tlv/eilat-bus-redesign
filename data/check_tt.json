@@ -1,19 +1,19 @@
 {
  "today": {
-  "minutes": 25.561223693533556,
-  "perceived_trips": 35.38571333827183,
+  "minutes": 28.50905259689464,
+  "perceived_trips": 39.52582408375586,
   "perceived": 42.75073770943717,
   "buses": 33,
   "worst_area": 1.0,
-  "minutes_check": 25.561223693533556
+  "minutes_check": 28.50905259689464
  },
  "data/opt_full_peak-3_warm.json": {
-  "minutes": 25.25333711890301,
-  "vs_today": -0.012045063973538772,
-  "worst_area": 1.1347501316342028,
-  "perceived_trips": 34.859245377037055,
-  "perceived_vs_today": -0.014877980731996865,
-  "worst_area_perceived": 1.1722792195033374,
+  "minutes": 27.179503750869753,
+  "vs_today": -0.04663602347030327,
+  "worst_area": 1.142774356100039,
+  "perceived_trips": 37.247145398314466,
+  "perceived_vs_today": -0.057650377652160634,
+  "worst_area_perceived": 1.1785982917854068,
   "perceived": 43.7207931701008,
   "buses": 29,
   "bus_hours": 405.1859291578624,
@@ -29,12 +29,12 @@
   ]
  },
  "data/net_H.json": {
-  "minutes": 24.537027738563204,
-  "vs_today": -0.04006834599352349,
+  "minutes": 26.270800937750934,
+  "vs_today": -0.07851020834650635,
   "worst_area": 1.1127528008165348,
-  "perceived_trips": 34.14879585053013,
-  "perceived_vs_today": -0.03495527915227581,
-  "worst_area_perceived": 1.178462512933774,
+  "perceived_trips": 36.25053813828308,
+  "perceived_vs_today": -0.08286445688095945,
+  "worst_area_perceived": 1.1522925891073292,
   "perceived": 41.722071357356484,
   "buses": 30,
   "bus_hours": 395.4440668178872,
@@ -47,6 +47,27 @@
    "D12169_28805",
    "D12719_42115",
    "D28809_29186"
+  ]
+ },
+ "data/net_F2.json": {
+  "minutes": 26.11698733992481,
+  "vs_today": -0.08390546296969503,
+  "worst_area": 1.1536310662513285,
+  "perceived_trips": 35.66574898094119,
+  "perceived_vs_today": -0.09765957300814543,
+  "worst_area_perceived": 1.199093103383854,
+  "perceived": 40.48186539038619,
+  "buses": 31,
+  "bus_hours": 395.8638080549439,
+  "lines": [
+   "15x",
+   "16x",
+   "3s",
+   "5s",
+   "6",
+   "D12157_12356",
+   "D12719_42115",
+   "D28805_42115"
   ]
  }
 }
