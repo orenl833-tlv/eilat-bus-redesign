@@ -1,18 +1,18 @@
 {
  "today": {
-  "minutes": 25.71577351043559,
-  "perceived_trips": 35.62556569585079,
+  "minutes": 25.561223693533556,
+  "perceived_trips": 35.38571333827183,
   "perceived": 42.75073770943717,
   "buses": 33,
   "worst_area": 1.0,
-  "minutes_check": 25.71577351043559
+  "minutes_check": 25.561223693533556
  },
  "data/opt_full_peak-3_warm.json": {
-  "minutes": 25.358847009699748,
-  "vs_today": -0.013879671968295981,
-  "worst_area": 1.1332304765987946,
-  "perceived_trips": 35.019952310667016,
-  "perceived_vs_today": -0.016999404033444132,
+  "minutes": 25.25333711890301,
+  "vs_today": -0.012045063973538772,
+  "worst_area": 1.1347501316342028,
+  "perceived_trips": 34.859245377037055,
+  "perceived_vs_today": -0.014877980731996865,
   "worst_area_perceived": 1.1722792195033374,
   "perceived": 43.7207931701008,
   "buses": 29,
@@ -29,12 +29,12 @@
   ]
  },
  "data/net_F2.json": {
-  "minutes": 24.49798990593019,
-  "vs_today": -0.04735551135614169,
-  "worst_area": 1.1537848683736849,
-  "perceived_trips": 33.77035089779144,
-  "perceived_vs_today": -0.05207537794341388,
-  "worst_area_perceived": 1.1995307886335542,
+  "minutes": 24.387394642757435,
+  "vs_today": -0.04592225571239272,
+  "worst_area": 1.1536310662513285,
+  "perceived_trips": 33.599008235794685,
+  "perceived_vs_today": -0.05049227312155702,
+  "worst_area_perceived": 1.2041697663397994,
   "perceived": 40.48186539038619,
   "buses": 31,
   "bus_hours": 395.8638080549439,
@@ -47,6 +47,49 @@
    "D12157_12356",
    "D12719_42115",
    "D28805_42115"
+  ]
+ },
+ "data/opt_tt_net_F2_s51_design_demand_freq.json": {
+  "minutes": 24.38124518983377,
+  "vs_today": -0.04616283311969516,
+  "worst_area": 1.1642712805102686,
+  "perceived_trips": 33.479417866670815,
+  "perceived_vs_today": -0.053871896077879455,
+  "worst_area_perceived": 1.2501245147613547,
+  "perceived": 41.06224357357253,
+  "buses": 31,
+  "bus_hours": 395.2851193880898,
+  "lines": [
+   "15x",
+   "16",
+   "3s",
+   "5",
+   "6",
+   "D12157_12356",
+   "D12719_42115",
+   "D28805_42115"
+  ]
+ },
+ "data/opt_tt_net_H_s52_design_demand_freq.json": {
+  "minutes": 24.644282991028536,
+  "vs_today": -0.03587233199390949,
+  "worst_area": 1.126449408422896,
+  "perceived_trips": 34.37994048265609,
+  "perceived_vs_today": -0.02842313353982706,
+  "worst_area_perceived": 1.186948773003619,
+  "perceived": 41.50287238492848,
+  "buses": 32,
+  "bus_hours": 393.03224892388255,
+  "lines": [
+   "15",
+   "16",
+   "3s",
+   "4",
+   "6",
+   "D12356_12357",
+   "D12356_12668",
+   "D28805_29085",
+   "D28809_29094"
   ]
  }
 }
