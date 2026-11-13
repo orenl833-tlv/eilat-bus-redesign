@@ -1,0 +1,25 @@
+{
+ "season": "summer",
+ "plan_file": "data/net_F2_summer.json",
+ "draws": 10,
+ "today": {
+  "app": 31.666,
+  "know": 28.867,
+  "xwait": 1.353,
+  "slow5": 0.182
+ },
+ "plan": {
+  "app": 28.573,
+  "know": 25.857,
+  "xwait": 1.033,
+  "slow5": 0.173
+ },
+ "change_app": {
+  "mean": -0.0975,
+  "ci95": 0.01
+ },
+ "change_know": {
+  "mean": -0.1041,
+  "ci95": 0.0101
+ }
+}
