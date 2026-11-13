@@ -123,13 +123,13 @@ def main():
     sid = {s: i for i, s in enumerate(stops.stop_id)}
     out = {"stops": [[round(r.stop_lat, 5), round(r.stop_lon, 5), r.stop_name] for r in stops.itertuples()],
            "periods": list(P.PERIODS), "seasons": list(P.SEASONS), "options": OPTS, "net": {}, "areas": [], "summary": {}}
-    a = gpd.read_file("data/areas.geojson")
-    a = a[a.use == "מגורים"].copy()
+    from eilat.demand import areas as model_areas
+    a = model_areas()[0]   # the model's residents: 2020 polygons scaled to the 2022 census, area 16 split from 15
     a["geometry"] = a.geometry.simplify(0.0001)
     for r in a.itertuples():
         geom = r.geometry.geoms if r.geometry.geom_type == "MultiPolygon" else [r.geometry]
         rings = [[[round(x, 5), round(y, 5)] for x, y in g.exterior.coords] for g in geom]
-        out["areas"].append(dict(id=int(r.stat11), rings=rings, pop=None if pd.isna(r.pop2020) else int(r.pop2020),
+        out["areas"].append(dict(id=int(r.stat11), rings=rings, pop=None if pd.isna(r.pop) else int(round(r.pop, -1)),
                                  nocar=None if pd.isna(r.Vehicle0_pcnt) else float(r.Vehicle0_pcnt)))
     for tag in OPTS:
         prob = prob_keep if tag == "keep" else prob_full
