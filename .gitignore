@@ -2,3 +2,6 @@ data/raw/
 data/siri/
 __pycache__/
 data/rerun/*.log
+data/*_ckpt.json
+.pytest_cache/
+.ruff_cache/
