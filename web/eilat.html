@@ -214,7 +214,7 @@ function css(v) { return getComputedStyle(document.documentElement).getPropertyV
 function seaColor(b) { return b >= 9 ? css("--sea-4") : b >= 6 ? css("--sea-3") : b >= 3 ? css("--sea-2") : css("--sea-1") }
 function areaFill(pct) {
   if (pct == null) return css("--land");
-  if (pct > 0.5) return css("--worse");
+  if (pct > 0) return css("--worse");
   return pct <= -20 ? css("--better-3") : pct <= -10 ? css("--better-2") : css("--better-1");
 }
 
@@ -257,7 +257,7 @@ function drawMap(svg, tag, showChange) {
       p.addEventListener("mouseleave", () => { document.getElementById("tip").hidden = true });
       g.appendChild(p);
     }
-    const label = los ? (los[a.id] ? `${los[a.id].met}/3` : null) : (showChange && change && change[a.id] != null ? `${signed(change[a.id])}%` : null);
+    const label = los ? (los[a.id] ? `${los[a.id].met}/3` : null) : (showChange && change && change[a.id] != null ? `${signed(change[a.id], Math.abs(change[a.id]) < 1 ? 1 : 0)}%` : null);
     if (label) {
       const ring = a.rings[0]; const cx = ring.reduce((s, q) => s + q[0], 0) / ring.length, cy = ring.reduce((s, q) => s + q[1], 0) / ring.length;
       const t = document.createElementNS(ns, "text");
