@@ -6,10 +6,10 @@
 Usage: python3 scripts/linkedin_images.py && node scripts/linkedin_shot.js
 """
 import json
+import math
 
 D = json.load(open("web/data.json"))
 OPT = "net_F2"
-import math
 LAT = (29.537, 29.575)     # city, without the coast road to Taba
 LON = (34.915, 34.968)
 W = 540

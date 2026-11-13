@@ -1,8 +1,8 @@
 """Numbers for the map page (web/eilat.html) from the timetable check, for today and the recommended network.
 
 - area change: each residential area's demand-weighted door-to-door minutes (its centre to the key places and
-  back, scripts/optimize_tt.py OD=demand), the network against today, per season (summer with its own headways when data/net_<x>_summer.json exists; spring/autumn uses the
-  winter trips: same timetable and no summer tourism peak);
+  back, scripts/optimize_tt.py OD=demand), the network against today, per season (summer with its own headways when
+  data/net_<x>_summer.json exists; spring/autumn uses the winter trips: same timetable and no summer tourism peak);
 - travel times: door-to-door minutes from each area's centre to the page's key places, per period and the whole
   day (periods weighted by hours), mean over leaving times in the period and SEEDS delay draws;
 - summary: the whole-city change per season and over the year (by months), the worst area, buses and

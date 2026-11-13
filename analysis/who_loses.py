@@ -23,7 +23,8 @@ def main():
         nets = {"today": today.network(today.start), "plan": C.PatsNet(S.tt, S.prob.network(C.load(S, path))).network(None)}
         res = {k: S.tt.per_home(n, "holdout", C.SEEDS)[0] for k, n in nets.items()}
         def name(o):
-            if (o[0], o[1]) in att: return att[(o[0], o[1])]
+            if (o[0], o[1]) in att:
+                return att[(o[0], o[1])]
             return "area " + str(int(pts.area.values[int(np.argmin((pts.lat.values - o[0]) ** 2 + (pts.lon.values - o[1]) ** 2))]))
         out[season] = dict(sorted(((name(o), round((res["plan"][o] / res["today"][o] - 1) * 100, 1)) for o in res["today"]),
                                   key=lambda r: -r[1]))
