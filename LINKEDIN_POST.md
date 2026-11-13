@@ -1,6 +1,6 @@
 # פוסט לדוגמה ללינקדאין
 
-תמונות: `figs/linkedin_map.png` (ראשונה: מפות היום וההצעה, צבועות לפי רמת השירות), `figs/linkedin_journeys.png` (שנייה: נסיעות לדוגמה, לפי לוחות הזמנים).
+תמונות: `linkedin/1_network.png` (ראשונה: הקווים היום מול ההצעה), `linkedin/2_areas.png` (שנייה: השינוי בזמן הנסיעה בכל שכונה, ממוצע שנתי). נוצרות ב-`scripts/linkedin_images.py` ו-`scripts/linkedin_shot.js`.
 
 ---
 
