@@ -59,7 +59,7 @@ def main():
         for k, (net, keys) in nets.items():
             per[k].append(run(S, net, keys, seed))
         print(seed, {k: {m: round(v, 2) for m, v in per[k][-1].items()} for k in nets}, flush=True)
-    out = {"season": season, "plan": path, "draws": len(SEEDS)}
+    out = {"season": season, "plan_file": path, "draws": len(SEEDS)}
     for k in nets:
         out[k] = {m: round(float(np.mean([r[m] for r in per[k]])), 3) for m in per[k][0]}
     for m in ("app", "know"):
