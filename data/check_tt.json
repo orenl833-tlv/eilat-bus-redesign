@@ -1,19 +1,19 @@
 {
  "today": {
-  "minutes": 25.54571971179086,
-  "perceived_trips": 35.391327313581655,
+  "minutes": 25.561223693533556,
+  "perceived_trips": 35.38571333827183,
   "perceived": 42.75073770943717,
   "buses": 33,
   "worst_area": 1.0,
-  "minutes_check": 25.54571971179086
+  "minutes_check": 25.561223693533556
  },
  "data/opt_full_peak-3_warm.json": {
-  "minutes": 24.547429709258843,
-  "vs_today": -0.03907856242825869,
+  "minutes": 25.25333711890301,
+  "vs_today": -0.012045063973538772,
   "worst_area": 1.1347501316342028,
-  "perceived_trips": 33.634053688458096,
-  "perceived_vs_today": -0.04965266234728627,
-  "worst_area_perceived": 1.1573924730602514,
+  "perceived_trips": 34.859245377037055,
+  "perceived_vs_today": -0.014877980731996865,
+  "worst_area_perceived": 1.1722792195033374,
   "perceived": 43.7207931701008,
   "buses": 29,
   "bus_hours": 405.1859291578624,
@@ -29,12 +29,12 @@
   ]
  },
  "data/net_F2.json": {
-  "minutes": 23.689823177158107,
-  "vs_today": -0.07264999990492127,
+  "minutes": 24.387394642757435,
+  "vs_today": -0.04592225571239272,
   "worst_area": 1.1536310662513285,
-  "perceived_trips": 32.41015444482011,
-  "perceived_vs_today": -0.08423455956729553,
-  "worst_area_perceived": 1.199093103383854,
+  "perceived_trips": 33.599008235794685,
+  "perceived_vs_today": -0.05049227312155702,
+  "worst_area_perceived": 1.2041697663397994,
   "perceived": 40.48186539038619,
   "buses": 31,
   "bus_hours": 395.8638080549439,
