@@ -68,6 +68,7 @@ svg { width: 100%; height: auto; display: block }
 .lines .route { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .lines .route small { display: block; font-size: 11px; opacity: .75; white-space: normal }
 .lines .hw { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .8 }
+.lines .hw .st { display: block }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--ink-2); align-items: center }
 .legend i { display: inline-block; width: 26px; vertical-align: middle; margin-inline-end: 6px; border-radius: 3px }
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
@@ -419,7 +420,7 @@ function lineList(id, tag, selKey) {
     const h = st.period === "all" ? null : l.hw[st.period];
     const freq = st.period === "all" ? (tripsDay(l) ? `${Math.round(tripsDay(l))} נסיעות ביום` : "אין שירות") : (h ? "כל " + h + " דק'" : "אין שירות");
     b.innerHTML = `<span class="no">${num(l.display || label(l.name))}${cnt[l.display || label(l.name)] > 1 ? `<small>${dirOf(l)}</small>` : ""}</span><span class="route">${l.start} ← ${l.end}${l.note ? `<small>${l.note}</small>` : ""}</span>` +
-      `<span class="hw">${freq}${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>`;
+      `<span class="hw"><span class="st">${l.stops.length - l.skip.length} תחנות${l.skip.length ? " · מדלג על " + l.skip.length : ""}</span>${freq}</span>`;
     b.onclick = () => selectLine(selKey, st[selKey] === l.name ? null : l.name);
     el.appendChild(b);
   }
