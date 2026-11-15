@@ -1,6 +1,6 @@
 # Eilat bus network redesign
 
-**Interactive map, today against the proposal (Hebrew):** https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV
+**Interactive map, today against the proposal (Hebrew):** https://claude.ai/artifact/DJSeiVJX6hTwAZyhMu8nMV · **LinkedIn post:** https://lnkd.in/p/d9rVPwGn
 
 Can a city's buses serve people better with the same fleet and the same drivers? For Eilat, a closed city of
 55,000 with ~35 urban buses, the answer from public data is **yes.**
@@ -84,7 +84,7 @@ PYTHONPATH=.:scripts python3 scripts/seasonal.py keep 400 && PYTHONPATH=.:script
   from the stop itself, for one bus at a time here, sized on site by swept-path analysis, with driver facilities nearby.
 - **Re-runs on the updated demand** (students and campus dorms, more beach trips in summer, 35% of tourists by bus):
   `scripts/rerun.sh`, outputs in `data/rerun/`.
-- **To do:** when the LinkedIn post is published, link it from the map page (`web/eilat.html` footer) and here.
+- **LinkedIn post (Hebrew):** https://lnkd.in/p/d9rVPwGn
 
 ## Honest limits
 
